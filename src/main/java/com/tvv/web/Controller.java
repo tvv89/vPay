@@ -28,17 +28,15 @@ public class Controller extends HttpServlet {
         process(request, response);
     }
 
-    /**
-     * Main method of this controller.
-     */
     private void process(HttpServletRequest request,
                          HttpServletResponse response) throws IOException, ServletException {
 
         log.debug("Controller starts");
-
+        log.trace("request: "+ request.toString());
         // extract command name from the request
         String commandName = request.getParameter("command");
         log.trace("Request parameter: command --> " + commandName);
+
 
         // obtain command object by its name
         Command command = CommandContainer.get(commandName);

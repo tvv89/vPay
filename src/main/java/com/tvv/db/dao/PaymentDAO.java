@@ -144,15 +144,7 @@ public class PaymentDAO {
             pstmt.setString(11, payment.getStatus());
             pstmt.setString(12, payment.getCurrency());
 
-            pstmt.executeQuery();
-            rs = pstmt.getGeneratedKeys();
-            Long paymentId = payment.getId();
-            if (rs.next()) {
-                paymentId = rs.getLong(1);
-            }
-            payment.setId(paymentId);
-            rs.close();
-            pstmt.close();
+            DAOUtils.getInsertEntityGenerateId(pstmt,rs,payment);
         } catch (SQLException ex) {
             DBManager.getInstance().rollbackAndClose(con);
             ex.printStackTrace();

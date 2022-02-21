@@ -1,6 +1,5 @@
 package com.tvv.db.entity;
 
-import java.io.Serializable;
 import java.util.Date;
 
 public class User extends EntityID{
@@ -24,6 +23,7 @@ public class User extends EntityID{
     private String photo;
 
     private int role;
+    private String email;
 
     public String getLogin() {
         return login;
@@ -73,7 +73,7 @@ public class User extends EntityID{
         this.status = status;
     }
 
-    public Date getDayOfBirth() {
+    public java.sql.Date getDayOfBirth() {
         return dayOfBirth;
     }
 
@@ -105,6 +105,14 @@ public class User extends EntityID{
         this.photo = photo;
     }
 
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
     @Override
     public String toString() {
         return "User{" +
@@ -113,6 +121,7 @@ public class User extends EntityID{
                 ", status=" + status +
                 ", firstName='" + firstName + '\'' +
                 ", lastName='" + lastName + '\'' +
+                ", email=" + email +
                 ", dayOfBirth=" + dayOfBirth +
                 ", sex='" + sex + '\'' +
                 ", gender='" + gender + '\'' +
@@ -120,4 +129,5 @@ public class User extends EntityID{
                 ", role=" + role +
                 '}';
     }
+
 }

@@ -6,10 +6,7 @@ import com.tvv.db.entity.LoadEntity;
 import com.tvv.db.entity.Fields;
 import com.tvv.db.entity.User;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -24,9 +21,48 @@ public class UserDAO {
     private static final String SQL__FIND_USER_BY_ID =
             "SELECT * FROM users WHERE id=?";
 
+    private static final String SQL__INSERT_USER =
+            "insert into users " +
+                    "(id, login, password, statususer, " +
+                    "role, firstname, lastname, " +
+                    "dateofbirth, sex, gender, photo, email) "+
+                    "values (default, ?, ?, ?," +
+                    "?, ?, ?," +
+                    "?, ?, ?, ?, ?)";
+
     private static final String SQL_UPDATE_USER =
             "UPDATE users SET password=?, firstname=?, lastname=?"+
                     "	WHERE id=?";
+
+    public static User insertUser (User user) {
+        PreparedStatement pstmt = null;
+        ResultSet rs = null;
+        Connection con = null;
+        try {
+            con = DBManager.getInstance().getConnection();
+            pstmt = con.prepareStatement(SQL__INSERT_USER);
+            pstmt.setString(1, user.getLogin());
+            pstmt.setString(2, user.getPassword());
+            pstmt.setBoolean(3, user.isStatus());
+            pstmt.setLong(4, user.getRole());
+            pstmt.setString(5, user.getFirstName());
+            pstmt.setString(6, user.getLastName());
+            pstmt.setDate(7, user.getDayOfBirth());
+            pstmt.setString(8, user.getSex());
+            pstmt.setString(9, user.getGender());
+            pstmt.setString(10, user.getPhoto());
+            pstmt.setString(11, user.getEmail());
+
+            DAOUtils.getInsertEntityGenerateId(pstmt,rs,user);
+
+        } catch (SQLException ex) {
+            DBManager.getInstance().rollbackAndClose(con);
+            ex.printStackTrace();
+        } finally {
+            DBManager.getInstance().commitAndClose(con);
+        }
+        return user;
+    }
 
     public static User findUserById(Long id) {
         User user = null;
@@ -125,6 +161,7 @@ public class UserDAO {
                 user.setSex(rs.getString(Fields.USER__SEX));
                 user.setGender(rs.getString(Fields.USER__GENDER));
                 user.setPhoto(rs.getString(Fields.USER__PHOTO));
+                user.setEmail(rs.getString(Fields.USER__EMAIL));
                 return user;
             } catch (SQLException e) {
                 throw new IllegalStateException(e);

@@ -28,7 +28,7 @@ public class CreateUserCommand extends Command {
 		//request.getParameter("p",)
 		// put user order beans list to request
 		//List<Card> pgList = cardList;// PaginationList.getListPage(cardList,pageView,countOnPage);
-		request.getServletContext().getInitParameter("photoPath");
+		//request.getServletContext().getInitParameter("photoPath");
 		//request.setAttribute("cardList", pgList);
 		//request.setAttribute("pageView",pageView);
 		//request.setAttribute("pages",pages);
