@@ -17,24 +17,26 @@ public class PaymentService {
 
     public static void submitPayment(Payment payment) throws AppException {
         String method = payment.getRecipientType();
-        ErrorString errorString = new ErrorMessageEN();
+
         switch (method) {
             case ("card"):
                 Card card = CardDAO.findCardById(payment.getRecipientId());
                 Account accountByCard = AccountDAO.findAccountById(card.getAccount().getId());
-                if (checkBalance(accountByCard, payment.getTotal())) {
-                    Double newBalance = accountByCard.getBalance() - payment.getTotal();
-                    AccountDAO.updateAccountBalance(accountByCard.getId(), newBalance);
-                } else throw new AppException(errorString.notEnoughMoney(), new IllegalArgumentException());
+                spUtil(accountByCard,payment);
                 break;
             case ("account"):
                 Account accountById = AccountDAO.findAccountById(payment.getRecipientId());
-                if (checkBalance(accountById, payment.getTotal())) {
-                    Double newBalance = accountById.getBalance() - payment.getTotal();
-                    AccountDAO.updateAccountBalance(accountById.getId(), newBalance);
-                } else throw new AppException("You have not enough money on Your account", new IllegalArgumentException());
+                spUtil(accountById,payment);
                 break;
         }
+    }
+
+    private static void spUtil(Account account, Payment payment) throws AppException {
+        ErrorString errorString = new ErrorMessageEN();
+        if (checkBalance(account, payment.getTotal())) {
+            Double newBalance = account.getBalance() - payment.getTotal();
+            AccountDAO.updateAccountBalance(account.getId(), newBalance);
+        } else throw new AppException(errorString.notEnoughMoney(), new IllegalArgumentException());
     }
 
     private static boolean checkBalance (Account account, double pay) {
