@@ -2,6 +2,7 @@ package com.tvv.web.servlet;
 
 import com.tvv.db.dao.UserDAO;
 import com.tvv.db.entity.User;
+import com.tvv.service.exception.AppException;
 import com.tvv.utils.FieldsChecker;
 import com.tvv.utils.StringHash;
 import com.tvv.web.webutil.ErrorMessageEN;
@@ -18,6 +19,8 @@ import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
 
+import static com.tvv.service.UserService.createUser;
+
 @WebServlet(name = "Registration", value = "/registration")
 public class Registration extends HttpServlet {
 
@@ -32,82 +35,35 @@ public class Registration extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         log.debug("Start registration servlet");
-        String forward = Path.PAGE__LOGIN;
+
         request.setCharacterEncoding("UTF-8");
         log.trace("Login for registration: " + request.getParameter("login"));
 
-        Map<String,String> userData = readParemeters(request);
+        Map<String, String> userData = readParemeters(request);
 
         ErrorString error = new ErrorMessageEN();
         LocalDate date = LocalDate.now();
         try {
             date = LocalDate.parse(userData.get("dateofbirth"));
-        } catch (Exception ex)
-        {
+        } catch (Exception ex) {
             log.debug("Bad parse date from dateOfBirth");
         }
-        StringBuilder errorMessage = new StringBuilder();
 
-        //if (!FieldsChecker.checkAge18YearsOld(date)) errorMessage.append(error.no18YearsOld()).append('\n');
-        //if (!FieldsChecker.checkNameField(userData.get("firstname"))) errorMessage.append(error.badFirstName()).append('\n');
-        //if (!FieldsChecker.checkNameField(userData.get("lastname"))) errorMessage.append(error.badLastName()).append('\n');
-        //if (!FieldsChecker.checkEMailAddress(userData.get("email"))) errorMessage.append(error.badEmail()).append('\n');
-        //if (!FieldsChecker.checkPasswordField(userData.get("password"))) errorMessage.append(error.badPassword()).append('\n');
-//        if (!userData.get("password").equals(userData.get("confirmpassword"))) errorMessage.append(error.bedConfirmPassword());
-        log.trace(errorMessage);
-        if (errorMessage.length()==0) {
-
-            User user = new User();
-            user.setId(1L);
-            user.setLogin(userData.get("login"));
-            user.setPassword(StringHash.getHashString(userData.get("password")));
-            user.setEmail(userData.get("email"));
-            user.setFirstName(userData.get("firstname"));
-            user.setLastName(userData.get("lastname"));
-            user.setDayOfBirth(date);
-            user.setSex(userData.get("sex"));
-            user.setGender("");
-            user.setRole(1);
-            if (request.getPart("photofile").getSize()>0) {
-                String appPath = request.getServletContext().getRealPath("");
-                String savePath = appPath + File.separator +
-                        "images";
-                Part part = request.getPart("photofile");
-                File fileSaveDir = new File(savePath);
-                if (!fileSaveDir.exists()) {
-                    fileSaveDir.mkdir();
-                }
-                String fileName = "photo_" + userData.get("login") + ".jpg";
-                fileName = new File(fileName).getName();
-                part.write(savePath + File.separator + fileName);
-                user.setPhoto(fileName);
-
-                //Part filePart =  ;
-                //String fileName = "photo"+request.getParameter("login")+".jpg";
-                //filePart.write(request.getServletContext().getRealPath(".")+"images/"+fileName);
-
-            } else user.setPhoto("");
-            user.setStatus(true);
-
-            UserDAO.insertUser(user);
+        try {
+            createUser(userData);
             response.sendRedirect(Path.PAGE__LOGIN);
-            //request.getRequestDispatcher(Path.PAGE__LOGIN).forward(request,response);
-        }
-        else {
-            log.trace(errorMessage);
+        } catch (AppException e) {
+            log.trace(e.getMessage());
             forward = Path.PAGE__ERROR_PAGE;
-            request.setAttribute("errorMessage", errorMessage);
+            request.setAttribute("errorMessage", e.getMessage());
             request.setAttribute("errorCode", 1);
             response.sendRedirect(forward);
-            //RequestDispatcher disp = request.getRequestDispatcher("error");
-            //disp.forward(request, response);
-
         }
 
-
-
-
+        //request.getRequestDispatcher(Path.PAGE__LOGIN).forward(request,response);
     }
+
+
 
     private Map<String, String> readParemeters(HttpServletRequest request) {
         Map<String,String> result = new HashMap<>();
