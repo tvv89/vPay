@@ -48,13 +48,11 @@ public class ListPaymentsCommand extends Command {
 		log.trace("Load from DB: paymentList " + paymentList);
 		
 		Collections.sort(paymentList, compareById);
-		//request.getParameter("p",)
 
 		int countOnPage = 5;
 		int pageView = 1;
 		int pages = (int)Math.ceil((double)paymentList.size()/countOnPage);
-		//request.getParameter("p",)
-		// put user order beans list to request
+
 		List<Payment> pgList = PaginationList.getListPage(paymentList,pageView,countOnPage);
 		request.setAttribute("paymentList", pgList);
 		request.setAttribute("pageView",pageView);

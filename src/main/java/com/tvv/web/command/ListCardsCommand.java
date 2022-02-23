@@ -55,7 +55,6 @@ public class ListCardsCommand extends Command {
 		int pageView = 1;
 		int pages = cardList.size()/countOnPage;
 		//request.getParameter("p",)
-		// put user order beans list to request
 		List<Card> pgList = cardList;// PaginationList.getListPage(cardList,pageView,countOnPage);
 
 		request.setAttribute("cardList", pgList);

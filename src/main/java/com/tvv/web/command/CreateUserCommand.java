@@ -25,15 +25,6 @@ public class CreateUserCommand extends Command {
 			HttpServletResponse response) throws IOException, ServletException {
 		log.debug("Commands starts");
 
-
-		//int pages = cardList.size()/countOnPage;
-		//request.getParameter("p",)
-		// put user order beans list to request
-		//List<Card> pgList = cardList;// PaginationList.getListPage(cardList,pageView,countOnPage);
-		//request.getServletContext().getInitParameter("photoPath");
-		//request.setAttribute("cardList", pgList);
-		//request.setAttribute("pageView",pageView);
-		//request.setAttribute("pages",pages);
 		request.setCharacterEncoding("UTF-8");
 		String body = request.getReader().readLine();
 		String login = request.getParameter("login");

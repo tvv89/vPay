@@ -45,8 +45,7 @@ public class ListUsersCommand extends Command {
 		log.trace("Found in DB: userList is " + userList);
 		
 		Collections.sort(userList, compareByLogin);
-		
-		// put user order beans list to request
+
 		request.setAttribute("usersList", userList);
 		request.setCharacterEncoding("UTF-8");
 		log.trace("Set the request attribute: userList is " + userList);

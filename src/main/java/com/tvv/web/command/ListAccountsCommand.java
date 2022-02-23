@@ -19,7 +19,6 @@ public class ListAccountsCommand extends Command {
 	private static final Logger log = Logger.getLogger(ListAccountsCommand.class);
 
 	private static class CompareByName implements Comparator<Account>, Serializable {
-		private static final long serialVersionUID = -1573481565177573283L;
 
 		@Override
 		public int compare(Account u1, Account u2) {
