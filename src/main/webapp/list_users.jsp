@@ -34,12 +34,8 @@
             <li>
                 <a href="controller?command=logout">Logout</a>
             </li>
-
         </ul>
-
     </nav>
-
-
 
     <div>
         <p uk-margin>
@@ -92,8 +88,6 @@
         </div>
     </div>
 </div>
-
-
 
 </body>
 </html>

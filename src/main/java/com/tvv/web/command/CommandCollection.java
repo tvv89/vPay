@@ -5,9 +5,9 @@ import java.util.TreeMap;
 
 import org.apache.log4j.Logger;
 
-public class CommandContainer {
+public class CommandCollection {
 	
-	private static final Logger log = Logger.getLogger(CommandContainer.class);
+	private static final Logger log = Logger.getLogger(CommandCollection.class);
 	
 	private static Map<String, Command> commands = new TreeMap<String, Command>();
 	

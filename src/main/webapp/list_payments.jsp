@@ -97,13 +97,6 @@
 </div>
 
 
-    <a id="js-modal-dialog" class="uk-button uk-button-default" href="#">Dialog</a>
-
-    <a id="js-modal-alert" class="uk-button uk-button-default" >Alert</a>
-
-    <a id="js-modal-confirm" class="uk-button uk-button-default" href="#">Confirm</a>
-
-    <a id="js-modal-prompt" class="uk-button uk-button-default" href="#">Prompt</a>
 
     <script>
 

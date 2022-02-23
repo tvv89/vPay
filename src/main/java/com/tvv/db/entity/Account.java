@@ -8,7 +8,7 @@ public class Account extends EntityID {
     String currency;
     Double balance;
     User ownerUser;
-    String status;
+    boolean status;
 
     public String getIban() {
         return iban;
@@ -66,11 +66,11 @@ public class Account extends EntityID {
         this.ownerUser = ownerUser;
     }
 
-    public String getStatus() {
+    public boolean isStatus() {
         return status;
     }
 
-    public void setStatus(String status) {
+    public void setStatus(boolean status) {
         this.status = status;
     }
 

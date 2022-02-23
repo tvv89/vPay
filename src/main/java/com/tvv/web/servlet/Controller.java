@@ -1,7 +1,7 @@
 package com.tvv.web.servlet;
 
 import com.tvv.web.command.Command;
-import com.tvv.web.command.CommandContainer;
+import com.tvv.web.command.CommandCollection;
 import org.apache.log4j.Logger;
 
 import javax.servlet.*;
@@ -33,17 +33,17 @@ public class Controller extends HttpServlet {
         log.debug("Controller starts");
 
         String commandName = request.getParameter("command");
-        log.trace("Request parameter: command --> " + commandName);
+        log.trace("Request parameter command: " + commandName);
         String login = request.getParameter("login");
         String password = request.getParameter("password");
 
-        Command command = CommandContainer.get(commandName);
-        log.trace("Obtained command --> " + command);
+        Command command = CommandCollection.get(commandName);
+        log.trace("Command is" + command);
 
         String forward = command.execute(request, response);
         log.trace("Forward address " + forward);
 
-        log.debug("Controller finished, now go to forward address " + forward);
+        log.debug("Controller finished, forward address " + forward);
 
         // if the forward address is not null go to the address
         if (forward != null) {

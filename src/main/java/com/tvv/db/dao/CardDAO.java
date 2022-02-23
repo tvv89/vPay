@@ -67,7 +67,7 @@ public class CardDAO {
         return cards;
     }
 
-    private static Card findCardById(Long id) {
+    public static Card findCardById(Long id) {
         Card card = new Card();
         PreparedStatement pstmt = null;
         ResultSet rs = null;
@@ -91,7 +91,7 @@ public class CardDAO {
         return card;
     }
 
-    private static List<Card> findCardByAccount(Long accountId) {
+    public static List<Card> findCardByAccount(Long accountId) {
         List<Card> cards = new ArrayList<>();
         PreparedStatement pstmt = null;
         ResultSet rs = null;

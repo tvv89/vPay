@@ -77,6 +77,54 @@ public class AccountDAO {
         return account;
     }
 
+    public static boolean updateAccountBalance (Long id, Double newBalance){
+        boolean result = false;
+        PreparedStatement pstmt = null;
+        ResultSet rs = null;
+        Connection con = null;
+        try {
+            con = DBManager.getInstance().getConnection();
+            AccountLoad mapper = new AccountLoad();
+            pstmt = con.prepareStatement(SQL__UPDATE_BALANCE);
+            pstmt.setLong(1, id);
+            pstmt.setDouble(2, newBalance);
+            pstmt.execute();
+            rs.close();
+            pstmt.close();
+            result = true;
+        } catch (SQLException ex) {
+            DBManager.getInstance().rollbackCloseConnection(con);
+            ex.printStackTrace();
+        } finally {
+            DBManager.getInstance().commitCloseConnection(con);
+        }
+        return result;
+    }
+
+    public static boolean updateAccountStatus (Long id, boolean status){
+        boolean result = false;
+        PreparedStatement pstmt = null;
+        ResultSet rs = null;
+        Connection con = null;
+        try {
+            con = DBManager.getInstance().getConnection();
+            AccountLoad mapper = new AccountLoad();
+            pstmt = con.prepareStatement(SQL__UPDATE_STATUS);
+            pstmt.setLong(1, id);
+            pstmt.setBoolean(2, status);
+            pstmt.execute();
+            rs.close();
+            pstmt.close();
+            result = true;
+        } catch (SQLException ex) {
+            DBManager.getInstance().rollbackCloseConnection(con);
+            ex.printStackTrace();
+        } finally {
+            DBManager.getInstance().commitCloseConnection(con);
+        }
+        return result;
+    }
+
     public static List<Account> findAccountByUserId (Long id)
     {
         List<Account> accounts = new ArrayList<>();
@@ -121,7 +169,7 @@ public class AccountDAO {
                 User user = UserDAO.findUserById(rs.getLong(Fields.ACCOUNT__USER_ID));
                 account.setOwnerUser(user);
 
-                account.setStatus(String.valueOf(rs.getBoolean(Fields.ACCOUNT__STATUS)));
+                account.setStatus(rs.getBoolean(Fields.ACCOUNT__STATUS));
                 return account;
             } catch (SQLException e) {
                 throw new IllegalStateException(e);

@@ -31,4 +31,9 @@ public class ErrorMessageEN implements ErrorString{
     public String bedConfirmPassword() {
         return "Password mismatch, please check password and confirm password";
     }
+
+    @Override
+    public String notEnoughMoney() {
+        return "You have not enough money on Your account";
+    }
 }

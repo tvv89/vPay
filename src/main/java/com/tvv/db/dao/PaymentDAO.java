@@ -100,7 +100,7 @@ public class PaymentDAO {
         return payments;
     }
 
-    public boolean updatePaymentStatus(Long id, String status)
+    public static boolean updatePaymentStatus(Long id, String status)
     {
         boolean result = false;
         PreparedStatement pstmt = null;

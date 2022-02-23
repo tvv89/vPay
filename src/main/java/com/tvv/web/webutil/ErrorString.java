@@ -12,4 +12,6 @@ public interface ErrorString {
     String badPassword();
 
     String bedConfirmPassword();
+
+    String notEnoughMoney();
 }
