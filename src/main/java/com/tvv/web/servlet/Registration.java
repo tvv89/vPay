@@ -70,7 +70,6 @@ public class Registration extends HttpServlet {
             user.setRole(1);
             if (request.getPart("photofile").getSize()>0) {
                 String appPath = request.getServletContext().getRealPath("");
-                // constructs path of the directory to save uploaded file
                 String savePath = appPath + File.separator +
                         "images";
                 Part part = request.getPart("photofile");
