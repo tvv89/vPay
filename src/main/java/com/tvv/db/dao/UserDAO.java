@@ -7,6 +7,7 @@ import com.tvv.db.entity.Fields;
 import com.tvv.db.entity.User;
 
 import java.sql.*;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,7 +29,7 @@ public class UserDAO {
                     "dateofbirth, sex, gender, photo, email) "+
                     "values (default, ?, ?, ?," +
                     "?, ?, ?," +
-                    "?, ?, ?, ?, ?)";
+                    "?, ?, ?, ?, ?);";
 
     private static final String SQL_UPDATE_USER =
             "UPDATE users SET password=?, firstname=?, lastname=?"+
@@ -43,23 +44,23 @@ public class UserDAO {
             pstmt = con.prepareStatement(SQL__INSERT_USER);
             pstmt.setString(1, user.getLogin());
             pstmt.setString(2, user.getPassword());
-            pstmt.setBoolean(3, user.isStatus());
+            pstmt.setInt(3, user.isStatus() ? 1 : 0);
             pstmt.setLong(4, user.getRole());
             pstmt.setString(5, user.getFirstName());
             pstmt.setString(6, user.getLastName());
-            pstmt.setDate(7, user.getDayOfBirth());
+            pstmt.setDate(7, Date.valueOf(user.getDayOfBirth()));
             pstmt.setString(8, user.getSex());
             pstmt.setString(9, user.getGender());
             pstmt.setString(10, user.getPhoto());
             pstmt.setString(11, user.getEmail());
-
-            DAOUtils.getInsertEntityGenerateId(pstmt,rs,user);
+            pstmt.execute();
+            pstmt.close();
 
         } catch (SQLException ex) {
-            DBManager.getInstance().rollbackAndClose(con);
+            DBManager.getInstance().rollbackCloseConnection(con);
             ex.printStackTrace();
         } finally {
-            DBManager.getInstance().commitAndClose(con);
+            DBManager.getInstance().commitCloseConnection(con);
         }
         return user;
     }
@@ -80,10 +81,10 @@ public class UserDAO {
             rs.close();
             pstmt.close();
         } catch (SQLException ex) {
-            DBManager.getInstance().rollbackAndClose(con);
+            DBManager.getInstance().rollbackCloseConnection(con);
             ex.printStackTrace();
         } finally {
-            DBManager.getInstance().commitAndClose(con);
+            DBManager.getInstance().commitCloseConnection(con);
         }
         return user;
     }
@@ -106,10 +107,10 @@ public class UserDAO {
             rs.close();
             pstmt.close();
         } catch (SQLException ex) {
-            DBManager.getInstance().rollbackAndClose(con);
+            DBManager.getInstance().rollbackCloseConnection(con);
             ex.printStackTrace();
         } finally {
-            DBManager.getInstance().commitAndClose(con);
+            DBManager.getInstance().commitCloseConnection(con);
         }
         return users;
     }
@@ -130,10 +131,10 @@ public class UserDAO {
             rs.close();
             pstmt.close();
         } catch (SQLException ex) {
-            DBManager.getInstance().rollbackAndClose(con);
+            DBManager.getInstance().rollbackCloseConnection(con);
             ex.printStackTrace();
         } finally {
-            DBManager.getInstance().commitAndClose(con);
+            DBManager.getInstance().commitCloseConnection(con);
         }
         return user;
     }
@@ -157,7 +158,7 @@ public class UserDAO {
                 user.setFirstName(rs.getString(Fields.USER__FIRST_NAME));
                 user.setLastName(rs.getString(Fields.USER__LAST_NAME));
                 user.setStatus(rs.getBoolean(Fields.USER__STATUS));
-                user.setDayOfBirth(rs.getDate(Fields.USER__DATE_OF_BIRTH));
+                user.setDayOfBirth(rs.getDate(Fields.USER__DATE_OF_BIRTH).toLocalDate());
                 user.setSex(rs.getString(Fields.USER__SEX));
                 user.setGender(rs.getString(Fields.USER__GENDER));
                 user.setPhoto(rs.getString(Fields.USER__PHOTO));

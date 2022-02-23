@@ -2,8 +2,6 @@ package com.tvv.utils;
 
 import java.time.LocalDate;
 import java.time.Period;
-import java.time.ZoneId;
-import java.util.Date;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -43,12 +41,9 @@ public class FieldsChecker {
     }
 
 
-    public static boolean checkAge18YearsOld(Date date) {
+    public static boolean checkAge18YearsOld(LocalDate date) {
         if (date==null) return false;
-        LocalDate old = date.toInstant()
-                .atZone(ZoneId.systemDefault())
-                .toLocalDate();
-        return (Period.between(old, LocalDate.now()).getYears()>=18);
+        return (Period.between(date, LocalDate.now()).getYears()>=18);
     }
 
     private static boolean checkRegEx(String field, String regex){

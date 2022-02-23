@@ -53,9 +53,7 @@
             <table class="uk-table uk-table-hover uk-table-middle uk-table-divider uk-table-striped">
                 <thead>
                 <tr>
-                    <th class="uk-table-shrink"></th>
                     <th class="uk-table-shrink">Photo</th>
-                    <th>ID</th>
                     <th>Status</th>
                     <th>Логін</th>
                     <th>First Name</th>
@@ -67,8 +65,7 @@
                 <tbody>
                 <c:forEach var="user" items="${usersList}">
                     <tr>
-                        <td><input class="uk-checkbox" type="checkbox"></td>
-                        <td><img class="uk-preserve-width uk-border-circle" src="${photoPath}${user.photo}" width="40" alt=""></td>
+                        <td><img class="uk-preserve-width uk-border-circle" src="images/${user.photo}" width="40" alt=""></td>
                         <td>${user.id}</td>
                         <td><c:choose>
                                 <c:when test="${user.status=='true'}">

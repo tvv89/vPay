@@ -46,7 +46,7 @@ public class ListCardsCommand extends Command {
 		log.debug("Commands starts");
 				
 		List<Card> cardList = CardDAO.findAllCards();
-		log.trace("Found in DB: cardList --> " + cardList);
+		log.trace("Load from DB: cardList " + cardList);
 		
 		Collections.sort(cardList, compareById);
 		//request.getParameter("p",)
@@ -62,7 +62,7 @@ public class ListCardsCommand extends Command {
 		request.setAttribute("pageView",pageView);
 		request.setAttribute("pages",pages);
 		request.setCharacterEncoding("UTF-8");
-		log.trace("Set the request attribute: cardList --> " + pgList);
+		log.trace("Set the request attribute: cardList " + pgList);
 		
 		log.debug("Commands finished");
 		return Path.PAGE__LIST_CARDS;

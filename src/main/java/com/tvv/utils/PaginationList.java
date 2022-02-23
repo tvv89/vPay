@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class PaginationList {
+
     public static <T> List<T> getListPage(List<T> tList, int page, int count) {
         List<T> result = new ArrayList<>();
         if (tList==null || tList.isEmpty()) return result;

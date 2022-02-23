@@ -19,8 +19,6 @@ import java.util.List;
 
 public class ListPaymentsCommand extends Command {
 
-	private static final long serialVersionUID = 1863978254689586513L;
-	
 	private static final Logger log = Logger.getLogger(ListPaymentsCommand.class);
 
 	private static class CompareById implements Comparator<Payment>, Serializable {
@@ -47,7 +45,7 @@ public class ListPaymentsCommand extends Command {
 		log.debug("Commands starts");
 				
 		List<Payment> paymentList = PaymentDAO.findAllPayments();
-		log.trace("Found in DB: paymentList --> " + paymentList);
+		log.trace("Load from DB: paymentList " + paymentList);
 		
 		Collections.sort(paymentList, compareById);
 		//request.getParameter("p",)
@@ -62,7 +60,7 @@ public class ListPaymentsCommand extends Command {
 		request.setAttribute("pageView",pageView);
 		request.setAttribute("pages",pages);
 		request.setCharacterEncoding("UTF-8");
-		log.trace("Set the request attribute: paymentList --> " + pgList);
+		log.trace("Set the request attribute: paymentList " + pgList);
 		
 		log.debug("Commands finished");
 		return Path.PAGE__LIST_PAYMANT;

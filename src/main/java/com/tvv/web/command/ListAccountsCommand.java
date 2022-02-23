@@ -16,8 +16,6 @@ import java.util.List;
 
 public class ListAccountsCommand extends Command {
 
-	private static final long serialVersionUID = 1863978254689586513L;
-	
 	private static final Logger log = Logger.getLogger(ListAccountsCommand.class);
 
 	private static class CompareByName implements Comparator<Account>, Serializable {
@@ -37,14 +35,14 @@ public class ListAccountsCommand extends Command {
 		log.debug("Commands starts");
 				
 		List<Account> accountList = AccountDAO.findAllAccount();
-		log.trace("Found in DB: accountList --> " + accountList);
+		log.trace("Load from DB: accountList is " + accountList);
 		
 		Collections.sort(accountList, compareByName);
 		
 		// put user order beans list to request
 		request.setAttribute("accountList", accountList);
 		request.setCharacterEncoding("UTF-8");
-		log.trace("Set the request attribute: accountList --> " + accountList);
+		log.trace("Set the request attribute: accountList " + accountList);
 		
 		log.debug("Commands finished");
 		return Path.PAGE__LIST_ACCOUNTS;

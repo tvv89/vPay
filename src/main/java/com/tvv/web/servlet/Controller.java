@@ -1,4 +1,4 @@
-package com.tvv.web;
+package com.tvv.web.servlet;
 
 import com.tvv.web.command.Command;
 import com.tvv.web.command.CommandContainer;
@@ -12,8 +12,6 @@ import java.io.IOException;
 @WebServlet(name = "Controller", value = "/controller")
 public class Controller extends HttpServlet {
 
-    private static final long serialVersionUID = 2423353715955164816L;
-
     private static final Logger log = Logger.getLogger(Controller.class);
 
     @Override
@@ -26,27 +24,26 @@ public class Controller extends HttpServlet {
     protected void doPost(HttpServletRequest request,
                           HttpServletResponse response) throws ServletException, IOException {
         process(request, response);
+
     }
 
     private void process(HttpServletRequest request,
                          HttpServletResponse response) throws IOException, ServletException {
 
         log.debug("Controller starts");
-        log.trace("request: "+ request.toString());
-        // extract command name from the request
+
         String commandName = request.getParameter("command");
         log.trace("Request parameter: command --> " + commandName);
+        String login = request.getParameter("login");
+        String password = request.getParameter("password");
 
-
-        // obtain command object by its name
         Command command = CommandContainer.get(commandName);
         log.trace("Obtained command --> " + command);
 
-        // execute command and get forward address
         String forward = command.execute(request, response);
-        log.trace("Forward address --> " + forward);
+        log.trace("Forward address " + forward);
 
-        log.debug("Controller finished, now go to forward address --> " + forward);
+        log.debug("Controller finished, now go to forward address " + forward);
 
         // if the forward address is not null go to the address
         if (forward != null) {

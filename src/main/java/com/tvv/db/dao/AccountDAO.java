@@ -44,10 +44,10 @@ public class AccountDAO {
             rs.close();
             stmt.close();
         } catch (SQLException ex) {
-            DBManager.getInstance().rollbackAndClose(con);
+            DBManager.getInstance().rollbackCloseConnection(con);
             ex.printStackTrace();
         } finally {
-            DBManager.getInstance().commitAndClose(con);
+            DBManager.getInstance().commitCloseConnection(con);
         }
         return accounts;
     }
@@ -69,10 +69,10 @@ public class AccountDAO {
             rs.close();
             pstmt.close();
         } catch (SQLException ex) {
-            DBManager.getInstance().rollbackAndClose(con);
+            DBManager.getInstance().rollbackCloseConnection(con);
             ex.printStackTrace();
         } finally {
-            DBManager.getInstance().commitAndClose(con);
+            DBManager.getInstance().commitCloseConnection(con);
         }
         return account;
     }
@@ -94,10 +94,10 @@ public class AccountDAO {
             rs.close();
             pstmt.close();
         } catch (SQLException ex) {
-            DBManager.getInstance().rollbackAndClose(con);
+            DBManager.getInstance().rollbackCloseConnection(con);
             ex.printStackTrace();
         } finally {
-            DBManager.getInstance().commitAndClose(con);
+            DBManager.getInstance().commitCloseConnection(con);
         }
         return accounts;
 

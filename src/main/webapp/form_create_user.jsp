@@ -1,5 +1,6 @@
-
 <!DOCTYPE html>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 <html class="uk-height-1-1">
 
 <head>
@@ -12,64 +13,75 @@
 </head>
 
 <body class="uk-height-1-1">
+<c:choose>
+  <c:when test="${errorCode=='1'}">
+    <div class="uk-alert-danger" id="errorCode" uk-alert>
+      <a class="uk-alert-close" uk-close></a>
+      <p>${errorMessage}</p>
+    </div>
+  </c:when>
+  <c:otherwise>
+
+  </c:otherwise>
+</c:choose>
 
 <div class="uk-align-left@m uk-text-center uk-height-1-1">
     <h1>Registration form</h1>
-    <form class="uk-form-horizontal" data-action="register-form">
+    <form class="uk-form-horizontal" method="post" data-action="register-form" enctype="multipart/form-data">
       <!--<input type="hidden" name="command" value="registration"/> -->
       <div class="uk-margin">
         <label class="uk-form-label" for="photofile">Photo</label>
         <div uk-form-custom="target: true">
-          <input type="file" id="photofile" accept="image/jpeg">
+          <input type="file" id="photofile" name="photofile" accept="image/jpeg">
           <input class="uk-input uk-form-width-large" type="text" placeholder="Photo" disabled>
         </div>
       </div>
       <div class="uk-margin">
         <label class="uk-form-label" for="login">Login</label>
         <div class="uk-form-controls">
-          <input class="uk-input uk-form-width-large" id="login" type="text" placeholder="Login">
+          <input class="uk-input uk-form-width-large" id="login" name="login" type="text" placeholder="Login" form-field>
         </div>
       </div>
       <div class="uk-margin">
         <label class="uk-form-label" for="password">Password</label>
         <div class="uk-form-controls">
-          <input class="uk-input" id="password" type="password" placeholder="Password">
+          <input class="uk-input" id="password" type="password" name="password" placeholder="Password" form-field>
         </div>
       </div>
       <div class="uk-margin">
         <label class="uk-form-label" for="confirmpassword">Confirm password</label>
         <div class="uk-form-controls">
-          <input class="uk-input" id="confirmpassword" type="password" placeholder="Confirm password">
+          <input class="uk-input" id="confirmpassword" type="password" name="confirmpassword" placeholder="Confirm password" form-field>
         </div>
       </div>
       <div class="uk-margin">
         <label class="uk-form-label" for="email">Email</label>
         <div class="uk-form-controls">
-          <input class="uk-input uk-form-width-large" id="email" type="text" placeholder="Email">
+          <input class="uk-input uk-form-width-large" id="email" name="email" type="text" placeholder="Email" form-field>
         </div>
       </div>
       <div class="uk-margin">
         <label class="uk-form-label" for="firstname">First name</label>
         <div class="uk-form-controls">
-          <input class="uk-input" id="firstname" type="text" placeholder="First name">
+          <input class="uk-input" id="firstname" type="text" name="firstname" placeholder="First name" form-field>
         </div>
       </div>
       <div class="uk-margin">
         <label class="uk-form-label" for="lastname">Last name</label>
         <div class="uk-form-controls">
-          <input class="uk-input" id="lastname" type="text" placeholder="Last name">
+          <input class="uk-input" id="lastname" type="text" name="lastname" placeholder="Last name" form-field>
         </div>
       </div>
       <div class="uk-margin">
         <label class="uk-form-label" for="dateofbirth">Date of birth</label>
         <div class="uk-form-controls">
-          <input type="date" id="dateofbirth">
+          <input type="date" id="dateofbirth" name="dateofbirth" form-field>
         </div>
       </div>
       <div class="uk-margin">
         <label class="uk-form-label" for="sex">Sex</label>
         <div class="uk-form-controls">
-          <select class="uk-select" id="sex">
+          <select class="uk-select" id="sex" name="sex" form-field>
             <option>Male</option>
             <option>Female</option>
             <option>Other</option>
@@ -86,6 +98,7 @@
 </body>
 
 </html>
+<!--
 <script>
   function getFormFieldValues(fields) {
     return Array.from(fields).reduce((formData, field) => {
@@ -116,16 +129,16 @@
     const submitButton = form.querySelector('input[type="submit"]');
     submitButton.addEventListener('click', () => {
       const loginData = getFormFieldValues(formFields);
-      fetch('/controller?command=createUser', {
+      fetch('registration', {
         method: 'POST',
         body: JSON.stringify(loginData)
       })
-              .then(response => response.json())
-              .then(data =>  {
-                // here code if BE response was successful
+              .then(url =>  {
+                console.log('200', url);
+                window.location.replace(`${window.location.origin}${url}`);
               })
               .catch(err => {
-                // here code if BE responses with error
+                console.log('500', err);
               });
     });
   }
@@ -133,4 +146,4 @@
   window.addEventListener('DOMContentLoaded', () => {
     initRegisterForm(document.querySelector('[data-action="register-form"]'));
   });
-</script>
+</script> -->

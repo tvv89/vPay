@@ -1,6 +1,6 @@
 package com.tvv.db.entity;
 
-import java.util.Date;
+import java.time.LocalDate;
 
 public class User extends EntityID{
 
@@ -14,7 +14,7 @@ public class User extends EntityID{
 
     private String lastName;
 
-    private Date dayOfBirth;
+    private LocalDate dayOfBirth;
 
     private String sex;
 
@@ -73,11 +73,11 @@ public class User extends EntityID{
         this.status = status;
     }
 
-    public java.sql.Date getDayOfBirth() {
+    public LocalDate getDayOfBirth() {
         return dayOfBirth;
     }
 
-    public void setDayOfBirth(Date dayOfBirth) {
+    public void setDayOfBirth(LocalDate dayOfBirth) {
         this.dayOfBirth = dayOfBirth;
     }
 

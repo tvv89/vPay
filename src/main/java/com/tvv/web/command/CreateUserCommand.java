@@ -6,8 +6,10 @@ import com.tvv.web.webutil.Path;
 import org.apache.log4j.Logger;
 
 import javax.servlet.ServletException;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.Collections;
@@ -33,10 +35,13 @@ public class CreateUserCommand extends Command {
 		//request.setAttribute("pageView",pageView);
 		//request.setAttribute("pages",pages);
 		request.setCharacterEncoding("UTF-8");
-		log.trace("Set the request attribute: create user --> " + "");
-		
+		String body = request.getReader().readLine();
+		String login = request.getParameter("login");
+		String password = request.getParameter("password");
+		log.trace("Set the request attribute: create user " + "");
+		request.setAttribute("error", "error message");
 		log.debug("Commands finished");
-		return Path.PAGE__LIST_CARDS;
+		return Path.PAGE__LIST_USERS;
 	}
 
 }

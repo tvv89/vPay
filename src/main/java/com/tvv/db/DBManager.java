@@ -26,13 +26,11 @@ public class DBManager {
         try {
             Context initContext = new InitialContext();
             Context envContext  = (Context)initContext.lookup("java:/comp/env");
-
-            // ST4DB - the name of data source
             DataSource ds = (DataSource)envContext.lookup("jdbc/vPay");
             con = ds.getConnection();
             con.setAutoCommit(false);
         } catch (NamingException ex) {
-            log.error("Cannot obtain a connection from the pool", ex);
+            log.error("No connection in pool", ex);
         }
         return con;
     }
@@ -40,7 +38,7 @@ public class DBManager {
     private DBManager() {
     }
 
-    public void commitAndClose(Connection con) {
+    public void commitCloseConnection(Connection con) {
         try {
             con.commit();
             con.close();
@@ -49,7 +47,7 @@ public class DBManager {
         }
     }
 
-    public void rollbackAndClose(Connection con) {
+    public void rollbackCloseConnection(Connection con) {
         try {
             con.rollback();
             con.close();

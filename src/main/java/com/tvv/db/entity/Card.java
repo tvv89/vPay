@@ -1,6 +1,5 @@
 package com.tvv.db.entity;
 
-import java.util.Date;
 
 public class Card extends EntityID {
     private String name;

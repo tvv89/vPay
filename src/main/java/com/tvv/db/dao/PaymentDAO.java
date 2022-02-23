@@ -44,10 +44,10 @@ public class PaymentDAO {
             rs.close();
             stmt.close();
         } catch (SQLException ex) {
-            DBManager.getInstance().rollbackAndClose(con);
+            DBManager.getInstance().rollbackCloseConnection(con);
             ex.printStackTrace();
         } finally {
-            DBManager.getInstance().commitAndClose(con);
+            DBManager.getInstance().commitCloseConnection(con);
         }
         return payments;
     }
@@ -69,10 +69,10 @@ public class PaymentDAO {
             rs.close();
             pstmt.close();
         } catch (SQLException ex) {
-            DBManager.getInstance().rollbackAndClose(con);
+            DBManager.getInstance().rollbackCloseConnection(con);
             ex.printStackTrace();
         } finally {
-            DBManager.getInstance().commitAndClose(con);
+            DBManager.getInstance().commitCloseConnection(con);
         }
         return payment;
     }
@@ -92,10 +92,10 @@ public class PaymentDAO {
             rs.close();
             pstmt.close();
         } catch (SQLException ex) {
-            DBManager.getInstance().rollbackAndClose(con);
+            DBManager.getInstance().rollbackCloseConnection(con);
             ex.printStackTrace();
         } finally {
-            DBManager.getInstance().commitAndClose(con);
+            DBManager.getInstance().commitCloseConnection(con);
         }
         return payments;
     }
@@ -116,10 +116,10 @@ public class PaymentDAO {
             pstmt.close();
             result = true;
         } catch (SQLException ex) {
-            DBManager.getInstance().rollbackAndClose(con);
+            DBManager.getInstance().rollbackCloseConnection(con);
             ex.printStackTrace();
         } finally {
-            DBManager.getInstance().commitAndClose(con);
+            DBManager.getInstance().commitCloseConnection(con);
         }
         return result;
     }
@@ -146,10 +146,10 @@ public class PaymentDAO {
 
             DAOUtils.getInsertEntityGenerateId(pstmt,rs,payment);
         } catch (SQLException ex) {
-            DBManager.getInstance().rollbackAndClose(con);
+            DBManager.getInstance().rollbackCloseConnection(con);
             ex.printStackTrace();
         } finally {
-            DBManager.getInstance().commitAndClose(con);
+            DBManager.getInstance().commitCloseConnection(con);
         }
         return payment;
     }

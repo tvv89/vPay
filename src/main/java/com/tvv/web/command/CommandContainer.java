@@ -15,25 +15,21 @@ public class CommandContainer {
 
 		commands.put("login", new LoginCommand());
 		commands.put("logout", new LogoutCommand());
-
-		// client commands
-
-		// admin commands
 		commands.put("listUsers", new ListUsersCommand());
 		commands.put("listAccounts", new ListAccountsCommand());
 		commands.put("listPayments", new ListPaymentsCommand());
 		commands.put("listCards", new ListCardsCommand());
-		commands.put("registration", new FormRegistration());
+		//commands.put("registration", new FormRegistration());
 
 		commands.put("createUser", new CreateUserCommand());
 		
-		log.debug("Command container was successfully initialized");
-		log.trace("Number of commands --> " + commands.size());
+		log.debug("Command container was initialized");
+		log.trace("Number of commands: " + commands.size());
 	}
 
 	public static Command get(String commandName) {
 		if (commandName == null || !commands.containsKey(commandName)) {
-			log.trace("Command not found, name --> " + commandName);
+			log.trace("Command not found: " + commandName);
 			return commands.get("noCommand"); 
 		}
 		

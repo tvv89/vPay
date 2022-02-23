@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en-gb" dir="ltr" class="uk-height-1-1">
 
@@ -27,7 +26,7 @@
         <input class="uk-width-1-1 uk-button uk-button-primary uk-button-large" type="submit" value="Login"/>
       </div>
       <div class="uk-form-row">
-        <a href="controller?command=registration">Register</a>
+        <a href="registration">Register</a>
       </div>
     </form>
 

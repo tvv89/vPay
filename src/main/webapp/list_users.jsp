@@ -8,7 +8,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>vPay</title>
     <link rel="stylesheet" href="css/uikit.min.css">
-    <script src="../vendor/jquery.js"></script>
     <script src="js/uikit.min.js"></script>
     <script src="js/uikit-icons.min.js"></script>
 </head>
@@ -53,9 +52,7 @@
             <table class="uk-table uk-table-hover uk-table-middle uk-table-divider uk-table-striped">
                 <thead>
                 <tr>
-                    <th class="uk-table-shrink"></th>
                     <th class="uk-table-shrink">Photo</th>
-                    <th>ID</th>
                     <th>Status</th>
                     <th>Логін</th>
                     <th>First Name</th>
@@ -67,8 +64,7 @@
                 <tbody>
                 <c:forEach var="user" items="${usersList}">
                     <tr>
-                        <td><input class="uk-checkbox" type="checkbox"></td>
-                        <td><img class="uk-preserve-width uk-border-circle" src="${photoPath}${user.photo}" width="40" alt=""></td>
+                        <td><img class="uk-preserve-width uk-border-circle" src="images/${user.photo}" width="40" alt=""></td>
                         <td>${user.id}</td>
                         <td><c:choose>
                                 <c:when test="${user.status=='true'}">
@@ -87,6 +83,7 @@
                         <td>
                             <form method="post" >
                             <button class="uk-button uk-button-default" type="button" name="user">Disable User</button>
+                            </form>
                         </td>
                     </tr>
                 </c:forEach>
