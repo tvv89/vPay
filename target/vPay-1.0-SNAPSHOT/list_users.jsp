@@ -8,7 +8,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>vPay</title>
     <link rel="stylesheet" href="css/uikit.min.css">
-    <script src="../vendor/jquery.js"></script>
     <script src="js/uikit.min.js"></script>
     <script src="js/uikit-icons.min.js"></script>
 </head>
@@ -35,17 +34,14 @@
             <li>
                 <a href="controller?command=logout">Logout</a>
             </li>
-
         </ul>
-
     </nav>
-
-
 
     <div>
         <p uk-margin>
-            <button class="uk-button uk-button-primary">Button</button>
-            <button class="uk-button uk-button-primary">Disable User</button>
+            <button class="uk-button uk-button-primary">Sort by login</button>
+            <button class="uk-button uk-button-primary">Sort by first name</button>
+            <button class="uk-button uk-button-primary">Sort by second name</button>
         </p>
     </div>
     <div class="uk-grid" data-uk-grid-margin>
@@ -66,7 +62,6 @@
                 <c:forEach var="user" items="${usersList}">
                     <tr>
                         <td><img class="uk-preserve-width uk-border-circle" src="images/${user.photo}" width="40" alt=""></td>
-                        <td>${user.id}</td>
                         <td><c:choose>
                                 <c:when test="${user.status=='true'}">
                                     <span uk-icon="unlock"></span>
@@ -84,6 +79,7 @@
                         <td>
                             <form method="post" >
                             <button class="uk-button uk-button-default" type="button" name="user">Disable User</button>
+                            </form>
                         </td>
                     </tr>
                 </c:forEach>
@@ -92,8 +88,6 @@
         </div>
     </div>
 </div>
-
-
 
 </body>
 </html>

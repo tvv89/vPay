@@ -43,8 +43,8 @@
 
     <div>
         <p uk-margin>
-            <button class="uk-button uk-button-primary">Button</button>
-            <button class="uk-button uk-button-primary">Disable Account</button>
+            <button class="uk-button uk-button-primary">Sort by balance</button>
+            <button class="uk-button uk-button-primary">Sort by name</button>
         </p>
     </div>
     <div class="uk-grid" data-uk-grid-margin>

@@ -43,8 +43,9 @@
 
     <div>
         <p uk-margin>
-            <button class="uk-button uk-button-primary">Button</button>
-            <button class="uk-button uk-button-primary">Disable Account</button>
+            <button class="uk-button uk-button-primary">Sort by name</button>
+            <button class="uk-button uk-button-primary">Sort by number</button>
+            <button class="uk-button uk-button-primary">Sort by account</button>
         </p>
     </div>
     <div class="uk-grid" data-uk-grid-margin>
@@ -92,13 +93,6 @@
 </div>
 
 
-    <a id="js-modal-dialog" class="uk-button uk-button-default" href="#">Dialog</a>
-
-    <a id="js-modal-alert" class="uk-button uk-button-default" >Alert</a>
-
-    <a id="js-modal-confirm" class="uk-button uk-button-default" href="#">Confirm</a>
-
-    <a id="js-modal-prompt" class="uk-button uk-button-default" href="#">Prompt</a>
 
     <script>
 

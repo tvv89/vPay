@@ -39,8 +39,9 @@
 
     <div>
         <p uk-margin>
-            <button class="uk-button uk-button-primary">Button</button>
-            <button class="uk-button uk-button-primary">Disable User</button>
+            <button class="uk-button uk-button-primary">Sort by login</button>
+            <button class="uk-button uk-button-primary">Sort by first name</button>
+            <button class="uk-button uk-button-primary">Sort by second name</button>
         </p>
     </div>
     <div class="uk-grid" data-uk-grid-margin>
@@ -61,7 +62,6 @@
                 <c:forEach var="user" items="${usersList}">
                     <tr>
                         <td><img class="uk-preserve-width uk-border-circle" src="images/${user.photo}" width="40" alt=""></td>
-                        <td>${user.id}</td>
                         <td><c:choose>
                                 <c:when test="${user.status=='true'}">
                                     <span uk-icon="unlock"></span>

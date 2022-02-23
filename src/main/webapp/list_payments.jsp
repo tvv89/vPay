@@ -40,8 +40,10 @@
 
     <div>
         <p uk-margin>
-            <button class="uk-button uk-button-primary">Button</button>
-            <button class="uk-button uk-button-primary">Disable Account</button>
+            <button class="uk-button uk-button-primary">Sort by date</button>
+            <button class="uk-button uk-button-primary">Sort by GUID</button>
+            <button class="uk-button uk-button-primary">Sort by total</button>
+            <button class="uk-button uk-button-primary">Sort by date</button>
         </p>
     </div>
     <div class="uk-grid" data-uk-grid-margin>
