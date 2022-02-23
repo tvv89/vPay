@@ -16,21 +16,18 @@ public class ContextListener implements ServletContextListener, HttpSessionListe
     private static final Logger log = Logger.getLogger(ContextListener.class);
 
     public void contextDestroyed(ServletContextEvent event) {
-        log("Servlet context destruction starts");
 
-        log("Servlet context destruction finished");
     }
 
     public void contextInitialized(ServletContextEvent event) {
-        log("Servlet context initialization starts");
+        log("Initialization services starts");
 
         ServletContext servletContext = event.getServletContext();
         initLog4J(servletContext);
         initCommandContainer();
-        initI18N(servletContext);
         initPhotoParameters(servletContext);
 
-        log("Servlet context initialization finished");
+        log("Initialization services finished");
     }
 
     private void initPhotoParameters(ServletContext servletContext) {
@@ -39,26 +36,6 @@ public class ContextListener implements ServletContextListener, HttpSessionListe
         servletContext.setAttribute("photoPath",photoPath);
         log.info("Photo path for user pictures is: " + photoPath);
         log.debug("Photo path initialization finished");
-    }
-
-    private void initI18N(ServletContext servletContext) {
-        log.debug("I18N subsystem initialization started");
-        String localesValue = servletContext.getInitParameter("locales");
-        if (localesValue == null || localesValue.isEmpty()) {
-            log.warn("'locales' init parameter is empty, the default encoding will be used");
-        } else {
-            List<String> locales = new ArrayList<>();
-            StringTokenizer st = new StringTokenizer(localesValue);
-            while (st.hasMoreTokens()) {
-                String localeName = st.nextToken();
-                locales.add(localeName);
-            }
-
-            log.debug("Application attribute set: locales " + locales);
-            servletContext.setAttribute("locales", locales);
-        }
-
-        log.debug("I18N subsystem initialization finished");
     }
 
     private void initLog4J(ServletContext servletContext) {
