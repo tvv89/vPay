@@ -54,7 +54,7 @@ public class Registration extends HttpServlet {
             response.sendRedirect(Path.PAGE__LOGIN);
         } catch (AppException e) {
             log.trace(e.getMessage());
-            forward = Path.PAGE__ERROR_PAGE;
+            String forward = Path.PAGE__ERROR_PAGE;
             request.setAttribute("errorMessage", e.getMessage());
             request.setAttribute("errorCode", 1);
             response.sendRedirect(forward);

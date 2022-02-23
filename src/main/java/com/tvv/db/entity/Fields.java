@@ -43,5 +43,4 @@ public final class Fields {
 	public static final String CARD__ACCOUNT = "ownerAccount";
 	public static final String CARD__STATUS = "statusCard";
 
-
 }
