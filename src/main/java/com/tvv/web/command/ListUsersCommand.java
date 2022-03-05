@@ -9,6 +9,7 @@ import java.util.List;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import com.tvv.db.dao.UserDAO;
 import com.tvv.db.entity.Role;
@@ -34,7 +35,7 @@ public class ListUsersCommand extends Command {
 	public String execute(HttpServletRequest request,
 			HttpServletResponse response) throws IOException, ServletException {
 		log.debug("Commands starts");
-
+		if (UtilCommand.noUserRedirect(request,response)) return Path.PAGE__LOGIN;
 		if (request.getSession().getAttribute("userRole")== Role.USER)
 		{
 			request.setAttribute("errorMessage", "Access denied to this page");
@@ -46,9 +47,13 @@ public class ListUsersCommand extends Command {
 		
 		Collections.sort(userList, compareByLogin);
 
+		log.trace("Current user: "+ request.getSession().getAttribute("currentUser"));
 		request.setAttribute("usersList", userList);
 		request.setCharacterEncoding("UTF-8");
 		log.trace("Set the request attribute: userList is " + userList);
+		HttpSession session = request.getSession();
+		session.setAttribute("currentPage", "users");
+		log.trace("Set the session attribute: currentPage " + "users");
 		
 		log.debug("Commands finished");
 		return Path.PAGE__LIST_USERS;

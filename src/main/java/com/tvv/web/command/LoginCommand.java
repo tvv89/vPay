@@ -41,16 +41,16 @@ public class LoginCommand extends Command {
 			return forward;
 		}
 		
-		User user = new UserDAO().findUserByLogin(login);
-		log.trace("Load from DB: user " + user);
+		User currentUser = new UserDAO().findUserByLogin(login);
+		log.trace("Load from DB: user " + currentUser);
 			
-		if (user == null || !StringHash.getHashString(password).equals(user.getPassword())) {
+		if (currentUser == null || !StringHash.getHashString(password).equals(currentUser.getPassword())) {
 			errorMessage = "Can't find user with login and password";
 			request.setAttribute("errorMessage", errorMessage);
 			log.error("errorMessage: " + errorMessage);
 			return forward;
 		} else {
-			Role userRole = Role.getRole(user);
+			Role userRole = Role.getRole(currentUser);
 			log.trace("userRole: " + userRole);
 				
 			if (userRole == Role.ADMIN)
@@ -59,11 +59,13 @@ public class LoginCommand extends Command {
 			if (userRole == Role.USER)
 				forward = Path.COMMAND__LIST_ACCOUNTS;
 			
-			session.setAttribute("user", user);
-			log.trace("Set the session attribute: user " + user);
+			session.setAttribute("currentUser", currentUser);
+			log.trace("Set the session attribute: user " + currentUser);
 				
 			session.setAttribute("userRole", userRole);				
 			log.trace("Set the session attribute: userRole " + userRole);
+			session.setAttribute("currentPage", "users");
+			log.trace("Set the session attribute: currentPage " + "users");
 
 		}
 		

@@ -32,8 +32,4 @@
         <error-code>404</error-code>
         <location>/error_page.jsp</location>
     </error-page>
-    <context-param>
-        <param-name>photoPath</param-name>
-        <param-value>c:\vpay\userphoto\</param-value>
-    </context-param>
 </web-app>

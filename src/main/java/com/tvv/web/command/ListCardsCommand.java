@@ -1,22 +1,18 @@
 package com.tvv.web.command;
 
 import com.tvv.db.dao.CardDAO;
-import com.tvv.db.dao.PaymentDAO;
 import com.tvv.db.entity.Card;
-import com.tvv.db.entity.Payment;
-import com.tvv.utils.PaginationList;
+import com.tvv.db.entity.Role;
 import com.tvv.web.webutil.Path;
 import org.apache.log4j.Logger;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.io.Serializable;
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 
 public class ListCardsCommand extends Command {
 
@@ -44,8 +40,18 @@ public class ListCardsCommand extends Command {
 	public String execute(HttpServletRequest request,
 			HttpServletResponse response) throws IOException, ServletException {
 		log.debug("Commands starts");
-				
-		List<Card> cardList = CardDAO.findAllCards();
+		//Return to login page, if current user is null
+		if (UtilCommand.noUserRedirect(request, response)) {
+			log.trace("No active user at this session");
+			return Path.PAGE__LOGIN;
+		}
+		//Access to card list by role
+		List<Card> cardList = new ArrayList<>();
+		if (request.getSession().getAttribute("userRole")== Role.USER)
+			cardList = CardDAO.findCardsByUser(UtilCommand.currentUser(request,response).getId());
+		if (request.getSession().getAttribute("userRole")== Role.ADMIN)
+			cardList = CardDAO.findAllCards();
+
 		log.trace("Load from DB: cardList " + cardList);
 		
 		Collections.sort(cardList, compareById);
@@ -61,6 +67,9 @@ public class ListCardsCommand extends Command {
 		request.setAttribute("pageView",pageView);
 		request.setAttribute("pages",pages);
 		request.setCharacterEncoding("UTF-8");
+		HttpSession session = request.getSession();
+		session.setAttribute("currentPage", "cards");
+		log.trace("Set the session attribute: currentPage " + "cards");
 		log.trace("Set the request attribute: cardList " + pgList);
 		
 		log.debug("Commands finished");

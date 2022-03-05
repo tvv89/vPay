@@ -18,24 +18,51 @@
 <div class="uk-container uk-container-left uk-margin-top uk-margin-large-bottom" uk-img>
 
     <nav class="uk-navbar uk-margin-large-bottom">
-        <button class="uk-navbar-brand uk-hidden-small uk-button">vPay</button>
-        <ul class="uk-navbar-nav uk-hidden-small">
-            <li>
-                <a href="controller?command=listUsers">Users</a>
-            </li>
-            <li>
-                <a href="controller?command=listAccounts">Accounts</a>
-            </li>
-            <li class="uk-active">
-                <a href="controller?command=listPayments">Payments</a>
-            </li>
-            <li>
-                <a href="controller?command=listCards">Cards</a>
-            </li>
-            <li>
-                <a href="controller?command=logout">Logout</a>
-            </li>
-        </ul>
+        <div class="uk-navbar-left">
+            <button class="uk-navbar-brand uk-hidden-small uk-button">vPay</button>
+            <ul class="uk-navbar-nav uk-hidden-small">
+                <c:if test="${userRole=='ADMIN'}">
+                    <li <c:if test="${currentPage=='users'}">class="uk-active" </c:if>>
+                        <a href="controller?command=listUsers">Users</a>
+                    </li>
+                </c:if>
+                <li <c:if test="${currentPage=='accounts'}">class="uk-active" </c:if>>
+                    <a href="controller?command=listAccounts">Accounts</a>
+                </li>
+                <li <c:if test="${currentPage=='payments'}">class="uk-active" </c:if>>
+                    <a href="controller?command=listPayments">Payments</a>
+                </li>
+                <li <c:if test="${currentPage=='cards'}">class="uk-active" </c:if>>
+                    <a href="controller?command=listCards">Cards</a>
+                </li>
+                <li>
+                    <a href="controller?command=logout">Logout</a>
+                </li>
+
+            </ul>
+        </div>
+        <div class="uk-navbar-right">
+            <ul class="uk-navbar-nav">
+                <li>
+                    <img class="uk-preserve-width uk-border-circle" src="images/${sessionScope.currentUser.photo}"
+                         width="40" alt="" uk-toggle="target: #offcanvas-flip">
+                    ${sessionScope.currentUser.login}
+                    <div id="offcanvas-flip" uk-offcanvas="flip: true; overlay: true">
+                        <div class="uk-offcanvas-bar">
+                            <button class="uk-offcanvas-close" type="button" uk-close></button>
+                            <h3>Information</h3>
+                            <img class="uk-preserve-width uk-border-circle" src="images/${sessionScope.currentUser.photo}"
+                                 width="80" alt="">
+                            <p>Login:  ${sessionScope.currentUser.login}</p>
+                            <p>First name:  ${sessionScope.currentUser.firstName}</p>
+                            <p>Last name:  ${sessionScope.currentUser.lastName}</p>
+                            <p>Day of birth:  ${sessionScope.currentUser.dayOfBirth}</p>
+                            <button class="uk-button-default" onclick="location.href = 'controller?command=logout'">Logout</button>
+                        </div>
+                    </div>
+                </li>
+            </ul>
+        </div>
     </nav>
 
     <div>
@@ -83,10 +110,10 @@
                         <td>
                         <c:choose>
                             <c:when test="${payment.status=='0'}">
-                                <span uk-icon="clock"></span>
+                                <span class="uk-label uk-label-warning">Ready</span>
                             </c:when>
                             <c:otherwise>
-                                <span uk-icon="check"></span>
+                                <span class="uk-label uk-label-success">Submitted</span>
                             </c:otherwise>
                         </c:choose>
                         </td>

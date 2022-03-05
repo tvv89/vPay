@@ -6,9 +6,6 @@ import org.apache.log4j.PropertyConfigurator;
 import javax.servlet.*;
 import javax.servlet.http.*;
 import javax.servlet.annotation.*;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.StringTokenizer;
 
 @WebListener
 public class ContextListener implements ServletContextListener, HttpSessionListener, HttpSessionAttributeListener {
@@ -26,7 +23,7 @@ public class ContextListener implements ServletContextListener, HttpSessionListe
         initLog4J(servletContext);
         initCommandContainer();
         initPhotoParameters(servletContext);
-
+        log("Init photo path: "+ servletContext.getInitParameter(""));
         log("Initialization services finished");
     }
 

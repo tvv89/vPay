@@ -17,6 +17,13 @@ public class CardDAO {
     private static final String SQL__FIND_CARD_BY_ID =
             "SELECT * FROM cards WHERE id=?";
 
+    private static final String SQL__FIND_CARDS_BY_USER_ID =
+            "SELECT *\n" +
+                    "FROM cards c\n" +
+                    "         INNER JOIN accounts a ON a.id = c.ownerAccount\n" +
+                    "         INNER JOIN users u ON u.id = a.ownerUser\n" +
+                    "WHERE u.id=?";
+
     private static final String SQL__INSERT_CARD =
             "insert into cards (id, name, number, expDate, ownerAccount, statusCard) "+
             "values (default,?,?,?,?,?)";
@@ -92,6 +99,14 @@ public class CardDAO {
     }
 
     public static List<Card> findCardByAccount(Long accountId) {
+        return getCards(accountId, SQL__FIND_CARDS_BY_ACCOUNT);
+    }
+
+    public static List<Card> findCardsByUser(Long userId) {
+        return getCards(userId, SQL__FIND_CARDS_BY_USER_ID);
+    }
+
+    private static List<Card> getCards(Long userId, String sql_findCardsByUserId) {
         List<Card> cards = new ArrayList<>();
         PreparedStatement pstmt = null;
         ResultSet rs = null;
@@ -99,8 +114,8 @@ public class CardDAO {
         try {
             con = DBManager.getInstance().getConnection();
             CardLoad mapper = new CardLoad();
-            pstmt = con.prepareStatement(SQL__FIND_CARDS_BY_ACCOUNT);
-            pstmt.setLong(1, accountId);
+            pstmt = con.prepareStatement(sql_findCardsByUserId);
+            pstmt.setLong(1, userId);
             rs = pstmt.executeQuery();
             while (rs.next()) cards.add(mapper.loadRow(rs));
             rs.close();
@@ -113,7 +128,6 @@ public class CardDAO {
         }
         return cards;
     }
-
 
     private static class CardLoad implements LoadEntity<Card> {
 
