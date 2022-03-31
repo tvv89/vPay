@@ -3,6 +3,23 @@ package com.tvv.web.command;
 import java.util.Map;
 import java.util.TreeMap;
 
+import com.tvv.web.command.create.CreateAccountCommand;
+import com.tvv.web.command.create.CreateCardCommand;
+import com.tvv.web.command.create.CreatePaymentCommand;
+import com.tvv.web.command.create.CreateUserCommand;
+import com.tvv.web.command.info.InfoAccountCommand;
+import com.tvv.web.command.info.InfoCardCommand;
+import com.tvv.web.command.info.InfoPaymentCommand;
+import com.tvv.web.command.info.InfoUserCommand;
+import com.tvv.web.command.load.LoadListAccountsCommand;
+import com.tvv.web.command.load.LoadListCardsCommand;
+import com.tvv.web.command.load.LoadListPaymentsCommand;
+import com.tvv.web.command.load.LoadListUsersCommand;
+import com.tvv.web.command.status.StatusAccountsCommand;
+import com.tvv.web.command.status.StatusCardsCommand;
+import com.tvv.web.command.status.StatusPaymentsCommand;
+import com.tvv.web.command.status.StatusUsersCommand;
+import com.tvv.web.command.update.*;
 import org.apache.log4j.Logger;
 
 public class CommandCollection {
@@ -15,14 +32,42 @@ public class CommandCollection {
 
 		commands.put("login", new LoginCommand());
 		commands.put("logout", new LogoutCommand());
-		commands.put("listUsers", new ListUsersCommand());
-		commands.put("listAccounts", new ListAccountsCommand());
-		commands.put("listPayments", new ListPaymentsCommand());
-		commands.put("listCards", new ListCardsCommand());
-		//commands.put("registration", new FormRegistration());
-
+		commands.put("registration", new RegistrationCommand());
 		commands.put("createUser", new CreateUserCommand());
-		
+
+		commands.put("listUsers", new LoadListUsersCommand());
+		//
+		commands.put("updateListUser", new UpdateListUsersCommand());
+		commands.put("infoUser", new InfoUserCommand());
+		commands.put("statusUser", new StatusUsersCommand());
+		commands.put("roleUser", new UpdateUserRoleCommand());
+		//
+
+		commands.put("listAccounts", new LoadListAccountsCommand());
+		//
+		commands.put("updateListAccount", new UpdateListAccountsCommand());
+		commands.put("infoAccount", new InfoAccountCommand());
+		commands.put("statusAccount", new StatusAccountsCommand());
+		commands.put("addCoin", new UpdateAccountBalanceCommand());
+		commands.put("createAccount", new CreateAccountCommand());
+		commands.put("infoCard", new InfoCardCommand());
+		//
+
+		commands.put("listPayments", new LoadListPaymentsCommand());
+		//
+		commands.put("updateListPayment", new UpdateListPaymentsCommand());
+		commands.put("infoPayment", new InfoPaymentCommand());
+		commands.put("statusPayment", new StatusPaymentsCommand());
+		commands.put("createPayment", new CreatePaymentCommand());
+		//
+
+		commands.put("listCards", new LoadListCardsCommand());
+		//
+		commands.put("updateListCard", new UpdateListCardsCommand());
+		commands.put("statusCard", new StatusCardsCommand());
+		commands.put("createCard", new CreateCardCommand());
+		//
+
 		log.debug("Command container was initialized");
 		log.trace("Number of commands: " + commands.size());
 	}

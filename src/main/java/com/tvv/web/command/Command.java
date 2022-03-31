@@ -1,5 +1,7 @@
 package com.tvv.web.command;
 
+import com.tvv.service.exception.AppException;
+
 import java.io.IOException;
 import java.io.Serializable;
 
@@ -9,7 +11,10 @@ import javax.servlet.http.HttpServletResponse;
 
 public abstract class Command implements Serializable {	
 
-	public abstract String execute(HttpServletRequest request, HttpServletResponse response)
+	public abstract void executePost(HttpServletRequest request, HttpServletResponse response)
+			throws IOException, ServletException, AppException;
+
+	public abstract void executeGet(HttpServletRequest request, HttpServletResponse response)
 			throws IOException, ServletException;
 	
 	@Override

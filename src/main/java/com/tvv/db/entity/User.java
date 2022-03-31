@@ -14,7 +14,7 @@ public class User extends EntityID{
 
     private String lastName;
 
-    private LocalDate dayOfBirth;
+    private String dayOfBirth;
 
     private String sex;
 
@@ -73,11 +73,11 @@ public class User extends EntityID{
         this.status = status;
     }
 
-    public LocalDate getDayOfBirth() {
+    public String getDayOfBirth() {
         return dayOfBirth;
     }
 
-    public void setDayOfBirth(LocalDate dayOfBirth) {
+    public void setDayOfBirth(String dayOfBirth) {
         this.dayOfBirth = dayOfBirth;
     }
 

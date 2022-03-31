@@ -1,5 +1,6 @@
 package com.tvv.web.servlet;
 
+import com.tvv.service.exception.AppException;
 import com.tvv.web.command.Command;
 import com.tvv.web.command.CommandCollection;
 import org.apache.log4j.Logger;
@@ -10,6 +11,7 @@ import javax.servlet.annotation.*;
 import java.io.IOException;
 
 @WebServlet(name = "Controller", value = "/controller")
+@MultipartConfig
 public class Controller extends HttpServlet {
 
     private static final Logger log = Logger.getLogger(Controller.class);
@@ -17,42 +19,40 @@ public class Controller extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request,
                          HttpServletResponse response) throws ServletException, IOException {
-        process(request, response);
+        String commandName = request.getParameter("command");
+        log.trace("Request parameter command GET: " + commandName);
+
+        Command command = CommandCollection.get(commandName);
+        log.trace("Command is " + command);
+
+        try {
+            command.executeGet(request, response);
+        } catch (ServletException e) {
+            e.printStackTrace();
+        }
+
+        log.debug("Controller finished GET with " + commandName);
+
     }
 
     @Override
     protected void doPost(HttpServletRequest request,
                           HttpServletResponse response) throws ServletException, IOException {
-        process(request, response);
-
-    }
-
-    private void process(HttpServletRequest request,
-                         HttpServletResponse response) throws IOException, ServletException {
-
-        log.debug("Controller starts");
-
         String commandName = request.getParameter("command");
-        log.trace("Request parameter command: " + commandName);
-        String login = request.getParameter("login");
-        String password = request.getParameter("password");
+        log.trace("Request parameter command POST: " + commandName);
 
         Command command = CommandCollection.get(commandName);
-        log.trace("Command is" + command);
+        log.trace("Command is " + command);
 
-        String forward = command.execute(request, response);
-        log.trace("Forward address " + forward);
-
-        log.debug("Controller finished, forward address " + forward);
-
-        if (forward != null) {
-            if ("GET".equals(request.getMethod())){
-                RequestDispatcher disp = request.getRequestDispatcher(forward);
-                disp.forward(request, response);}
-            if ("POST".equals(request.getMethod())){
-                response.sendRedirect(forward);
-            }
-
+        try {
+            command.executePost(request, response);
+        } catch (ServletException | AppException e) {
+            e.printStackTrace();
         }
+
+        log.debug("Controller finished POST with " + commandName);
+
     }
+
+
 }

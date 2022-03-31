@@ -36,6 +36,16 @@ public class FieldsChecker {
         return checkRegEx(code,regex);
     }
 
+    public static boolean checkCardNumber (String number) {
+        String regex = "^[0-9]{12}(?:[0-9]{4})?$";
+        return checkRegEx(number,regex);
+    }
+
+    public static boolean checkBalanceDouble(String value) {
+        String regex = "^(\\d+(\\.\\d{0,2})?|\\.?\\d{1,2})$";
+        return checkRegEx(value,regex);
+    }
+
     public static boolean checkEqualsPassword (String password, String confirmPassword){
         return password.equals(confirmPassword);
     }

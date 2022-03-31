@@ -5,7 +5,7 @@ public class Card extends EntityID {
     private String name;
     private String number;
     private String expDate;
-    private Account account;
+    private User user;
     private Boolean status;
 
     public String getName() {
@@ -32,12 +32,12 @@ public class Card extends EntityID {
         this.expDate = expDate;
     }
 
-    public Account getAccount() {
-        return account;
+    public User getUser() {
+        return user;
     }
 
-    public void setAccount(Account account) {
-        this.account = account;
+    public void setUser(User user) {
+        this.user = user;
     }
 
     public Boolean getStatus() {
@@ -55,7 +55,7 @@ public class Card extends EntityID {
                 ", name='" + name + '\'' +
                 ", number='" + number + '\'' +
                 ", expDate='" + expDate + '\'' +
-                ", account=" + account +
+                ", account=" + user +
                 ", status=" + status +
                 '}';
     }

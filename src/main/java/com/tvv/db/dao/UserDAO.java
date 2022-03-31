@@ -9,7 +9,9 @@ import com.tvv.db.entity.User;
 import java.sql.*;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class UserDAO {
 
@@ -18,6 +20,9 @@ public class UserDAO {
 
     private static final String SQL__FIND_USER_BY_LOGIN =
             "SELECT * FROM users WHERE login=?";
+
+    private static final String SQL__FIND_USER_BY_ACCOUNTUID =
+            "select u.id, u.lastname, u.firstname from users u JOIN accounts a on u.id = a.ownerUser where a.iban = ?";
 
     private static final String SQL__FIND_USER_BY_ID =
             "SELECT * FROM users WHERE id=?";
@@ -31,8 +36,12 @@ public class UserDAO {
                     "?, ?, ?," +
                     "?, ?, ?, ?, ?);";
 
-    private static final String SQL_UPDATE_USER =
-            "UPDATE users SET password=?, firstname=?, lastname=?"+
+    private static final String SQL_UPDATE_STATUS_USER =
+            "UPDATE users SET statususer=?"+
+                    "	WHERE id=?";
+
+    private static final String SQL_UPDATE_ROLE_USER =
+            "UPDATE users SET role=?"+
                     "	WHERE id=?";
 
     public static User insertUser (User user) {
@@ -78,6 +87,32 @@ public class UserDAO {
             rs = pstmt.executeQuery();
             if (rs.next())
                 user = mapper.loadRow(rs);
+            rs.close();
+            pstmt.close();
+        } catch (SQLException ex) {
+            DBManager.getInstance().rollbackCloseConnection(con);
+            ex.printStackTrace();
+        } finally {
+            DBManager.getInstance().commitCloseConnection(con);
+        }
+        return user;
+    }
+
+    public static Map<String,String> findUserByAccountUID(String accountUID) {
+        Map<String,String> user = new HashMap<>();
+        PreparedStatement pstmt = null;
+        ResultSet rs = null;
+        Connection con = null;
+        try {
+            con = DBManager.getInstance().getConnection();
+            pstmt = con.prepareStatement(SQL__FIND_USER_BY_ACCOUNTUID);
+            pstmt.setString(1, accountUID);
+            rs = pstmt.executeQuery();
+            if (rs.next()) {
+                user.put("id",rs.getString(Fields.ENTITY__ID));
+                user.put("firstName", rs.getString(Fields.USER__FIRST_NAME));
+                user.put("lastName", rs.getString(Fields.USER__LAST_NAME));
+            }
             rs.close();
             pstmt.close();
         } catch (SQLException ex) {
@@ -144,6 +179,47 @@ public class UserDAO {
         return (user==null);
     }
 
+    public static boolean updateStatusUserById(Long id, int status) {
+        boolean result = false;
+        PreparedStatement pstmt = null;
+        Connection con = null;
+        try {
+            con = DBManager.getInstance().getConnection();
+            UserLoad mapper = new UserLoad();
+            pstmt = con.prepareStatement(SQL_UPDATE_STATUS_USER);
+            pstmt.setLong(1, status);
+            pstmt.setLong(2, id);
+            pstmt.execute();
+            pstmt.close();
+        } catch (SQLException ex) {
+            DBManager.getInstance().rollbackCloseConnection(con);
+            ex.printStackTrace();
+        } finally {
+            DBManager.getInstance().commitCloseConnection(con);
+        }
+        return result;
+    }
+
+    public static boolean updateRoleUserById(Long id, int role) {
+        boolean result = false;
+        PreparedStatement pstmt = null;
+        Connection con = null;
+        try {
+            con = DBManager.getInstance().getConnection();
+            UserLoad mapper = new UserLoad();
+            pstmt = con.prepareStatement(SQL_UPDATE_ROLE_USER);
+            pstmt.setLong(1, role);
+            pstmt.setLong(2, id);
+            pstmt.execute();
+            pstmt.close();
+        } catch (SQLException ex) {
+            DBManager.getInstance().rollbackCloseConnection(con);
+            ex.printStackTrace();
+        } finally {
+            DBManager.getInstance().commitCloseConnection(con);
+        }
+        return result;
+    }
 
     private static class UserLoad implements LoadEntity<User> {
 
@@ -158,7 +234,7 @@ public class UserDAO {
                 user.setFirstName(rs.getString(Fields.USER__FIRST_NAME));
                 user.setLastName(rs.getString(Fields.USER__LAST_NAME));
                 user.setStatus(rs.getBoolean(Fields.USER__STATUS));
-                user.setDayOfBirth(rs.getDate(Fields.USER__DATE_OF_BIRTH).toLocalDate());
+                user.setDayOfBirth(rs.getString(Fields.USER__DATE_OF_BIRTH));
                 user.setSex(rs.getString(Fields.USER__SEX));
                 user.setGender(rs.getString(Fields.USER__GENDER));
                 user.setPhoto(rs.getString(Fields.USER__PHOTO));

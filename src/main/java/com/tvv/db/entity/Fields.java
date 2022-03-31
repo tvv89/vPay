@@ -24,6 +24,7 @@ public final class Fields {
 	public static final String ACCOUNT__BALANCE = "balance";
 	public static final String ACCOUNT__USER_ID = "ownerUser";
 	public static final String ACCOUNT__STATUS = "statusAccount";
+	public static final String ACCOUNT__CARD = "card_id";
 
 	public static final String PAYMENT__GUID = "guid";
 	public static final String PAYMENT__USER = "ownerUser";
@@ -40,7 +41,7 @@ public final class Fields {
 	public static final String CARD__NAME = "name";
 	public static final String CARD__NUMBER = "number";
 	public static final String CARD__EXPIRATION_DATE = "expDate";
-	public static final String CARD__ACCOUNT = "ownerAccount";
+	public static final String CARD__USER = "user_id";
 	public static final String CARD__STATUS = "statusCard";
 
 }

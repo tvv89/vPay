@@ -17,20 +17,20 @@ public class CardDAO {
     private static final String SQL__FIND_CARD_BY_ID =
             "SELECT * FROM cards WHERE id=?";
 
+    private static final String SQL__UPDATE_CARD_STATUS =
+            "UPDATE cards SET statusCard=? WHERE id=?";
+
     private static final String SQL__FIND_CARDS_BY_USER_ID =
             "SELECT *\n" +
-                    "FROM cards c\n" +
-                    "         INNER JOIN accounts a ON a.id = c.ownerAccount\n" +
-                    "         INNER JOIN users u ON u.id = a.ownerUser\n" +
-                    "WHERE u.id=?";
+                    "FROM cards \n" +
+                    "WHERE user_id=?";
 
     private static final String SQL__INSERT_CARD =
-            "insert into cards (id, name, number, expDate, ownerAccount, statusCard) "+
+            "insert into cards (id, name, number, expDate, user_id, statusCard) "+
             "values (default,?,?,?,?,?)";
 
     public static Card insertCard (Card card) {
         PreparedStatement pstmt = null;
-        ResultSet rs = null;
         Connection con = null;
         try {
             con = DBManager.getInstance().getConnection();
@@ -38,10 +38,10 @@ public class CardDAO {
             pstmt.setString(1, card.getName());
             pstmt.setString(2, card.getNumber());
             pstmt.setString(3, card.getExpDate());
-            pstmt.setLong(4, card.getAccount().getId());
+            pstmt.setLong(4, card.getUser().getId());
             pstmt.setBoolean(5, card.getStatus());
-
-            DAOUtils.getInsertEntityGenerateId(pstmt,rs,card);
+            pstmt.execute();
+            pstmt.close();
 
         } catch (SQLException ex) {
             DBManager.getInstance().rollbackCloseConnection(con);
@@ -51,6 +51,7 @@ public class CardDAO {
         }
         return card;
     }
+
     public static List<Card> findAllCards() {
         List<Card> cards = new ArrayList<>();
         Statement stmt = null;
@@ -106,7 +107,7 @@ public class CardDAO {
         return getCards(userId, SQL__FIND_CARDS_BY_USER_ID);
     }
 
-    private static List<Card> getCards(Long userId, String sql_findCardsByUserId) {
+    private static List<Card> getCards(Long userId, String sqlRequest) {
         List<Card> cards = new ArrayList<>();
         PreparedStatement pstmt = null;
         ResultSet rs = null;
@@ -114,7 +115,7 @@ public class CardDAO {
         try {
             con = DBManager.getInstance().getConnection();
             CardLoad mapper = new CardLoad();
-            pstmt = con.prepareStatement(sql_findCardsByUserId);
+            pstmt = con.prepareStatement(sqlRequest);
             pstmt.setLong(1, userId);
             rs = pstmt.executeQuery();
             while (rs.next()) cards.add(mapper.loadRow(rs));
@@ -129,6 +130,26 @@ public class CardDAO {
         return cards;
     }
 
+    public static boolean updateStatusCardById(Long id, int newStatus) {
+        boolean result = false;
+        PreparedStatement pstmt = null;
+        Connection con = null;
+        try {
+            con = DBManager.getInstance().getConnection();
+            pstmt = con.prepareStatement(SQL__UPDATE_CARD_STATUS);
+            pstmt.setLong(1, newStatus);
+            pstmt.setLong(2, id);
+            pstmt.execute();
+            pstmt.close();
+        } catch (SQLException ex) {
+            DBManager.getInstance().rollbackCloseConnection(con);
+            ex.printStackTrace();
+        } finally {
+            DBManager.getInstance().commitCloseConnection(con);
+        }
+        return result;
+    }
+
     private static class CardLoad implements LoadEntity<Card> {
 
         @Override
@@ -140,8 +161,8 @@ public class CardDAO {
                 card.setNumber(rs.getString(Fields.CARD__NUMBER));
                 card.setExpDate(rs.getString(Fields.CARD__EXPIRATION_DATE));
 
-                Account account = AccountDAO.findAccountById(rs.getLong(Fields.CARD__ACCOUNT));
-                card.setAccount(account);
+                User user = UserDAO.findUserById(rs.getLong(Fields.CARD__USER));
+                card.setUser(user);
 
                 card.setStatus(rs.getBoolean(Fields.CARD__STATUS));
                 return card;

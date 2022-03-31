@@ -38,4 +38,19 @@ public class UtilsGenerator {
         return result.toString();
     }
 
+    public static String getAccountUID() {
+        int startSymbol = 48;
+        int endSymbol = 122;
+        int targetStringLength = 25;
+        Random random = new Random();
+
+        String result = random.ints(startSymbol, endSymbol + 1)
+                .filter(i -> (i <= 57 || i >= 65) && (i <= 90 || i >= 97))
+                .limit(targetStringLength)
+                .collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append)
+                .toString();
+
+        return result;
+    }
+
 }

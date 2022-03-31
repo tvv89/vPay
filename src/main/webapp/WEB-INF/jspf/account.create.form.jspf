@@ -1,0 +1,46 @@
+<div id="modal-add-account" uk-modal>
+    <div class="uk-modal-dialog uk-modal-body">
+        <form class="uk-form-horizontal" method="post" action="controller" enctype="multipart/form-data">
+            <h2 class="uk-modal-title">Add account</h2>
+            <input type="hidden" name="command" value="createAccount"/>
+            <div class="uk-margin">
+                <label class="uk-form-label" for="name">Name</label>
+                <div class="uk-form-controls">
+                    <input class="uk-input uk-form-width-large" id="name" name="name" type="text" form-field>
+                </div>
+            </div>
+            <div class="uk-margin">
+                <label class="uk-form-label" for="iban">IBAN</label>
+                <div class="uk-form-controls">
+                    <input class="uk-input" id="iban" type="text" name="iban" form-field>
+                </div>
+            </div>
+            <div class="uk-margin">
+                <label class="uk-form-label" for="bankCode">Bank code</label>
+                <div class="uk-form-controls">
+                    <input class="uk-input" id="bankCode" type="text" name="bankCode" form-field>
+                </div>
+            </div>
+            <div class="uk-margin">
+                <label class="uk-form-label" for="ipn">IPN</label>
+                <div class="uk-form-controls">
+                    <input class="uk-input" id="ipn" type="text" name="ipn" form-field>
+                </div>
+            </div>
+            <div class="uk-margin">
+                <label class="uk-form-label" for="currency">Currency</label>
+                <div class="uk-form-controls">
+                    <select class="uk-select" id="currency" name="currency" form-field>
+                        <option>UAH</option>
+                        <option>USD</option>
+                        <option>EUR</option>
+                    </select>
+                </div>
+            </div>
+            <div>
+                <input class="uk-width-1-1 uk-button uk-button-primary uk-button-default" type="submit"
+                       id="createAccountSubmit" value="Submit"/>
+            </div>
+        </form>
+    </div>
+</div>

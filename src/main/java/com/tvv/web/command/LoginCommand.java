@@ -19,8 +19,8 @@ public class LoginCommand extends Command {
 	private static final Logger log = Logger.getLogger(LoginCommand.class);
 	
 	@Override
-	public String execute(HttpServletRequest request,
-			HttpServletResponse response) throws IOException, ServletException {
+	public void executePost(HttpServletRequest request,
+							HttpServletResponse response) throws IOException, ServletException {
 		
 		log.debug("Command starts");
 		
@@ -38,31 +38,31 @@ public class LoginCommand extends Command {
 			errorMessage = "Login/password cannot be empty";
 			request.setAttribute("errorMessage", errorMessage);
 			log.error("errorMessage " + errorMessage);
-			return forward;
 		}
 		
 		User currentUser = new UserDAO().findUserByLogin(login);
 		log.trace("Load from DB: user " + currentUser);
-			
+
 		if (currentUser == null || !StringHash.getHashString(password).equals(currentUser.getPassword())) {
 			errorMessage = "Can't find user with login and password";
 			request.setAttribute("errorMessage", errorMessage);
 			log.error("errorMessage: " + errorMessage);
-			return forward;
-		} else {
+		} //else if (!currentUser.isStatus()) UtilCommand.bedGETRequest(request, response);
+		else {
 			Role userRole = Role.getRole(currentUser);
 			log.trace("userRole: " + userRole);
-				
+
 			if (userRole == Role.ADMIN)
 				forward = Path.COMMAND__LIST_USERS;
-		
+
 			if (userRole == Role.USER)
 				forward = Path.COMMAND__LIST_ACCOUNTS;
-			
+
+			currentUser.setPassword("");
 			session.setAttribute("currentUser", currentUser);
 			log.trace("Set the session attribute: user " + currentUser);
-				
-			session.setAttribute("userRole", userRole);				
+
+			session.setAttribute("userRole", userRole);
 			log.trace("Set the session attribute: userRole " + userRole);
 			session.setAttribute("currentPage", "users");
 			log.trace("Set the session attribute: currentPage " + "users");
@@ -70,7 +70,12 @@ public class LoginCommand extends Command {
 		}
 		
 		log.debug("Command finished");
-		return forward;
+		response.sendRedirect(forward);
+	}
+
+	@Override
+	public void executeGet(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
+
 	}
 
 }

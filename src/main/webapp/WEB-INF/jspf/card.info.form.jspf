@@ -1,0 +1,11 @@
+<div id="modal-info-card" uk-modal>
+    <div class="uk-modal-dialog uk-modal-body">
+
+                <div class="uk-inline uk-dark">
+                    <img src="images/__card_blank.png" width="324" height="196" alt="">
+                    <label class="uk-position-absolute uk-text-large" style="left: 10%; top: 50%" >4321 1234 5678 7654</label>
+                    <label class="uk-position-absolute uk-text-large" style="left: 43%; top: 65%" >01/22</label>
+                </div>
+
+    </div>
+</div>

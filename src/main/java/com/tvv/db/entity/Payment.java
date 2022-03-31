@@ -1,5 +1,6 @@
 package com.tvv.db.entity;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 
 public class Payment extends EntityID {
@@ -9,7 +10,7 @@ public class Payment extends EntityID {
     private Long senderId;
     private String recipientType;
     private Long recipientId;
-    private Date timeOfLog;
+    private String timeOfLog;
     private String currency;
     private Double commission;
     private Double total;
@@ -63,11 +64,11 @@ public class Payment extends EntityID {
         this.recipientId = recipientId;
     }
 
-    public Date getTimeOfLog() {
+    public String getTimeOfLog() {
         return timeOfLog;
     }
 
-    public void setTimeOfLog(Date timeOfLog) {
+    public void setTimeOfLog(String timeOfLog) {
         this.timeOfLog = timeOfLog;
     }
 

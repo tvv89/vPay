@@ -18,4 +18,8 @@ public class PaginationList {
         return result;
     }
 
+    public static <T> int getPages(List<T> tList, int count) {
+        return (int)Math.ceil((double)tList.size()/count);
+    }
+
 }

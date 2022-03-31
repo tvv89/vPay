@@ -4,6 +4,8 @@ import com.tvv.db.DBManager;
 import com.tvv.db.entity.*;
 
 import java.sql.*;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,6 +31,10 @@ public class PaymentDAO {
                     "        ?,?,?,?,?," +
                     "        ?,?,?,?,?,?);";
 
+    private static final String SQL_UPDATE_STATUS_PAYMENT =
+            "UPDATE payments SET statusPayment=?"+
+                    "	WHERE id=?";
+
     public static List<Payment> findAllPayments() {
         List<Payment> payments = new ArrayList<>();
         Statement stmt = null;
@@ -51,7 +57,6 @@ public class PaymentDAO {
         }
         return payments;
     }
-
 
     public static Payment findPaymentById (Long id){
         Payment payment = new Payment();
@@ -100,8 +105,7 @@ public class PaymentDAO {
         return payments;
     }
 
-    public static boolean updatePaymentStatus(Long id, String status)
-    {
+    public static boolean updatePaymentStatus(Long id, String status){
         boolean result = false;
         PreparedStatement pstmt = null;
         ResultSet rs = null;
@@ -137,7 +141,7 @@ public class PaymentDAO {
             pstmt.setLong(4, payment.getSenderId());
             pstmt.setString(5, payment.getRecipientType());
             pstmt.setLong(6, payment.getRecipientId());
-            pstmt.setDate(7, (Date) payment.getTimeOfLog());
+            pstmt.setString(7, payment.getTimeOfLog().toString());
             pstmt.setString(8, "");
             pstmt.setDouble(9, payment.getCommission());
             pstmt.setDouble(10, payment.getTotal());
@@ -152,6 +156,27 @@ public class PaymentDAO {
             DBManager.getInstance().commitCloseConnection(con);
         }
         return payment;
+    }
+
+    public static boolean updateStatusPaymentById(Long id, String status) {
+        boolean result = false;
+        PreparedStatement pstmt = null;
+        Connection con = null;
+        try {
+            con = DBManager.getInstance().getConnection();
+            PaymentDAO.PaymentLoad mapper = new PaymentLoad();
+            pstmt = con.prepareStatement(SQL_UPDATE_STATUS_PAYMENT);
+            pstmt.setString(1, status);
+            pstmt.setLong(2, id);
+            pstmt.execute();
+            pstmt.close();
+        } catch (SQLException ex) {
+            DBManager.getInstance().rollbackCloseConnection(con);
+            ex.printStackTrace();
+        } finally {
+            DBManager.getInstance().commitCloseConnection(con);
+        }
+        return result;
     }
 
     private static class PaymentLoad implements LoadEntity<Payment> {
@@ -170,7 +195,18 @@ public class PaymentDAO {
                 payment.setSenderId(rs.getLong(Fields.PAYMENT__SENDER_ID));
                 payment.setRecipientType(rs.getString(Fields.PAYMENT__RECIPIENT_TYPE));
                 payment.setRecipientId(rs.getLong(Fields.PAYMENT__RECIPIENT_ID));
-                payment.setTimeOfLog(rs.getDate(Fields.PAYMENT__TIME_OF_LOG));
+
+                System.out.println(rs.getString(Fields.PAYMENT__TIME_OF_LOG));
+                try {
+                    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+                    LocalDateTime ldt = LocalDateTime.parse(rs.getString(Fields.PAYMENT__TIME_OF_LOG),formatter);
+                    payment.setTimeOfLog(rs.getString(Fields.PAYMENT__TIME_OF_LOG));
+                }
+                catch (Exception ex) {
+                    System.out.println("Bad parse datetime");
+                }
+
+
                 payment.setCurrency(rs.getString(Fields.PAYMENT__CURRENCY));
                 payment.setCommission(rs.getDouble(Fields.PAYMENT__COMMISSION));
                 payment.setTotal(rs.getDouble(Fields.PAYMENT__TOTAL));

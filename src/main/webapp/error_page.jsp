@@ -9,9 +9,9 @@
     <script src="js/uikit.min.js"></script>
 </head>
 <body>
-<div class="uk-alert-danger" uk-alert>
-    <a class="uk-alert-close" uk-close></a>
-    <p>${errorMessage}</p>
+<div class="uk-alert-danger">
+    <h1>${errorHeader}</h1>
+    <h2>${errorMessage}</h2>
 </div>
 
 

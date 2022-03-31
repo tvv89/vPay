@@ -5,4 +5,5 @@ public class AppException extends Exception{
     {
         super(message,exception);
     }
+
 }
