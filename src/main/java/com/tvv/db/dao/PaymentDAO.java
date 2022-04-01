@@ -2,6 +2,7 @@ package com.tvv.db.dao;
 
 import com.tvv.db.DBManager;
 import com.tvv.db.entity.*;
+import com.tvv.service.exception.AppException;
 
 import java.sql.*;
 import java.time.LocalDateTime;
@@ -12,27 +13,31 @@ import java.util.List;
 
 public class PaymentDAO {
     private static final String SQL__FIND_ALL_PAYMENT =
-            "SELECT * FROM payments";
+            "SELECT * FROM payments where archive!=1";
 
     private static final String SQL__FIND_PAYMENT_BY_USER_ID =
-            "SELECT * FROM payments WHERE ownerUser=?";
+            "SELECT * FROM payments WHERE ownerUser=? AND archive!=1";
 
     private static final String SQL__FIND_PAYMENT_BY_ID =
-            "SELECT * FROM payments WHERE id=?";
+            "SELECT * FROM payments WHERE id=? AND archive!=1";
 
     private static final String SQL__UPDATE_STATUS_PAYMENT =
-            "UPDATE payments SET statusPayment=? WHERE id=?";
+            "UPDATE payments SET statusPayment=? WHERE id=? AND archive!=1";
 
     private static final String SQL__INSERT_PAYMENT =
             "insert into payments (id, guid, " +
                     "ownerUser, account_id, recipientType, recipientId, " +
-                    "datetimeOfLog, currency, commission, total, statusPayment, sum, currencysum)\n" +
+                    "datetimeOfLog, currency, commission, total, statusPayment, sum, currencysum, archive)\n" +
                     "values (default,?," +
                     "        ?,?,?,?," +
-                    "        ?,?,?,?,?,?,?);";
+                    "        ?,?,?,?,?,?,?,0);";
 
     private static final String SQL_UPDATE_STATUS_PAYMENT =
             "UPDATE payments SET statusPayment=?"+
+                    "	WHERE id=?";
+
+    private static final String SQL_SET_ARCHIVE =
+            "UPDATE payments SET archive=1"+
                     "	WHERE id=?";
 
     public static List<Payment> findAllPayments() {
@@ -137,7 +142,7 @@ public class PaymentDAO {
             pstmt = con.prepareStatement(SQL__INSERT_PAYMENT);
             pstmt.setString(1, payment.getGuid());
             pstmt.setLong(2, payment.getUser().getId());
-            pstmt.setLong(3, payment.getSenderId());
+            pstmt.setLong(3, payment.getSenderId().getId());
             pstmt.setString(4, payment.getRecipientType());
 
             pstmt.setString(5, payment.getRecipientId());
@@ -171,6 +176,28 @@ public class PaymentDAO {
             pstmt.setLong(2, id);
             pstmt.execute();
             pstmt.close();
+            result = true;
+        } catch (SQLException ex) {
+            DBManager.getInstance().rollbackCloseConnection(con);
+            ex.printStackTrace();
+        } finally {
+            DBManager.getInstance().commitCloseConnection(con);
+        }
+        return result;
+    }
+
+    public static boolean deletePaymentById(Long id) {
+        boolean result = false;
+        PreparedStatement pstmt = null;
+        Connection con = null;
+        try {
+            con = DBManager.getInstance().getConnection();
+            PaymentDAO.PaymentLoad mapper = new PaymentLoad();
+            pstmt = con.prepareStatement(SQL_SET_ARCHIVE);
+            pstmt.setLong(1, id);
+            pstmt.execute();
+            pstmt.close();
+            result = true;
         } catch (SQLException ex) {
             DBManager.getInstance().rollbackCloseConnection(con);
             ex.printStackTrace();
@@ -191,8 +218,14 @@ public class PaymentDAO {
 
                 User user = UserDAO.findUserById(rs.getLong(Fields.PAYMENT__USER));
                 payment.setUser(user);
-
-                payment.setSenderId(rs.getLong(Fields.PAYMENT__SENDER_ID));
+                Account sender = null;
+                try {
+                    sender = AccountDAO.findAccountById(rs.getLong(Fields.PAYMENT__SENDER_ID));
+                }
+                catch (AppException ex) {
+                    System.out.println("Bad parse account");
+                }
+                payment.setSenderId(sender);
                 payment.setRecipientType(rs.getString(Fields.PAYMENT__RECIPIENT_TYPE));
                 payment.setRecipientId(rs.getString(Fields.PAYMENT__RECIPIENT_ID));
 

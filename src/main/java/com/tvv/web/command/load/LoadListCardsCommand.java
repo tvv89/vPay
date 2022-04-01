@@ -47,10 +47,11 @@ public class LoadListCardsCommand extends Command {
                 } catch (AppException e) {
                     log.error(e.getMessage());
                 }
-                request.getSession().setAttribute("currentPage", "cards");
-                RequestDispatcher disp = request.getRequestDispatcher(Path.PAGE__LIST_CARDS);
-                disp.forward(request, response);
             }
+            request.getSession().setAttribute("currentPage", "cards");
+            RequestDispatcher disp = request.getRequestDispatcher(Path.PAGE__LIST_CARDS);
+            disp.forward(request, response);
+
         }
         log.trace("Forward to: " + Path.PAGE__LIST_CARDS);
     }

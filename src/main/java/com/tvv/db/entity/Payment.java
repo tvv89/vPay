@@ -4,7 +4,7 @@ package com.tvv.db.entity;
 public class Payment extends EntityID {
     private String guid;
     private User user;
-    private Long senderId;
+    private Account sender;
     private String recipientType;
     private String recipientId;
     private String timeOfLog;
@@ -31,12 +31,12 @@ public class Payment extends EntityID {
         this.user = user;
     }
 
-    public Long getSenderId() {
-        return senderId;
+    public Account getSenderId() {
+        return sender;
     }
 
-    public void setSenderId(Long senderId) {
-        this.senderId = senderId;
+    public void setSenderId(Account sender) {
+        this.sender = sender;
     }
 
     public String getRecipientType() {
@@ -116,7 +116,7 @@ public class Payment extends EntityID {
         return "Payment{" +
                 "guid='" + guid + '\'' +
                 ", user=" + user +
-                ", senderId=" + senderId +
+                ", senderId=" + sender +
                 ", recipientType='" + recipientType + '\'' +
                 ", recipientId='" + recipientId + '\'' +
                 ", timeOfLog='" + timeOfLog + '\'' +
