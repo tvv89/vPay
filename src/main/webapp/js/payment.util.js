@@ -44,7 +44,7 @@ function createTable(tx) {
         //var paymentStatusButton = tx[i].status == true ? "Disable Payment" : "Enable Payment";
         var statusP;
             if (tx[i].status=='Ready') statusP = `<span class="uk-label uk-label-warning" 
-                                            onclick="changeStatusButton(tx[i].id)">
+                                            onclick="changeStatusButton(${tx[i].id})">
                                             Ready</span>`;
             else statusP = `<span class="uk-label uk-label-success" 
                                             onclick="">
@@ -93,7 +93,7 @@ function changePaymentStatus(id) {
         .then(data =>  {
             if (data.status =='OK') {
                 if ($('#td_status_' + data.id).length) {
-                    if (data.status == 'Submitted') {
+                    if (data.statusPayment == 'Submitted') {
                         statusP = `<span class="uk-label uk-label-success" 
                                          onclick="">
                                          Submitted</span>`;
@@ -109,27 +109,33 @@ function changePaymentStatus(id) {
 }
 
 function deletePayment(id) {
-    fetch('controller?command=statusPayment', {
-        headers: {
-            'Content-Type': 'application/json; charset=utf-8'
-        },
-        method: 'POST',
-        body: JSON.stringify({action: 'delete',
-                                   paymentId: id})
-    }) .then(response => response.json())
-        .then(data =>  {
-            if (data.status =='OK') {
-                callPOSTRequest(1,0);
-                UIkit.notification({
-                    message: 'Success! Payment was deleted.',
-                    status: 'success',
-                    timeout: 2000
-                });
-            } else callErrorAlert(data.message);
-        })
-        .catch(err => {
-            callErrorAlert(err);
-        });
+    UIkit.modal.confirm('Payment status will be changed to submitted. Are you sure?').then(function () {
+        fetch('controller?command=statusPayment', {
+            headers: {
+                'Content-Type': 'application/json; charset=utf-8'
+            },
+            method: 'POST',
+            body: JSON.stringify({action: 'delete',
+                paymentId: id})
+        }) .then(response => response.json())
+            .then(data =>  {
+                if (data.status =='OK') {
+                    callPOSTRequest(1,0);
+                    UIkit.notification({
+                        message: 'Success! Payment was deleted.',
+                        status: 'success',
+                        timeout: 2000
+                    });
+                } else callErrorAlert(data.message);
+            })
+            .catch(err => {
+                callErrorAlert(err);
+            });
+
+        console.log('Payment is deleted')
+    }, function () {
+        console.log('Canceling enable')
+    });
 
 }
 

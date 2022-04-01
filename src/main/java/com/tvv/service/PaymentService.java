@@ -65,14 +65,20 @@ public class PaymentService {
                 payment.setStatus("Submitted");
                 PaymentDAO.updatePaymentStatus(payment.getId(),"Submitted");
                 innerObject.add("status", new Gson().toJsonTree("OK"));
+                innerObject.add("id", new Gson().toJsonTree(payment.getId()));
+                innerObject.add("statusPayment", new Gson().toJsonTree(payment.getStatus()));
+
                 return innerObject;
+
             }
             if ("Card".equals(payment.getRecipientType())) {
                 AccountService.depositAccount(accountFrom, null, totalPaymentFrom, 0D);
-                innerObject.add("status", new Gson().toJsonTree("OK"));
                 payment.setStatus("Submitted");
                 PaymentDAO.updatePaymentStatus(payment.getId(),"Submitted");
                 innerObject.add("status", new Gson().toJsonTree("OK"));
+                innerObject.add("id", new Gson().toJsonTree(payment.getId()));
+                innerObject.add("statusPayment", new Gson().toJsonTree(payment.getStatus()));
+
                 return innerObject;
             }
         }
@@ -81,7 +87,6 @@ public class PaymentService {
         }
         return UtilCommand.errorMessageJSON("Payment can not be submitted.");
     }
-
 
     public static JsonObject deletePayment(Payment payment) throws AppException {
         JsonObject innerObject = new JsonObject();

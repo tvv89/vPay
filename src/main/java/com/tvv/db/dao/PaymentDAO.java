@@ -110,7 +110,7 @@ public class PaymentDAO {
         return payments;
     }
 
-    public static boolean updatePaymentStatus(Long id, String status){
+    public static boolean updatePaymentStatus(Long id, String status) throws AppException {
         boolean result = false;
         PreparedStatement pstmt = null;
         ResultSet rs = null;
@@ -120,13 +120,13 @@ public class PaymentDAO {
             pstmt = con.prepareStatement(SQL__UPDATE_STATUS_PAYMENT);
             pstmt.setString(1, status);
             pstmt.setLong(2, id);
-            pstmt.executeQuery();
-            rs.close();
+            pstmt.executeUpdate();
             pstmt.close();
             result = true;
         } catch (SQLException ex) {
             DBManager.getInstance().rollbackCloseConnection(con);
             ex.printStackTrace();
+            throw new AppException("Can not update status payment",ex);
         } finally {
             DBManager.getInstance().commitCloseConnection(con);
         }
@@ -145,10 +145,11 @@ public class PaymentDAO {
             pstmt.setLong(3, payment.getSenderId().getId());
             pstmt.setString(4, payment.getRecipientType());
             pstmt.setString(5, payment.getRecipientId());
-            pstmt.setString(7, payment.getTimeOfLog());
-            pstmt.setString(8, payment.getCurrency());
-            pstmt.setDouble(9, payment.getCommission());
-            pstmt.setDouble(10, payment.getTotal());
+            pstmt.setString(6, payment.getTimeOfLog());
+            pstmt.setString(7, payment.getCurrency());
+            pstmt.setDouble(8, payment.getCommission());
+            pstmt.setDouble(9, payment.getTotal());
+            pstmt.setString(10, payment.getStatus());
             pstmt.setDouble(11, payment.getSum());
             pstmt.setString(12, payment.getCurrencySum());
             pstmt.execute();

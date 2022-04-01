@@ -208,7 +208,7 @@ public class CreatePaymentCommand extends Command {
         Double value;
         String accountToType = (String) jsonParameters.get("accountType");
         String accountToNumber = (String) jsonParameters.get("accountNumber");
-        Long accountFromId = (Long) jsonParameters.get("accountFromId");
+        Long accountFromId = ((Integer) jsonParameters.get("accountFromId")).longValue();
         String currencyFrom = (String) jsonParameters.get("currencyFrom");
         String currencyTo = (String) jsonParameters.get("currencyTo");
         String statusPayment = (String) jsonParameters.get("status");
@@ -236,7 +236,6 @@ public class CreatePaymentCommand extends Command {
                     if (accountFromBalance < totalPaymentFrom)
                         return UtilCommand.errorMessageJSON("Not enough funds in the account");
                     Double totalPaymentTo = PaymentService.currencyExchange(value, accountTo.getCurrency(), currencyTo);
-                    AccountService.depositAccount(accountFrom, accountTo, totalPaymentFrom, totalPaymentTo);
                     Payment payment = new Payment();
                     payment.setId(1L);
                     payment.setGuid(UtilsGenerator.getGUID());
@@ -252,6 +251,8 @@ public class CreatePaymentCommand extends Command {
                     payment.setCurrencySum(currencyTo);
                     payment.setStatus(statusPayment);
                     PaymentService.createPayment(payment);
+                    if ("Submitted".equals(statusPayment))
+                        AccountService.depositAccount(accountFrom, null, totalPaymentFrom, 0D);
                     innerObject.add("status", new Gson().toJsonTree("OK"));
 
                 } else {
@@ -277,14 +278,13 @@ public class CreatePaymentCommand extends Command {
                 Double accountFromBalance = accountFrom.getBalance();
                 if (accountFromBalance < totalPaymentFrom)
                     return UtilCommand.errorMessageJSON("Not enough funds in the account");
-                AccountService.depositAccount(accountFrom, null, totalPaymentFrom, 0D);
                 Payment payment = new Payment();
                 payment.setId(1L);
                 payment.setGuid(UtilsGenerator.getGUID());
                 payment.setUser(currentUser);
                 payment.setSenderId(accountFrom);
                 payment.setRecipientType(accountToType);
-                payment.setRecipientId(accountToNumber);
+                payment.setRecipientId(CardService.formatCard(accountToNumber));
                 payment.setTimeOfLog(datetime);
                 payment.setCurrency(currencyFrom);
                 payment.setCommission(commissionPayment);
@@ -293,7 +293,10 @@ public class CreatePaymentCommand extends Command {
                 payment.setCurrencySum(currencyTo);
                 payment.setStatus(statusPayment);
                 PaymentService.createPayment(payment);
+                if ("Submitted".equals(statusPayment))
+                    AccountService.depositAccount(accountFrom, null, totalPaymentFrom, 0D);
                 innerObject.add("status", new Gson().toJsonTree("OK"));
+
             } catch (AppException ex) {
                 return UtilCommand.errorMessageJSON(ex.getMessage());
             }
