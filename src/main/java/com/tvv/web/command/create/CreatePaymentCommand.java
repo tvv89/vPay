@@ -60,7 +60,6 @@ public class CreatePaymentCommand extends Command {
         } catch (Exception e) {
             log.error("Can't read correct data from request, because " + e.getMessage());
         }
-
         try {
             switch (action) {
                 case "selectAccount":
@@ -95,14 +94,12 @@ public class CreatePaymentCommand extends Command {
                         log.error("Can't find account by id");
                     }
                     break;
-
                 case "calculatePayment":
                     innerObject = calculatePayment(jsonParameters);
                     break;
                 case "createPayment":
                     innerObject = createPayment(jsonParameters);
                     break;
-
             }
         } catch (AppException ex) {
             innerObject = UtilCommand.errorMessageJSON(ex.getMessage());
@@ -144,7 +141,7 @@ public class CreatePaymentCommand extends Command {
 
     private JsonObject calculatePayment(Map<String, Object> jsonParameters) {
         JsonObject innerObject = new JsonObject();
-        Double commissionPercent = 0.05;
+        Double commissionPercent = SystemParameters.COMMISSION_PERCENT;
         Double commissionValue = 0D;
         Double totalPayment = 0D;
         Double value;

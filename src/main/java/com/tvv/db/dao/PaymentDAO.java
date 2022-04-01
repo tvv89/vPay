@@ -25,11 +25,11 @@ public class PaymentDAO {
 
     private static final String SQL__INSERT_PAYMENT =
             "insert into payments (id, guid, " +
-                    "ownerUser, senderType, senderId, recipientType, recipientId, " +
-                    "datetimeOfLog, amount, commission, total, statusPayment, currency)\n" +
+                    "ownerUser, account_id, recipientType, recipientId, " +
+                    "datetimeOfLog, currency, commission, total, statusPayment, sum, currencysum)\n" +
                     "values (default,?," +
-                    "        ?,?,?,?,?," +
-                    "        ?,?,?,?,?,?);";
+                    "        ?,?,?,?," +
+                    "        ?,?,?,?,?,?,?);";
 
     private static final String SQL_UPDATE_STATUS_PAYMENT =
             "UPDATE payments SET statusPayment=?"+
@@ -128,34 +128,35 @@ public class PaymentDAO {
         return result;
     }
 
-    public static Payment insertPayment (Payment payment) {
+    public static boolean insertPayment (Payment payment) {
         PreparedStatement pstmt = null;
-        ResultSet rs = null;
         Connection con = null;
+        boolean result = false;
         try {
             con = DBManager.getInstance().getConnection();
             pstmt = con.prepareStatement(SQL__INSERT_PAYMENT);
             pstmt.setString(1, payment.getGuid());
             pstmt.setLong(2, payment.getUser().getId());
-            pstmt.setString(3, payment.getSenderType());
-            pstmt.setLong(4, payment.getSenderId());
-            pstmt.setString(5, payment.getRecipientType());
-            pstmt.setLong(6, payment.getRecipientId());
-            pstmt.setString(7, payment.getTimeOfLog().toString());
-            pstmt.setString(8, "");
+            pstmt.setLong(3, payment.getSenderId());
+            pstmt.setString(4, payment.getRecipientType());
+
+            pstmt.setString(5, payment.getRecipientId());
+            pstmt.setString(7, payment.getTimeOfLog());
+            pstmt.setString(8, payment.getCurrency());
             pstmt.setDouble(9, payment.getCommission());
             pstmt.setDouble(10, payment.getTotal());
-            pstmt.setString(11, payment.getStatus());
-            pstmt.setString(12, payment.getCurrency());
-
-            DAOUtils.getInsertEntityGenerateId(pstmt,rs,payment);
+            pstmt.setDouble(11, payment.getSum());
+            pstmt.setString(12, payment.getCurrencySum());
+            pstmt.execute();
+            pstmt.close();
+            result = true;
         } catch (SQLException ex) {
             DBManager.getInstance().rollbackCloseConnection(con);
             ex.printStackTrace();
         } finally {
             DBManager.getInstance().commitCloseConnection(con);
         }
-        return payment;
+        return result;
     }
 
     public static boolean updateStatusPaymentById(Long id, String status) {
@@ -191,24 +192,24 @@ public class PaymentDAO {
                 User user = UserDAO.findUserById(rs.getLong(Fields.PAYMENT__USER));
                 payment.setUser(user);
 
-                payment.setSenderType(rs.getString(Fields.PAYMENT__SENDER_TYPE));
                 payment.setSenderId(rs.getLong(Fields.PAYMENT__SENDER_ID));
                 payment.setRecipientType(rs.getString(Fields.PAYMENT__RECIPIENT_TYPE));
-                payment.setRecipientId(rs.getLong(Fields.PAYMENT__RECIPIENT_ID));
+                payment.setRecipientId(rs.getString(Fields.PAYMENT__RECIPIENT_ID));
 
                 try {
                     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
                     LocalDateTime ldt = LocalDateTime.parse(rs.getString(Fields.PAYMENT__TIME_OF_LOG),formatter);
-                    payment.setTimeOfLog(rs.getString(Fields.PAYMENT__TIME_OF_LOG));
+                    payment.setTimeOfLog(ldt.format(formatter));
                 }
                 catch (Exception ex) {
                     System.out.println("Bad parse datetime");
                 }
 
-
                 payment.setCurrency(rs.getString(Fields.PAYMENT__CURRENCY));
                 payment.setCommission(rs.getDouble(Fields.PAYMENT__COMMISSION));
                 payment.setTotal(rs.getDouble(Fields.PAYMENT__TOTAL));
+                payment.setCurrencySum(rs.getString(Fields.PAYMENT__CURRENCY_SUM));
+                payment.setSum(rs.getDouble(Fields.PAYMENT__SUM));
                 payment.setStatus(rs.getString(Fields.PAYMENT__STATUS));
 
                 return payment;

@@ -28,14 +28,15 @@ public final class Fields {
 
 	public static final String PAYMENT__GUID = "guid";
 	public static final String PAYMENT__USER = "ownerUser";
-	public static final String PAYMENT__SENDER_TYPE = "senderType";
-	public static final String PAYMENT__SENDER_ID = "senderId";
+	public static final String PAYMENT__SENDER_ID = "account_id";
 	public static final String PAYMENT__RECIPIENT_TYPE = "recipientType";
 	public static final String PAYMENT__RECIPIENT_ID = "recipientId";
 	public static final String PAYMENT__TIME_OF_LOG = "datetimeOfLog";
 	public static final String PAYMENT__CURRENCY = "currency";
 	public static final String PAYMENT__COMMISSION = "commission";
 	public static final String PAYMENT__TOTAL = "total";
+	public static final String PAYMENT__SUM = "sum";
+	public static final String PAYMENT__CURRENCY_SUM = "currencysum";
 	public static final String PAYMENT__STATUS = "statusPayment";
 
 	public static final String CARD__NAME = "name";

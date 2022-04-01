@@ -44,25 +44,21 @@ public class PaymentService {
         return res;
     }
 
+    public static boolean createPayment() {
+
+        return true;
+    }
+
+    public static boolean changeStatusPayment() {
+
+        return true;
+    }
+
+
     public static void preparePayment(Payment payment) {
 
     }
 
-    public static void submitPayment(Payment payment) throws AppException {
-        String method = payment.getRecipientType();
-
-        switch (method) {
-            case ("card"):
-                Card card = CardDAO.findCardById(payment.getRecipientId());
-                //Account accountByCard = AccountDAO.findAccountById(card.getAccount().getId());
-                //spUtil(accountByCard,payment);
-                break;
-            case ("account"):
-                Account accountById = AccountDAO.findAccountById(payment.getRecipientId());
-                spUtil(accountById,payment);
-                break;
-        }
-    }
 
     private static void spUtil(Account account, Payment payment) throws AppException {
         ErrorString errorString = new ErrorMessageEN();

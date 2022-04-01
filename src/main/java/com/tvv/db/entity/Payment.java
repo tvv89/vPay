@@ -1,19 +1,18 @@
 package com.tvv.db.entity;
 
-import java.time.LocalDateTime;
-import java.util.Date;
 
 public class Payment extends EntityID {
     private String guid;
     private User user;
-    private String senderType;
     private Long senderId;
     private String recipientType;
-    private Long recipientId;
+    private String recipientId;
     private String timeOfLog;
     private String currency;
     private Double commission;
     private Double total;
+    private String currencySum;
+    private Double sum;
     private String status;
 
     public String getGuid() {
@@ -32,14 +31,6 @@ public class Payment extends EntityID {
         this.user = user;
     }
 
-    public String getSenderType() {
-        return senderType;
-    }
-
-    public void setSenderType(String senderType) {
-        this.senderType = senderType;
-    }
-
     public Long getSenderId() {
         return senderId;
     }
@@ -56,11 +47,11 @@ public class Payment extends EntityID {
         this.recipientType = recipientType;
     }
 
-    public Long getRecipientId() {
+    public String getRecipientId() {
         return recipientId;
     }
 
-    public void setRecipientId(Long recipientId) {
+    public void setRecipientId(String recipientId) {
         this.recipientId = recipientId;
     }
 
@@ -104,22 +95,37 @@ public class Payment extends EntityID {
         this.currency = currency;
     }
 
+    public String getCurrencySum() {
+        return currencySum;
+    }
+
+    public void setCurrencySum(String currencySum) {
+        this.currencySum = currencySum;
+    }
+
+    public Double getSum() {
+        return sum;
+    }
+
+    public void setSum(Double sum) {
+        this.sum = sum;
+    }
 
     @Override
     public String toString() {
         return "Payment{" +
                 "guid='" + guid + '\'' +
                 ", user=" + user +
-                ", senderType='" + senderType + '\'' +
-                ", serderId=" + senderId +
+                ", senderId=" + senderId +
                 ", recipientType='" + recipientType + '\'' +
-                ", recipientId=" + recipientId +
-                ", timeOfLog=" + timeOfLog +
+                ", recipientId='" + recipientId + '\'' +
+                ", timeOfLog='" + timeOfLog + '\'' +
+                ", currency='" + currency + '\'' +
                 ", commission=" + commission +
                 ", total=" + total +
+                ", currencySum='" + currencySum + '\'' +
+                ", sum=" + sum +
                 ", status='" + status + '\'' +
                 '}';
     }
-
-
 }
