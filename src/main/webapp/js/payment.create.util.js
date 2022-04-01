@@ -91,6 +91,41 @@ function calculatePayment(){
         });
 }
 
+function submitPayment(){
+    var accountType = $('#recipientType').val();
+    var accountNumber = $('#recipientNumber').val();
+    var currencyOfPayment = $('#currencyOfPayment').val();
+    var statusPayment = $('input[name=statusPayment]:checked').val();
+    var valueOfPayment = $('#valueOfPayment').val();
+    var currentAccountId = parseInt($('#currentPaymentAccount').val());
+
+    fetch('controller?command=createPayment', {
+        headers: {
+            'Content-Type': 'application/json; charset=utf-8'
+        },
+        method: 'POST',
+        body: JSON.stringify({
+            action: 'createPayment',
+            accountFromId: currentAccountId,
+            accountType: accountType,
+            accountNumber: accountNumber,
+            currencyFrom: accountCurrency,
+            currencyTo: currencyOfPayment,
+            value: valueOfPayment,
+            status: statusPayment})
+    }) .then(response => response.json())
+        .then(data =>  {
+            if (data.status =='OK') {
+                window.location.href="controller?command=listPayments";
+            } else callErrorAlert(data.message);
+        })
+        .catch(err => {
+            callErrorAlert(err);
+        });
+}
+
+
+
 function callErrorAlert(message){
     UIkit.modal.alert(message);
 }

@@ -5,6 +5,7 @@ import com.google.gson.JsonObject;
 import com.tvv.db.dao.AccountDAO;
 import com.tvv.db.dao.UserDAO;
 import com.tvv.db.entity.Account;
+import com.tvv.db.entity.Fields;
 import com.tvv.db.entity.Role;
 import com.tvv.db.entity.User;
 import com.tvv.service.AccountService;
@@ -13,6 +14,7 @@ import com.tvv.service.PaymentService;
 import com.tvv.service.UserService;
 import com.tvv.service.exception.AppException;
 import com.tvv.utils.FieldsChecker;
+import com.tvv.utils.SystemParameters;
 import com.tvv.web.command.Command;
 import com.tvv.web.command.UtilCommand;
 import com.tvv.web.webutil.ErrorMessageEN;
@@ -28,6 +30,8 @@ import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 
@@ -94,6 +98,9 @@ public class CreatePaymentCommand extends Command {
 
                 case "calculatePayment":
                     innerObject = calculatePayment(jsonParameters);
+                    break;
+                case "createPayment":
+                    innerObject = createPayment(jsonParameters);
                     break;
 
             }
@@ -188,6 +195,81 @@ public class CreatePaymentCommand extends Command {
             innerObject.add("commissionValue", new Gson().toJsonTree(commissionValue));
             innerObject.add("totalPayment", new Gson().toJsonTree(totalPayment));
 
+        }
+
+        return innerObject;
+
+    }
+
+    private JsonObject createPayment(Map<String, Object> jsonParameters) {
+        JsonObject innerObject = new JsonObject();
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        LocalDateTime ldt = LocalDateTime.now();
+        System.out.println(ldt.format(formatter));
+        String datetime = ldt.format(formatter);
+        Double commissionPercent = SystemParameters.COMMISSION_PERCENT;
+
+        Double value;
+        String accountToType = (String) jsonParameters.get("accountType");
+        String accountToNumber = (String) jsonParameters.get("accountNumber");
+        Long accountFromId = (Long) jsonParameters.get("accountFromId");
+        String currencyFrom = (String) jsonParameters.get("currencyFrom");
+        String currencyTo = (String) jsonParameters.get("currencyTo");
+        if (FieldsChecker.checkBalanceDouble((String) jsonParameters.get("value"))) {
+            value = Double.valueOf((String) jsonParameters.get("value"));
+            if (value < SystemParameters.MIN_PAYMENT_SUM)
+                return UtilCommand.errorMessageJSON("Sum must be more then " + SystemParameters.MIN_PAYMENT_SUM + " " + currencyTo);
+            if (value > SystemParameters.MAX_PAYMENT_SUM)
+                return UtilCommand.errorMessageJSON("Sum must be less then " + SystemParameters.MAX_PAYMENT_SUM + " " + currencyTo);
+        } else return UtilCommand.errorMessageJSON("Incorrect sum value");
+
+        if ("Account".equals(accountToType)) {
+            try {
+                Account accountTo = AccountDAO.findAccountByUID(accountToNumber);
+                DecimalFormat df = new DecimalFormat("#.##", new DecimalFormatSymbols(Locale.ENGLISH));
+                if (accountTo != null) {
+                    commissionPercent = 0D;
+                    Double totalPaymentFrom = Double.valueOf(df.format(
+                            (1 + commissionPercent) * PaymentService.currencyExchange(value, currencyTo, currencyFrom)));
+                    Account accountFrom = AccountDAO.findAccountById(accountFromId);
+                    if (!"Enabled".equals(accountFrom.getStatus()))
+                        return UtilCommand.errorMessageJSON("Your account is locked. You can't create payment.");
+
+                    Double accountFromBalance = accountFrom.getBalance();
+                    if (accountFromBalance < totalPaymentFrom)
+                        return UtilCommand.errorMessageJSON("Not enough funds in the account");
+                    Double totalPaymentTo = PaymentService.currencyExchange(value, accountTo.getCurrency(), currencyTo);
+                    AccountService.depositAccount(accountFrom, accountTo, totalPaymentFrom, totalPaymentTo);
+                    innerObject.add("status", new Gson().toJsonTree("OK"));
+
+                } else {
+                    return UtilCommand.errorMessageJSON("Account not found");
+                }
+
+            } catch (AppException e) {
+                return UtilCommand.errorMessageJSON(e.getMessage());
+            }
+        }
+        if ("Card".equals(accountToType)) {
+            try {
+                if (!FieldsChecker.checkCardNumber(accountToNumber.replace(" ", "")))
+                    return UtilCommand.errorMessageJSON("Bad card number");
+                DecimalFormat df = new DecimalFormat("#.##", new DecimalFormatSymbols(Locale.ENGLISH));
+
+                Double totalPaymentFrom = Double.valueOf(df.format(
+                        (1 + commissionPercent) * PaymentService.currencyExchange(value, currencyTo, currencyFrom)));
+                Account accountFrom = AccountDAO.findAccountById(accountFromId);
+                if (!"Enabled".equals(accountFrom.getStatus()))
+                    return UtilCommand.errorMessageJSON("Your account is locked. You can't create payment.");
+                Double accountFromBalance = accountFrom.getBalance();
+                if (accountFromBalance < totalPaymentFrom)
+                    return UtilCommand.errorMessageJSON("Not enough funds in the account");
+                AccountService.depositAccount(accountFrom, null, totalPaymentFrom, 0D);
+                innerObject.add("status", new Gson().toJsonTree("OK"));
+            } catch (AppException ex) {
+                return UtilCommand.errorMessageJSON(ex.getMessage());
+            }
         }
 
         return innerObject;

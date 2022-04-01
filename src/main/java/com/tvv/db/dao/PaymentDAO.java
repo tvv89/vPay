@@ -196,7 +196,6 @@ public class PaymentDAO {
                 payment.setRecipientType(rs.getString(Fields.PAYMENT__RECIPIENT_TYPE));
                 payment.setRecipientId(rs.getLong(Fields.PAYMENT__RECIPIENT_ID));
 
-                System.out.println(rs.getString(Fields.PAYMENT__TIME_OF_LOG));
                 try {
                     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
                     LocalDateTime ldt = LocalDateTime.parse(rs.getString(Fields.PAYMENT__TIME_OF_LOG),formatter);

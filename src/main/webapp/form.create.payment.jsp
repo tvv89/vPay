@@ -83,7 +83,7 @@
                 </div>
                 <br>
                 <div>
-                    <button class="uk-button uk-button-primary uk-width-1-1">
+                    <button class="uk-button uk-button-primary uk-width-1-1" onclick="submitPayment()">
                         Submit payment
                     </button>
                 </div>

@@ -14,20 +14,14 @@ import java.util.Map;
 import java.util.Random;
 
 public class AccountService {
-    public static void depositAccount(String type, Long id, Double amount) throws AppException {
-        switch (type){
-            case ("card"):
-                Card card = CardDAO.findCardById(id);
-                //Account accountByCard = AccountDAO.findAccountById(card.getAccount().getId());
-                //Double newBalanceCard = accountByCard.getBalance() + amount;
-                //AccountDAO.updateAccountBalance(accountByCard.getId(), newBalanceCard);
-                break;
-            case ("account"):
-                Account accountById = AccountDAO.findAccountById(id);
-                Double newBalanceAccount = accountById.getBalance() + amount;
-                AccountDAO.updateAccountBalance(accountById.getId(), newBalanceAccount);
-                break;
+    public static boolean depositAccount(Account accountFrom, Account accountTo, Double valueFrom, Double valueTo) throws AppException {
+        Double balanceFrom = accountFrom.getBalance();
+        AccountDAO.updateAccountBalance(accountFrom.getId(),balanceFrom-valueFrom);
+        if (accountTo!=null) {
+            Double balanceTo = accountTo.getBalance();
+            AccountDAO.updateAccountBalance(accountTo.getId(), balanceTo + valueTo);
         }
+        return true;
     }
 
     public static void lockAccount(Account account) throws AppException {
