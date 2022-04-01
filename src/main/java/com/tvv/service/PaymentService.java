@@ -1,11 +1,13 @@
 package com.tvv.service;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 import com.tvv.db.dao.AccountDAO;
-import com.tvv.db.dao.CardDAO;
+import com.tvv.db.dao.PaymentDAO;
 import com.tvv.db.entity.Account;
-import com.tvv.db.entity.Card;
 import com.tvv.db.entity.Payment;
 import com.tvv.service.exception.AppException;
+import com.tvv.web.command.UtilCommand;
 import com.tvv.web.webutil.ErrorMessageEN;
 import com.tvv.web.webutil.ErrorString;
 
@@ -44,18 +46,52 @@ public class PaymentService {
         return res;
     }
 
-    public static boolean createPayment() {
+    public static boolean createPayment(Payment payment) throws AppException {
 
-        return true;
+        return PaymentDAO.insertPayment(payment);
     }
 
-    public static boolean changeStatusPayment() {
-
-        return true;
+    public static JsonObject changeStatusPayment(Payment payment) throws AppException {
+        JsonObject innerObject = new JsonObject();
+        if ("Ready".equals(payment.getStatus())) {
+            Account accountFrom = AccountDAO.findAccountById(payment.getSenderId().getId());
+            Double totalPaymentFrom = payment.getTotal();
+            if (totalPaymentFrom > accountFrom.getBalance())
+                return UtilCommand.errorMessageJSON("Not enough funds in the account");
+            if ("Account".equals(payment.getRecipientType())) {
+                Account accountTo = AccountDAO.findAccountByUID(payment.getRecipientId());
+                Double totalPaymentTo = PaymentService.currencyExchange(payment.getSum(), accountTo.getCurrency(), payment.getCurrencySum());
+                AccountService.depositAccount(accountFrom, accountTo, totalPaymentFrom, totalPaymentTo);
+                payment.setStatus("Submitted");
+                PaymentDAO.updatePaymentStatus(payment.getId(),"Submitted");
+                innerObject.add("status", new Gson().toJsonTree("OK"));
+                return innerObject;
+            }
+            if ("Card".equals(payment.getRecipientType())) {
+                AccountService.depositAccount(accountFrom, null, totalPaymentFrom, 0D);
+                innerObject.add("status", new Gson().toJsonTree("OK"));
+                payment.setStatus("Submitted");
+                PaymentDAO.updatePaymentStatus(payment.getId(),"Submitted");
+                innerObject.add("status", new Gson().toJsonTree("OK"));
+                return innerObject;
+            }
+        }
+        else {
+            return UtilCommand.errorMessageJSON("Payment had been submitted before");
+        }
+        return UtilCommand.errorMessageJSON("Payment can not be submitted.");
     }
 
 
-    public static void preparePayment(Payment payment) {
+    public static JsonObject deletePayment(Payment payment) throws AppException {
+        JsonObject innerObject = new JsonObject();
+
+        if (PaymentDAO.deletePaymentById(payment.getId()))
+            innerObject.add("status", new Gson().toJsonTree("OK"));
+        else
+            innerObject= UtilCommand.errorMessageJSON("Payment can not be deleted.");
+
+        return innerObject;
 
     }
 

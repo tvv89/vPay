@@ -1,4 +1,4 @@
-package com.tvv.web.command;
+package com.tvv.web.command.update;
 
 
 import com.google.gson.Gson;
@@ -8,6 +8,8 @@ import com.tvv.db.entity.Account;
 import com.tvv.db.entity.Role;
 import com.tvv.db.entity.User;
 import com.tvv.service.exception.AppException;
+import com.tvv.web.command.Command;
+import com.tvv.web.command.UtilCommand;
 import com.tvv.web.webutil.Path;
 import org.apache.log4j.Logger;
 

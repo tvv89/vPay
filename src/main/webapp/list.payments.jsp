@@ -47,6 +47,8 @@
                     <th>Commission</th>
                     <th>Total</th>
                     <th>Status</th>
+                    <th>PDF</th>
+                    <th></th>
                 </tr>
                 </thead>
                 <tbody id="table">

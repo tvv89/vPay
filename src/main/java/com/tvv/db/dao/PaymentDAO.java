@@ -133,7 +133,7 @@ public class PaymentDAO {
         return result;
     }
 
-    public static boolean insertPayment (Payment payment) {
+    public static boolean insertPayment (Payment payment) throws AppException {
         PreparedStatement pstmt = null;
         Connection con = null;
         boolean result = false;
@@ -144,7 +144,6 @@ public class PaymentDAO {
             pstmt.setLong(2, payment.getUser().getId());
             pstmt.setLong(3, payment.getSenderId().getId());
             pstmt.setString(4, payment.getRecipientType());
-
             pstmt.setString(5, payment.getRecipientId());
             pstmt.setString(7, payment.getTimeOfLog());
             pstmt.setString(8, payment.getCurrency());
@@ -158,6 +157,7 @@ public class PaymentDAO {
         } catch (SQLException ex) {
             DBManager.getInstance().rollbackCloseConnection(con);
             ex.printStackTrace();
+            throw new AppException("Can not create payment in DB",ex);
         } finally {
             DBManager.getInstance().commitCloseConnection(con);
         }
@@ -186,7 +186,7 @@ public class PaymentDAO {
         return result;
     }
 
-    public static boolean deletePaymentById(Long id) {
+    public static boolean deletePaymentById(Long id) throws AppException {
         boolean result = false;
         PreparedStatement pstmt = null;
         Connection con = null;
@@ -201,6 +201,7 @@ public class PaymentDAO {
         } catch (SQLException ex) {
             DBManager.getInstance().rollbackCloseConnection(con);
             ex.printStackTrace();
+            throw new AppException("Payment wasn't deleted",ex);
         } finally {
             DBManager.getInstance().commitCloseConnection(con);
         }

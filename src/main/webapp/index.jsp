@@ -10,6 +10,7 @@
   <title>Login vPay</title>
   <link rel="stylesheet" href="css/uikit.min.css">
   <script src="js/uikit.min.js"></script>
+  <script src="js/uikit-icons.js"></script>
 </head>
 
 <body class="uk-height-1-1">

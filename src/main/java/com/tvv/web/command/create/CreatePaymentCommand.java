@@ -4,10 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.tvv.db.dao.AccountDAO;
 import com.tvv.db.dao.UserDAO;
-import com.tvv.db.entity.Account;
-import com.tvv.db.entity.Fields;
-import com.tvv.db.entity.Role;
-import com.tvv.db.entity.User;
+import com.tvv.db.entity.*;
 import com.tvv.service.AccountService;
 import com.tvv.service.CardService;
 import com.tvv.service.PaymentService;
@@ -15,6 +12,7 @@ import com.tvv.service.UserService;
 import com.tvv.service.exception.AppException;
 import com.tvv.utils.FieldsChecker;
 import com.tvv.utils.SystemParameters;
+import com.tvv.utils.UtilsGenerator;
 import com.tvv.web.command.Command;
 import com.tvv.web.command.UtilCommand;
 import com.tvv.web.webutil.ErrorMessageEN;
@@ -98,7 +96,7 @@ public class CreatePaymentCommand extends Command {
                     innerObject = calculatePayment(jsonParameters);
                     break;
                 case "createPayment":
-                    innerObject = createPayment(jsonParameters);
+                    innerObject = createPayment(jsonParameters, currentUser);
                     break;
             }
         } catch (AppException ex) {
@@ -198,13 +196,13 @@ public class CreatePaymentCommand extends Command {
 
     }
 
-    private JsonObject createPayment(Map<String, Object> jsonParameters) {
+    private JsonObject createPayment(Map<String, Object> jsonParameters, User currentUser) {
         JsonObject innerObject = new JsonObject();
 
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         LocalDateTime ldt = LocalDateTime.now();
-        System.out.println(ldt.format(formatter));
         String datetime = ldt.format(formatter);
+
         Double commissionPercent = SystemParameters.COMMISSION_PERCENT;
 
         Double value;
@@ -213,6 +211,7 @@ public class CreatePaymentCommand extends Command {
         Long accountFromId = (Long) jsonParameters.get("accountFromId");
         String currencyFrom = (String) jsonParameters.get("currencyFrom");
         String currencyTo = (String) jsonParameters.get("currencyTo");
+        String statusPayment = (String) jsonParameters.get("status");
         if (FieldsChecker.checkBalanceDouble((String) jsonParameters.get("value"))) {
             value = Double.valueOf((String) jsonParameters.get("value"));
             if (value < SystemParameters.MIN_PAYMENT_SUM)
@@ -238,6 +237,21 @@ public class CreatePaymentCommand extends Command {
                         return UtilCommand.errorMessageJSON("Not enough funds in the account");
                     Double totalPaymentTo = PaymentService.currencyExchange(value, accountTo.getCurrency(), currencyTo);
                     AccountService.depositAccount(accountFrom, accountTo, totalPaymentFrom, totalPaymentTo);
+                    Payment payment = new Payment();
+                    payment.setId(1L);
+                    payment.setGuid(UtilsGenerator.getGUID());
+                    payment.setUser(currentUser);
+                    payment.setSenderId(accountFrom);
+                    payment.setRecipientType(accountToType);
+                    payment.setRecipientId(accountToNumber);
+                    payment.setTimeOfLog(datetime);
+                    payment.setCurrency(currencyFrom);
+                    payment.setCommission(0D);
+                    payment.setTotal(totalPaymentTo);
+                    payment.setSum(value);
+                    payment.setCurrencySum(currencyTo);
+                    payment.setStatus(statusPayment);
+                    PaymentService.createPayment(payment);
                     innerObject.add("status", new Gson().toJsonTree("OK"));
 
                 } else {
@@ -253,7 +267,8 @@ public class CreatePaymentCommand extends Command {
                 if (!FieldsChecker.checkCardNumber(accountToNumber.replace(" ", "")))
                     return UtilCommand.errorMessageJSON("Bad card number");
                 DecimalFormat df = new DecimalFormat("#.##", new DecimalFormatSymbols(Locale.ENGLISH));
-
+                Double commissionPayment = Double.valueOf(df.format(
+                        commissionPercent * PaymentService.currencyExchange(value, currencyTo, currencyFrom)));
                 Double totalPaymentFrom = Double.valueOf(df.format(
                         (1 + commissionPercent) * PaymentService.currencyExchange(value, currencyTo, currencyFrom)));
                 Account accountFrom = AccountDAO.findAccountById(accountFromId);
@@ -263,6 +278,21 @@ public class CreatePaymentCommand extends Command {
                 if (accountFromBalance < totalPaymentFrom)
                     return UtilCommand.errorMessageJSON("Not enough funds in the account");
                 AccountService.depositAccount(accountFrom, null, totalPaymentFrom, 0D);
+                Payment payment = new Payment();
+                payment.setId(1L);
+                payment.setGuid(UtilsGenerator.getGUID());
+                payment.setUser(currentUser);
+                payment.setSenderId(accountFrom);
+                payment.setRecipientType(accountToType);
+                payment.setRecipientId(accountToNumber);
+                payment.setTimeOfLog(datetime);
+                payment.setCurrency(currencyFrom);
+                payment.setCommission(commissionPayment);
+                payment.setTotal(totalPaymentFrom);
+                payment.setSum(value);
+                payment.setCurrencySum(currencyTo);
+                payment.setStatus(statusPayment);
+                PaymentService.createPayment(payment);
                 innerObject.add("status", new Gson().toJsonTree("OK"));
             } catch (AppException ex) {
                 return UtilCommand.errorMessageJSON(ex.getMessage());

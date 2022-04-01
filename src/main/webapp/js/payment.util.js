@@ -42,16 +42,25 @@ function createTable(tx) {
     table.innerHTML = "";
     for (var i = 0; i < tx.length; i++) {
         //var paymentStatusButton = tx[i].status == true ? "Disable Payment" : "Enable Payment";
+        var statusP;
+            if (tx[i].status=='Ready') statusP = `<span class="uk-label uk-label-warning" 
+                                            onclick="changeStatusButton(tx[i].id)">
+                                            Ready</span>`;
+            else statusP = `<span class="uk-label uk-label-success" 
+                                            onclick="">
+                                            Submitted</span>`;
         var row = `<tr id="tr_${tx[i].id}">
                 <td>${tx[i].timeOfLog}</td>
                 <td>${tx[i].guid}</td>
                 <td>${tx[i].user.firstName} ${tx[i].user.lastName}</td>
-                <td>${tx[i].senderId}</td>
+                <td>${tx[i].sender.name}</td>
                 <td>${tx[i].recipientId}</td>
                 <td>${tx[i].currency}</td>
                 <td>${tx[i].commission}</td>
                 <td>${tx[i].total}</td>
-                <td>${tx[i].status}</td>
+                <td id="td_status_${tx[i].id}">${statusP}</td>
+                <td><a uk-icon="icon: file-pdf; ratio: 1.5" onclick=""></a></td>
+                <td><a uk-icon="icon: trash; ratio: 1.5" onclick="deletePayment(${tx[i].id})"></a></td>
                 </tr>`
         table.innerHTML += row;
     }
@@ -77,25 +86,45 @@ function changePaymentStatus(id) {
             'Content-Type': 'application/json; charset=utf-8'
         },
         method: 'POST',
-        body: JSON.stringify({paymentId: id})
+        body: JSON.stringify({
+            action: 'status',
+            paymentId: id})
     }) .then(response => response.json())
         .then(data =>  {
             if (data.status =='OK') {
-                if ($('#tr_' + data.payment.id).length) {
-                    var paymentStatusButton = data.payment.status == true ? "Disable payment" : "Enable payment";
-                    var newHtml = `<td>${data.payment.name}</td>
-                <td>${data.payment.iban}</td>
-                <td>${data.payment.ipn}</td>
-                <td>${data.payment.bankCode}</td>
-                <td>${data.payment.currency}</td>
-                <td>${data.payment.balance}</td>
-                <td>${data.payment.ownerUser.firstName} ${data.payment.ownerUser.lastName}</td>
-                <td><button id="js-modal-status" class="uk-button uk-button-default" type="button" name="payment"
-                                    value="${data.payment.id}" onclick="changeStatusButton(${data.payment.id})">${paymentStatusButton}</button>
-                </td>`
-                    $('#tr_' + data.payment.id).html(newHtml);
+                if ($('#td_status_' + data.id).length) {
+                    if (data.status == 'Submitted') {
+                        statusP = `<span class="uk-label uk-label-success" 
+                                         onclick="">
+                                         Submitted</span>`;
+                        $('#td_status_' + data.id).html(statusP);
+                    }
                 }
+            } else callErrorAlert(data.message);
+        })
+        .catch(err => {
+            callErrorAlert(err);
+        });
 
+}
+
+function deletePayment(id) {
+    fetch('controller?command=statusPayment', {
+        headers: {
+            'Content-Type': 'application/json; charset=utf-8'
+        },
+        method: 'POST',
+        body: JSON.stringify({action: 'delete',
+                                   paymentId: id})
+    }) .then(response => response.json())
+        .then(data =>  {
+            if (data.status =='OK') {
+                callPOSTRequest(1,0);
+                UIkit.notification({
+                    message: 'Success! Payment was deleted.',
+                    status: 'success',
+                    timeout: 2000
+                });
             } else callErrorAlert(data.message);
         })
         .catch(err => {
@@ -105,9 +134,9 @@ function changePaymentStatus(id) {
 }
 
 function changeStatusButton(e) {
-    UIkit.modal.confirm('Payment status will be changed. Are you sure?').then(function () {
-        //changePaymentStatus(e);
-        console.log('Payment is enabled')
+    UIkit.modal.confirm('Payment status will be changed to submitted. Are you sure?').then(function () {
+        changePaymentStatus(e);
+        console.log('Payment is submitted')
     }, function () {
         console.log('Canceling enable')
     });
