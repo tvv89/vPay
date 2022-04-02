@@ -60,8 +60,6 @@ public class CreateAccountCommand extends Command {
 		Map<String, String> accountData = readParemeters(request);
 		log.debug("Read parameter: " + accountData);
 
-		ErrorString error = new ErrorMessageEN();
-
 		/**
 		 * Check parameters and create account
 		 */
