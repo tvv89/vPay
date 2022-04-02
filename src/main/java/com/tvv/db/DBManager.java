@@ -9,6 +9,9 @@ import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
 
+/**
+ * Database manager. Create instance. Use connection pool from tomcat configuration
+ */
 public class DBManager {
 
     private static final Logger log = Logger.getLogger(DBManager.class);
@@ -38,21 +41,31 @@ public class DBManager {
     private DBManager() {
     }
 
+    /**
+     * Function for commit changes in DB
+     * @param con connection
+     */
     public void commitCloseConnection(Connection con) {
         try {
             con.commit();
             con.close();
         } catch (SQLException ex) {
             ex.printStackTrace();
+            log.error(ex.getMessage());
         }
     }
 
+    /**
+     * Function for rollback changes in DB
+     * @param con connection
+     */
     public void rollbackCloseConnection(Connection con) {
         try {
             con.rollback();
             con.close();
         } catch (SQLException ex) {
             ex.printStackTrace();
+            log.error(ex.getMessage());
         }
     }
 
