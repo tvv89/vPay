@@ -40,7 +40,7 @@ public class PaymentDAO {
             "UPDATE payments SET archive=1"+
                     "	WHERE id=?";
 
-    public static List<Payment> findAllPayments() {
+    public static List<Payment> findAllPayments() throws AppException {
         List<Payment> payments = new ArrayList<>();
         Statement stmt = null;
         ResultSet rs = null;
@@ -57,13 +57,14 @@ public class PaymentDAO {
         } catch (SQLException ex) {
             DBManager.getInstance().rollbackCloseConnection(con);
             ex.printStackTrace();
+            throw new AppException("Payments not found in DB",ex);
         } finally {
             DBManager.getInstance().commitCloseConnection(con);
         }
         return payments;
     }
 
-    public static Payment findPaymentById (Long id){
+    public static Payment findPaymentById (Long id) throws AppException {
         Payment payment = new Payment();
         PreparedStatement pstmt = null;
         ResultSet rs = null;
@@ -81,13 +82,14 @@ public class PaymentDAO {
         } catch (SQLException ex) {
             DBManager.getInstance().rollbackCloseConnection(con);
             ex.printStackTrace();
+            throw new AppException("Payment not found by ID",ex);
         } finally {
             DBManager.getInstance().commitCloseConnection(con);
         }
         return payment;
     }
 
-    public static List<Payment> findPaymentsByUser (Long id){
+    public static List<Payment> findPaymentsByUser (Long id) throws AppException {
         List<Payment> payments = new ArrayList<>();
         PreparedStatement pstmt = null;
         ResultSet rs = null;
@@ -104,6 +106,7 @@ public class PaymentDAO {
         } catch (SQLException ex) {
             DBManager.getInstance().rollbackCloseConnection(con);
             ex.printStackTrace();
+            throw new AppException("Payment not found by User",ex);
         } finally {
             DBManager.getInstance().commitCloseConnection(con);
         }
@@ -158,29 +161,7 @@ public class PaymentDAO {
         } catch (SQLException ex) {
             DBManager.getInstance().rollbackCloseConnection(con);
             ex.printStackTrace();
-            throw new AppException("Can not create payment in DB",ex);
-        } finally {
-            DBManager.getInstance().commitCloseConnection(con);
-        }
-        return result;
-    }
-
-    public static boolean updateStatusPaymentById(Long id, String status) {
-        boolean result = false;
-        PreparedStatement pstmt = null;
-        Connection con = null;
-        try {
-            con = DBManager.getInstance().getConnection();
-            PaymentDAO.PaymentLoad mapper = new PaymentLoad();
-            pstmt = con.prepareStatement(SQL_UPDATE_STATUS_PAYMENT);
-            pstmt.setString(1, status);
-            pstmt.setLong(2, id);
-            pstmt.execute();
-            pstmt.close();
-            result = true;
-        } catch (SQLException ex) {
-            DBManager.getInstance().rollbackCloseConnection(con);
-            ex.printStackTrace();
+            throw new AppException("Can not insert payment in DB",ex);
         } finally {
             DBManager.getInstance().commitCloseConnection(con);
         }
@@ -212,7 +193,7 @@ public class PaymentDAO {
     private static class PaymentLoad implements LoadEntity<Payment> {
 
         @Override
-        public Payment loadRow(ResultSet rs) {
+        public Payment loadRow(ResultSet rs) throws AppException {
             try {
                 Payment payment = new Payment();
                 payment.setId(rs.getLong(Fields.ENTITY__ID));
@@ -249,7 +230,7 @@ public class PaymentDAO {
 
                 return payment;
             } catch (SQLException e) {
-                throw new IllegalStateException(e);
+                throw new AppException("Can nor read payment from DB",e);
             }
         }
     }

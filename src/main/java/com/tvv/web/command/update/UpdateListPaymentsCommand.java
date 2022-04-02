@@ -17,15 +17,18 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.io.Serializable;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
+/**
+ * Update list command for single page application include pagination and sorting for showing payment list
+ */
 public class UpdateListPaymentsCommand extends Command {
 
     private static final Logger log = Logger.getLogger(UpdateListPaymentsCommand.class);
 
+    /**
+     * Comparator for sorting by payment GUID
+     */
     private static class CompareByGuid implements Comparator<Payment>, Serializable {
 
         @Override
@@ -33,6 +36,10 @@ public class UpdateListPaymentsCommand extends Command {
             return p1.getGuid().compareTo(p2.getGuid());
         }
     }
+
+    /**
+     * Comparator for sorting by total
+     */
     private static class CompareByTotal implements Comparator<Payment>, Serializable {
 
         @Override
@@ -43,6 +50,9 @@ public class UpdateListPaymentsCommand extends Command {
         }
     }
 
+    /**
+     * Comparator for sorting by time of log ascending
+     */
     private static class CompareByAscTime implements Comparator<Payment>, Serializable {
 
         @Override
@@ -51,6 +61,9 @@ public class UpdateListPaymentsCommand extends Command {
         }
     }
 
+    /**
+     * Comparator for sorting by time of log descending
+     */
     private static class CompareByDesTime implements Comparator<Payment>, Serializable {
 
         @Override
@@ -65,21 +78,48 @@ public class UpdateListPaymentsCommand extends Command {
     private static Comparator<Payment> compareByAscTime = new CompareByAscTime();
     private static Comparator<Payment> compareByDesTime = new CompareByDesTime();
 
+    /**
+     * Execute GET function for Controller. This function doesn't have GET request, and redirect to error page
+     * @param request servlet request
+     * @param response servlet response
+     * @throws IOException
+     * @throws ServletException
+     */
     @Override
     public void executeGet(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
         UtilCommand.bedGETRequest(request,response);
     }
 
+    /**
+     * Execute POST function for Controller. This function use JSON data from request, parse it, and send response for
+     * single page Payment. Function has different ways for USER and ADMIN
+     * @param request
+     * @param response
+     * @throws IOException
+     * @throws ServletException
+     */
     @Override
     public void executePost(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
-
+        log.trace("Start POST command");
+        /**
+         * Check user role
+         */
+        request.setCharacterEncoding("UTF-8");
         HttpSession session = request.getSession();
         Role userRole = (Role) session.getAttribute("userRole");
         User currentUser = (User) session.getAttribute("currentUser");
+        if (userRole!=Role.ADMIN && userRole!=Role.USER)
+        {
+            response.sendRedirect(request.getContextPath()+ Path.COMMAND__START_PAGE);
+            log.debug("User role is not correct");
+            return;
+        }
 
-        request.setCharacterEncoding("UTF-8");
-        Map<String, Object> jsonParameters =
-                null;
+        /**
+         * Start JSON parsing request
+         */
+        JsonObject innerObject = new JsonObject();
+        Map<String, Object> jsonParameters = null;
 
         try {
             jsonParameters = UtilCommand.parseRequestJSON(request);
@@ -87,6 +127,9 @@ public class UpdateListPaymentsCommand extends Command {
             e.printStackTrace();
         }
 
+        /**
+         * Create pagination and sorting
+         */
         Integer currentPage = null;
         Integer itemPerPage = null;
         Integer sorting = null;
@@ -110,11 +153,22 @@ public class UpdateListPaymentsCommand extends Command {
             sorting = 1;
         }
 
-        List<Payment> list;
-        if (userRole==Role.ADMIN) list = PaymentDAO.findAllPayments();
-        else if (userRole==Role.USER) list = PaymentDAO.findPaymentsByUser(currentUser.getId());
-        else list = null;
+        /**
+         * Select and show payment list
+         */
+        List<Payment> list = new ArrayList<>();
+        try {
+            if (userRole == Role.ADMIN) list = PaymentDAO.findAllPayments();
+            else if (userRole == Role.USER) list = PaymentDAO.findPaymentsByUser(currentUser.getId());
+            else list = null;
+        }
+        catch (AppException ex) {
+            log.error(ex.getMessage());
+        }
 
+        /**
+         * Sorting
+         */
         switch (sorting){
             case 1:
                 Collections.sort(list, compareByGuid);
@@ -130,8 +184,10 @@ public class UpdateListPaymentsCommand extends Command {
                 break;
         }
 
+        /**
+         * Create response with JSON files
+         */
         int pages;
-        JsonObject innerObject = new JsonObject();
         if (itemPerPage>0) {
             pages = PaginationList.getPages(list, itemPerPage);
             List<Payment> listX = PaginationList.getListPage(list, currentPage, itemPerPage);
@@ -139,6 +195,7 @@ public class UpdateListPaymentsCommand extends Command {
             innerObject.add("page", new Gson().toJsonTree(currentPage));
             innerObject.add("pages", new Gson().toJsonTree(pages));
             innerObject.add("list", new Gson().toJsonTree(listX));
+            log.debug("Create data for sending "+ itemPerPage +" item per page, " + currentPage+" is curren page");
         } else if (itemPerPage==-1) {
             innerObject.add("status", new Gson().toJsonTree("OK"));
             innerObject.add("page", new Gson().toJsonTree(1));
@@ -147,10 +204,14 @@ public class UpdateListPaymentsCommand extends Command {
         } else {
             innerObject.add("status", new Gson().toJsonTree("ERROR"));
             innerObject.add("message", new Gson().toJsonTree("Bad input data"));
+            log.debug("Bad input data");
         }
 
-        if (userRole!=Role.ADMIN && userRole!=Role.USER) response.sendRedirect(request.getContextPath()+ Path.COMMAND__START_PAGE);
-        else UtilCommand.sendJSONData(response,innerObject);
+        /**
+         * Send result response for single page
+         */
+        UtilCommand.sendJSONData(response,innerObject);
+        log.trace("End POST command "+ this.getClass().getName());
 
     }
 }

@@ -86,7 +86,7 @@ public class UpdateListCardsCommand extends Command {
      */
     @Override
     public void executePost(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
-        log.trace("Start POST command "+ this.getClass());
+        log.trace("Start POST command "+ this.getClass().getName());
         /**
          * Check user role
          */
@@ -192,7 +192,7 @@ public class UpdateListCardsCommand extends Command {
          * Send result response for single page
          */
         UtilCommand.sendJSONData(response,innerObject);
-        log.trace("End POST command "+ this.getClass());
+        log.trace("End POST command "+ this.getClass().getName());
 
     }
 }
