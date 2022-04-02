@@ -5,9 +5,9 @@ import com.tvv.db.DBManager;
 import com.tvv.db.entity.LoadEntity;
 import com.tvv.db.entity.Fields;
 import com.tvv.db.entity.User;
+import com.tvv.service.exception.AppException;
 
 import java.sql.*;
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -21,7 +21,7 @@ public class UserDAO {
     private static final String SQL__FIND_USER_BY_LOGIN =
             "SELECT * FROM users WHERE login=?";
 
-    private static final String SQL__FIND_USER_BY_ACCOUNTUID =
+    private static final String SQL__FIND_USER_BY_ACCOUNT_UID =
             "select u.id, u.lastname, u.firstname from users u JOIN accounts a on u.id = a.ownerUser where a.iban = ?";
 
     private static final String SQL__FIND_USER_BY_ID =
@@ -44,7 +44,7 @@ public class UserDAO {
             "UPDATE users SET role=?"+
                     "	WHERE id=?";
 
-    public static User insertUser (User user) {
+    public static User insertUser (User user) throws AppException {
         PreparedStatement pstmt = null;
         ResultSet rs = null;
         Connection con = null;
@@ -68,13 +68,14 @@ public class UserDAO {
         } catch (SQLException ex) {
             DBManager.getInstance().rollbackCloseConnection(con);
             ex.printStackTrace();
+            throw new AppException("Not inserted user to DB",ex);
         } finally {
             DBManager.getInstance().commitCloseConnection(con);
         }
         return user;
     }
 
-    public static User findUserById(Long id) {
+    public static User findUserById(Long id) throws AppException {
         User user = null;
         PreparedStatement pstmt = null;
         ResultSet rs = null;
@@ -92,20 +93,21 @@ public class UserDAO {
         } catch (SQLException ex) {
             DBManager.getInstance().rollbackCloseConnection(con);
             ex.printStackTrace();
+            throw new AppException("Not found user by id in DB",ex);
         } finally {
             DBManager.getInstance().commitCloseConnection(con);
         }
         return user;
     }
 
-    public static Map<String,String> findUserByAccountUID(String accountUID) {
+    public static Map<String,String> findUserByAccountUID(String accountUID) throws AppException {
         Map<String,String> user = new HashMap<>();
         PreparedStatement pstmt = null;
         ResultSet rs = null;
         Connection con = null;
         try {
             con = DBManager.getInstance().getConnection();
-            pstmt = con.prepareStatement(SQL__FIND_USER_BY_ACCOUNTUID);
+            pstmt = con.prepareStatement(SQL__FIND_USER_BY_ACCOUNT_UID);
             pstmt.setString(1, accountUID);
             rs = pstmt.executeQuery();
             if (rs.next()) {
@@ -118,13 +120,14 @@ public class UserDAO {
         } catch (SQLException ex) {
             DBManager.getInstance().rollbackCloseConnection(con);
             ex.printStackTrace();
+            throw new AppException("Not found user by account UID in DB",ex);
         } finally {
             DBManager.getInstance().commitCloseConnection(con);
         }
         return user;
     }
 
-    public static List<User> findAllUsers() {
+    public static List<User> findAllUsers() throws AppException {
         List<User> users = new ArrayList<>();
         User user = null;
         PreparedStatement pstmt = null;
@@ -144,13 +147,14 @@ public class UserDAO {
         } catch (SQLException ex) {
             DBManager.getInstance().rollbackCloseConnection(con);
             ex.printStackTrace();
+            throw new AppException("Not found users in DB",ex);
         } finally {
             DBManager.getInstance().commitCloseConnection(con);
         }
         return users;
     }
 
-    public User findUserByLogin(String login) {
+    public User findUserByLogin(String login) throws AppException {
         User user = null;
         PreparedStatement pstmt = null;
         ResultSet rs = null;
@@ -168,18 +172,19 @@ public class UserDAO {
         } catch (SQLException ex) {
             DBManager.getInstance().rollbackCloseConnection(con);
             ex.printStackTrace();
+            throw new AppException("Not found user by login in DB",ex);
         } finally {
             DBManager.getInstance().commitCloseConnection(con);
         }
         return user;
     }
 
-    public boolean checkUniqueLogin(String login){
+    public boolean checkUniqueLogin(String login) throws AppException {
         User user = findUserByLogin(login);
         return (user==null);
     }
 
-    public static boolean updateStatusUserById(Long id, int status) {
+    public static boolean updateStatusUserById(Long id, int status) throws AppException {
         boolean result = false;
         PreparedStatement pstmt = null;
         Connection con = null;
@@ -194,13 +199,14 @@ public class UserDAO {
         } catch (SQLException ex) {
             DBManager.getInstance().rollbackCloseConnection(con);
             ex.printStackTrace();
+            throw new AppException("Not updated status user by id in DB",ex);
         } finally {
             DBManager.getInstance().commitCloseConnection(con);
         }
         return result;
     }
 
-    public static boolean updateRoleUserById(Long id, int role) {
+    public static boolean updateRoleUserById(Long id, int role) throws AppException {
         boolean result = false;
         PreparedStatement pstmt = null;
         Connection con = null;
@@ -215,6 +221,7 @@ public class UserDAO {
         } catch (SQLException ex) {
             DBManager.getInstance().rollbackCloseConnection(con);
             ex.printStackTrace();
+            throw new AppException("Not updated user role by id in DB",ex);
         } finally {
             DBManager.getInstance().commitCloseConnection(con);
         }
@@ -224,7 +231,7 @@ public class UserDAO {
     private static class UserLoad implements LoadEntity<User> {
 
         @Override
-        public User loadRow(ResultSet rs) {
+        public User loadRow(ResultSet rs) throws AppException {
             try {
                 User user = new User();
                 user.setId(rs.getLong(Fields.ENTITY__ID));
@@ -241,7 +248,7 @@ public class UserDAO {
                 user.setEmail(rs.getString(Fields.USER__EMAIL));
                 return user;
             } catch (SQLException e) {
-                throw new IllegalStateException(e);
+                throw new AppException("Not loaded row for user from DB",e);
             }
         }
     }
