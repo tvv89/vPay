@@ -20,7 +20,7 @@ import java.io.IOException;
 import java.util.Map;
 
 /**
- * Update status command for status payment (single page application) include pagination and sorting
+ * Update status command for status payment (single page application)
  */
 public class StatusPaymentsCommand extends Command {
 
