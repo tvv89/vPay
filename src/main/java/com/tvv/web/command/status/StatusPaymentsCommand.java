@@ -1,7 +1,5 @@
 package com.tvv.web.command.status;
 
-
-import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.tvv.db.dao.PaymentDAO;
 import com.tvv.db.entity.Payment;
@@ -21,19 +19,42 @@ import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.util.Map;
 
+/**
+ * Update status command for status payment (single page application) include pagination and sorting
+ */
 public class StatusPaymentsCommand extends Command {
 
     private static final Logger log = Logger.getLogger(StatusPaymentsCommand.class);
 
+    /**
+     * Execute GET function for Controller. This function doesn't have GET request, and redirect to error page
+     * @param request servlet request
+     * @param response servlet response
+     * @throws IOException
+     * @throws ServletException
+     */
     @Override
     public void executeGet(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
-
+        UtilCommand.bedGETRequest(request,response);
     }
 
+    /**
+     * Execute POST function for Controller. This function use JSON data from request, parse it, and send response for
+     * single page application. Function can change status payment and delete only for user
+     * @param request
+     * @param response
+     * @throws IOException
+     * @throws ServletException
+     */
     @Override
     public void executePost(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
+        log.trace("Start POST command");
+
         request.setCharacterEncoding("UTF-8");
-        JsonObject innerObject = new JsonObject();
+
+        /**
+         * Check user role
+         */
         HttpSession session = request.getSession();
         Role userRole = (Role) session.getAttribute("userRole");
         User currentUser = (User) session.getAttribute("currentUser");
@@ -43,6 +64,10 @@ public class StatusPaymentsCommand extends Command {
             return;
         }
 
+        /**
+         * Start JSON parsing request
+         */
+        JsonObject innerObject = new JsonObject();
         Map<String, Object> jsonParameters = null;
         try {
             jsonParameters = UtilCommand.parseRequestJSON(request);
@@ -63,25 +88,43 @@ public class StatusPaymentsCommand extends Command {
         catch (Exception e) {
             log.error(e.getMessage());
         }
-
-        switch (action){
-            case "status":
-                try {
-                    innerObject = PaymentService.changeStatusPayment(paymentById);
-                } catch (AppException e) {
-                    innerObject = UtilCommand.errorMessageJSON(e.getMessage());
-                }
-                break;
-            case "delete":
-                try {
-                    innerObject = PaymentService.deletePayment(paymentById);
-                } catch (AppException e) {
-                    innerObject = UtilCommand.errorMessageJSON(e.getMessage());
-                }
-                break;
+        /**
+         * Check payment owner and select action from request
+         */
+        if (paymentById!=null || currentUser!=null || paymentById.getUser().getId().equals(currentUser.getId())) {
+            switch (action) {
+                /**
+                 * Change payment status and calculate money
+                 */
+                case "status":
+                    try {
+                        innerObject = PaymentService.changeStatusPayment(paymentById);
+                    } catch (AppException e) {
+                        innerObject = UtilCommand.errorMessageJSON(e.getMessage());
+                        log.error(e.getMessage());
+                    }
+                    break;
+                /**
+                 * Delete payment status (payment will not be deleted, will be marked archive)
+                 */
+                case "delete":
+                    try {
+                        innerObject = PaymentService.deletePayment(paymentById);
+                    } catch (AppException e) {
+                        innerObject = UtilCommand.errorMessageJSON(e.getMessage());
+                        log.error(e.getMessage());
+                    }
+                    break;
+            }
+        } else {
+            innerObject = UtilCommand.errorMessageJSON("Current user is not owner for this payment");
+            log.error("Current user is not owner for this payment or payment does not exist");
         }
-
+        /**
+         * Send result response for single page
+         */
         UtilCommand.sendJSONData(response,innerObject);
 
+        log.trace("End POST command");
     }
 }
