@@ -32,27 +32,51 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 
-
+/**
+ * Command for create card. Card can be created only by USER role
+ */
 public class CreatePaymentCommand extends Command {
 
     private static final Logger log = Logger.getLogger(CreatePaymentCommand.class);
 
+    /**
+     * Execute POST function for Controller. This function use JSON data from request, parse it, and send response to
+     * page. Create payment for current user and redirect to payment list
+     * User can create payment with one of types recipient: card and account
+     * Payment status can be ready or submitted. Ready status don't transfer money.
+     * @param request servlet request
+     * @param response servlet response
+     * @throws IOException
+     * @throws ServletException
+     */
     @Override
     public void executePost(HttpServletRequest request,
                             HttpServletResponse response) throws IOException, ServletException {
-        log.debug("Start create account POST command");
+        log.debug("Start create account POST command " + this.getClass().getSimpleName());
 
         request.setCharacterEncoding("UTF-8");
 
-        JsonObject innerObject = new JsonObject();
+        /**
+         * Check user role
+         */
         HttpSession session = request.getSession();
         Role userRole = (Role) session.getAttribute("userRole");
         User currentUser = (User) session.getAttribute("currentUser");
+        if (userRole!=Role.ADMIN && userRole!=Role.USER)
+        {
+            response.sendRedirect(request.getContextPath()+ Path.COMMAND__START_PAGE);
+            return;
+        }
+
+        /**
+         * Parse parameter for create payment
+         */
         String action = "noAction";
+        JsonObject innerObject = new JsonObject();
         Map<String, Object> jsonParameters = new HashMap<>();
         try {
-            jsonParameters =
-                    UtilCommand.parseRequestJSON(request);
+            jsonParameters = UtilCommand.parseRequestJSON(request);
+            log.debug("Parse parameter: "+jsonParameters);
             action = (String) jsonParameters.get("action");
             log.trace("Read command action payment: " + action);
         } catch (Exception e) {
@@ -60,6 +84,9 @@ public class CreatePaymentCommand extends Command {
         }
         try {
             switch (action) {
+                /**
+                 * Show information about sender account
+                 */
                 case "selectAccount":
                     Integer accountId = -1;
                     accountId = (Integer) jsonParameters.get("accountId");
@@ -74,6 +101,9 @@ public class CreatePaymentCommand extends Command {
                         log.error("Can't find account by id");
                     }
                     break;
+                /**
+                 * Check Name (and hide) of user for recipient account
+                 */
                 case "checkAccount":
                     String accountType = (String) jsonParameters.get("accountType");
                     String accountNumber = (String) jsonParameters.get("accountNumber");
@@ -92,9 +122,15 @@ public class CreatePaymentCommand extends Command {
                         log.error("Can't find account by id");
                     }
                     break;
+                /**
+                 * Calculate payment
+                 */
                 case "calculatePayment":
                     innerObject = calculatePayment(jsonParameters);
                     break;
+                /**
+                 * Create payment
+                 */
                 case "createPayment":
                     innerObject = createPayment(jsonParameters, currentUser);
                     break;
@@ -104,19 +140,34 @@ public class CreatePaymentCommand extends Command {
             log.error(ex.getMessage());
         }
 
-        if (userRole != Role.ADMIN && userRole != Role.USER)
-            response.sendRedirect(request.getContextPath() + Path.COMMAND__START_PAGE);
-        else UtilCommand.sendJSONData(response, innerObject);
+        /**
+         * send JSON data
+         */
+        UtilCommand.sendJSONData(response, innerObject);
 
-        log.debug("Finish create account POST command.");
+        log.debug("Finish create account POST command " + this.getClass().getSimpleName());
     }
 
+    /**
+     * Load page "Create payment" with parameter: list of current user account
+     * @param request servlet request
+     * @param response servlet response
+     * @throws IOException
+     * @throws ServletException
+     */
     @Override
     public void executeGet(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
         log.trace("Start load command with method" + request.getMethod());
+        /**
+         * Check user role
+         */
         HttpSession session = request.getSession();
-        User currentUser = (User) request.getSession().getAttribute("currentUser");
         Role userRole = (Role) session.getAttribute("userRole");
+        User currentUser = (User) session.getAttribute("currentUser");
+        if (userRole != Role.ADMIN && userRole != Role.USER) {
+            response.sendRedirect(request.getContextPath() + Path.COMMAND__START_PAGE);
+            return;
+        }
         List<Account> list = null;
         if (userRole == Role.USER) {
             try {
@@ -128,17 +179,23 @@ public class CreatePaymentCommand extends Command {
                 return;
             }
         }
-        if (userRole != Role.ADMIN && userRole != Role.USER)
-            response.sendRedirect(request.getContextPath() + Path.COMMAND__START_PAGE);
-        else {
-            RequestDispatcher disp = request.getRequestDispatcher(Path.PAGE__CREATE_PAYMENT);
-            disp.forward(request, response);
-        }
+
+        RequestDispatcher disp = request.getRequestDispatcher(Path.PAGE__CREATE_PAYMENT);
+        disp.forward(request, response);
+
         log.trace("Forward to: " + Path.PAGE__CREATE_PAYMENT);
     }
 
+    /**
+     * Calculating sum for payment
+     * @param jsonParameters parameters from JSON request
+     * @return
+     */
     private JsonObject calculatePayment(Map<String, Object> jsonParameters) {
         JsonObject innerObject = new JsonObject();
+        /**
+         * Commission parameters
+         */
         Double commissionPercent = SystemParameters.COMMISSION_PERCENT;
         Double commissionValue = 0D;
         Double totalPayment = 0D;
@@ -154,9 +211,15 @@ public class CreatePaymentCommand extends Command {
         }
         else return UtilCommand.errorMessageJSON("Incorrect sum value");
 
+        /**
+         * Check payment type: account or card (account payment doesn't have commission)
+         */
         if ("Account".equals(accountType)) {
             try {
                 Account account = AccountDAO.findAccountByUID(accountNumber);
+                /**
+                 * Use '.' for double value
+                 */
                 DecimalFormat df = new DecimalFormat("#.##", new DecimalFormatSymbols(Locale.ENGLISH));
                 if (account != null) {
                     commissionPercent = 0D;
@@ -168,16 +231,18 @@ public class CreatePaymentCommand extends Command {
                     innerObject.add("commissionValue", new Gson().toJsonTree(commissionValue));
                     innerObject.add("totalPayment", new Gson().toJsonTree(totalPayment));
                 } else {
+                    log.debug("Account not found");
                     return UtilCommand.errorMessageJSON("Account not found");
                 }
-
-
             } catch (AppException e) {
+                log.debug(e.getMessage());
                 return UtilCommand.errorMessageJSON(e.getMessage());
             }
         }
+        /**
+         * Check payment type: account or card (card payment has commission)
+         */
         if ("Card".equals(accountType)) {
-
             if (!FieldsChecker.checkCardNumber(accountNumber.replace(" ", "")))
                 return UtilCommand.errorMessageJSON("Bad card number");
             DecimalFormat df = new DecimalFormat("#.##", new DecimalFormatSymbols(Locale.ENGLISH));
@@ -196,9 +261,18 @@ public class CreatePaymentCommand extends Command {
 
     }
 
+    /**
+     * Function for create payment
+     * @param jsonParameters parameters from JSON request
+     * @param currentUser current user, who creates payment
+     * @return
+     */
     private JsonObject createPayment(Map<String, Object> jsonParameters, User currentUser) {
         JsonObject innerObject = new JsonObject();
 
+        /**
+         * Date time format and create time (now) for payment
+         */
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         LocalDateTime ldt = LocalDateTime.now();
         String datetime = ldt.format(formatter);
@@ -212,6 +286,10 @@ public class CreatePaymentCommand extends Command {
         String currencyFrom = (String) jsonParameters.get("currencyFrom");
         String currencyTo = (String) jsonParameters.get("currencyTo");
         String statusPayment = (String) jsonParameters.get("status");
+
+        /**
+         * Check correct double value for money (format: #.##)
+         */
         if (FieldsChecker.checkBalanceDouble((String) jsonParameters.get("value"))) {
             value = Double.valueOf((String) jsonParameters.get("value"));
             if (value < SystemParameters.MIN_PAYMENT_SUM)
@@ -220,6 +298,9 @@ public class CreatePaymentCommand extends Command {
                 return UtilCommand.errorMessageJSON("Sum must be less then " + SystemParameters.MAX_PAYMENT_SUM + " " + currencyTo);
         } else return UtilCommand.errorMessageJSON("Incorrect sum value");
 
+        /**
+         * Check payment type: account or card (account payment doesn't have commission)
+         */
         if ("Account".equals(accountToType)) {
             try {
                 Account accountTo = AccountDAO.findAccountByUID(accountToNumber);
@@ -236,6 +317,9 @@ public class CreatePaymentCommand extends Command {
                     if (accountFromBalance < totalPaymentFrom)
                         return UtilCommand.errorMessageJSON("Not enough funds in the account");
                     Double totalPaymentTo = PaymentService.currencyExchange(value, accountTo.getCurrency(), currencyTo);
+                    /**
+                     * Create payment object from parameters
+                     */
                     Payment payment = new Payment();
                     payment.setId(1L);
                     payment.setGuid(UtilsGenerator.getGUID());
@@ -251,6 +335,9 @@ public class CreatePaymentCommand extends Command {
                     payment.setCurrencySum(currencyTo);
                     payment.setStatus(statusPayment);
                     PaymentService.createPayment(payment);
+                    /**
+                     * Use service for transfer money
+                     */
                     if ("Submitted".equals(statusPayment))
                         AccountService.depositAccount(accountFrom, null, totalPaymentFrom, 0D);
                     innerObject.add("status", new Gson().toJsonTree("OK"));
@@ -263,6 +350,9 @@ public class CreatePaymentCommand extends Command {
                 return UtilCommand.errorMessageJSON(e.getMessage());
             }
         }
+        /**
+         * Check payment type: account or card (card payment has commission)
+         */
         if ("Card".equals(accountToType)) {
             try {
                 if (!FieldsChecker.checkCardNumber(accountToNumber.replace(" ", "")))
@@ -278,6 +368,9 @@ public class CreatePaymentCommand extends Command {
                 Double accountFromBalance = accountFrom.getBalance();
                 if (accountFromBalance < totalPaymentFrom)
                     return UtilCommand.errorMessageJSON("Not enough funds in the account");
+                /**
+                 * Create payment object from parameters
+                 */
                 Payment payment = new Payment();
                 payment.setId(1L);
                 payment.setGuid(UtilsGenerator.getGUID());
@@ -293,6 +386,9 @@ public class CreatePaymentCommand extends Command {
                 payment.setCurrencySum(currencyTo);
                 payment.setStatus(statusPayment);
                 PaymentService.createPayment(payment);
+                /**
+                 * Use service for transfer money
+                 */
                 if ("Submitted".equals(statusPayment))
                     AccountService.depositAccount(accountFrom, null, totalPaymentFrom, 0D);
                 innerObject.add("status", new Gson().toJsonTree("OK"));
