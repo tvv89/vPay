@@ -39,6 +39,14 @@ public class StatusAccountsCommand extends Command {
         UtilCommand.bedGETRequest(request,response);
     }
 
+    /**
+     * Execute POST function for Controller. This function use JSON data from request, parse it, and send response for
+     * single page application. change account status for user and admin
+     * @param request
+     * @param response
+     * @throws IOException
+     * @throws ServletException
+     */
     @Override
     public void executePost(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
         log.trace("Start POST command "+this.getClass().getSimpleName());

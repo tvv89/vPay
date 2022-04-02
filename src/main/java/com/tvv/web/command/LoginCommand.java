@@ -3,6 +3,7 @@ package com.tvv.web.command;
 import com.tvv.db.dao.UserDAO;
 import com.tvv.db.entity.Role;
 import com.tvv.db.entity.User;
+import com.tvv.service.exception.AppException;
 import com.tvv.utils.StringHash;
 import com.tvv.web.webutil.Path;
 import org.apache.log4j.Logger;
@@ -20,7 +21,7 @@ public class LoginCommand extends Command {
 	
 	@Override
 	public void executePost(HttpServletRequest request,
-							HttpServletResponse response) throws IOException, ServletException {
+							HttpServletResponse response) throws IOException, ServletException, AppException {
 		
 		log.debug("Command starts");
 		

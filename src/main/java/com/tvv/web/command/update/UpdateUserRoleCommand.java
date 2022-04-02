@@ -22,12 +22,12 @@ public class UpdateUserRoleCommand extends Command {
 
     @Override
     public void executeGet(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
-
+        UtilCommand.bedGETRequest(request,response);
     }
 
     @Override
-    public void executePost(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
-
+    public void executePost(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException, AppException {
+        log.trace("Star");
         request.setCharacterEncoding("UTF-8");
         Map<String, Object> jsonParameters =
                 null;

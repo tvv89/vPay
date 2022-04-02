@@ -57,7 +57,7 @@ public class UpdateListUsersCommand extends Command {
     }
 
     @Override
-    public void executePost(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
+    public void executePost(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException, AppException {
 
         request.setCharacterEncoding("UTF-8");
         Map<String, Object> jsonParameters =

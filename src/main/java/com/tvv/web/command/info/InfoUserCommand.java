@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.tvv.db.dao.UserDAO;
 import com.tvv.db.entity.User;
+import com.tvv.service.exception.AppException;
 import com.tvv.web.command.Command;
 import com.tvv.web.command.UtilCommand;
 import org.apache.log4j.Logger;
@@ -24,7 +25,7 @@ public class InfoUserCommand extends Command {
     }
 
     @Override
-    public void executePost(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
+    public void executePost(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException, AppException {
         request.setCharacterEncoding("UTF-8");
 
         Integer userId = null;

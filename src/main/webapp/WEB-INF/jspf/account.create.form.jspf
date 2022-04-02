@@ -10,23 +10,12 @@
                 </div>
             </div>
             <div class="uk-margin">
-                <label class="uk-form-label" for="iban">IBAN</label>
+                <label class="uk-form-label" for="iban">UID</label>
                 <div class="uk-form-controls">
-                    <input class="uk-input" id="iban" type="text" name="iban" form-field>
+                    <input class="uk-input uk-disabled" id="iban" type="text" name="iban" form-field>
                 </div>
             </div>
-            <div class="uk-margin">
-                <label class="uk-form-label" for="bankCode">Bank code</label>
-                <div class="uk-form-controls">
-                    <input class="uk-input" id="bankCode" type="text" name="bankCode" form-field>
-                </div>
-            </div>
-            <div class="uk-margin">
-                <label class="uk-form-label" for="ipn">IPN</label>
-                <div class="uk-form-controls">
-                    <input class="uk-input" id="ipn" type="text" name="ipn" form-field>
-                </div>
-            </div>
+
             <div class="uk-margin">
                 <label class="uk-form-label" for="currency">Currency</label>
                 <div class="uk-form-controls">

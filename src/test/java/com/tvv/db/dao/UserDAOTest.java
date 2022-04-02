@@ -2,6 +2,7 @@ package com.tvv.db.dao;
 
 import com.tvv.db.DBManager;
 import com.tvv.db.entity.User;
+import com.tvv.service.exception.AppException;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockedStatic;
@@ -18,7 +19,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class UserDAOTest {
 
     @Test
-    void findAllUsers() throws SQLException {
+    void findAllUsers() throws SQLException, AppException {
         ResultSet rs = Mockito.mock(ResultSet.class);
         Mockito.when(rs.next())
                 .thenReturn(true)

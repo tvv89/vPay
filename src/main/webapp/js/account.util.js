@@ -82,6 +82,7 @@ function createTable(tx,cards,userRole) {
                             </button>`
         var row = `<tr id="tr_${tx[i].id}">
                 <td>${tx[i].name}</td>
+                <td>${tx[i].iban}</td>
                 <td>${tx[i].currency}</td>
                 <td id="td_balance_${tx[i].id}">${tx[i].balance}</td>
                 <td>${tx[i].ownerUser.firstName} ${tx[i].ownerUser.lastName}</td>

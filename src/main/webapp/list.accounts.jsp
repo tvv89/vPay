@@ -37,6 +37,7 @@
                 <thead>
                 <tr>
                     <th>Name</th>
+                    <th>UID</th>
                     <th>Currency</th>
                     <th>Balance</th>
                     <th>Owner</th>

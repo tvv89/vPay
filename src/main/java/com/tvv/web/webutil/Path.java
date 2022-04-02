@@ -3,7 +3,7 @@ package com.tvv.web.webutil;
 public final class Path {
 
 	public static final String PAGE__LOGIN = "/index.jsp";
-	public static final String PAGE__ERROR_PAGE = "/error_page.jsp";
+	public static final String PAGE__ERROR_PAGE = "/error.page.jsp";
 	public static final String PAGE__LIST_USERS = "/list.users.jsp";
 	public static final String PAGE__LIST_ACCOUNTS = "/list.accounts.jsp";
 	public static final String PAGE__LIST_PAYMANT = "/list.payments.jsp";
