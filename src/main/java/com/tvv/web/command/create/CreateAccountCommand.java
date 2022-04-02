@@ -28,8 +28,8 @@ public class CreateAccountCommand extends Command {
 	private static final Logger log = Logger.getLogger(CreateAccountCommand.class);
 
 	/**
-	 * Execute POST function for Controller. This function use JSON data from request, parse it, and send response for
-	 * single page application. Create account for current user
+	 * Execute POST function for Controller. This function use JSON data from request, parse it, and send response to
+	 * page. Create account for current user and redirect to users list
 	 * @param request servlet request
 	 * @param response servlet response
 	 * @throws IOException
