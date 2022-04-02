@@ -32,10 +32,6 @@ public class PaymentDAO {
                     "        ?,?,?,?," +
                     "        ?,?,?,?,?,?,?,0);";
 
-    private static final String SQL_UPDATE_STATUS_PAYMENT =
-            "UPDATE payments SET statusPayment=?"+
-                    "	WHERE id=?";
-
     private static final String SQL_SET_ARCHIVE =
             "UPDATE payments SET archive=1"+
                     "	WHERE id=?";
