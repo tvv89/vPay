@@ -1,5 +1,17 @@
 package com.tvv.db.entity;
 
+/**
+ * Class for Account. Use data from table accounts
+ * iban - account id, use for create payment
+ * ipn - reserved
+ * bankCode - reserved
+ * name - name of account
+ * currency - currency of account
+ * balance - balance account (double format #.##)
+ * ownerUser - object user, who own account
+ * status - Enabled, Idle, Disabled
+ * card - object card, which top up balance account
+ */
 public class Account extends EntityID {
     String iban;
     String ipn;
