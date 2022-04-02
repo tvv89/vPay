@@ -100,18 +100,4 @@ public class PaymentService {
 
     }
 
-
-    private static void spUtil(Account account, Payment payment) throws AppException {
-        ErrorString errorString = new ErrorMessageEN();
-        if (checkBalance(account, payment.getTotal())) {
-            Double newBalance = account.getBalance() - payment.getTotal();
-            AccountDAO.updateAccountBalance(account.getId(), newBalance);
-        } else throw new AppException(errorString.notEnoughMoney(), new IllegalArgumentException());
-    }
-
-    private static boolean checkBalance (Account account, double pay) {
-        Double balance = account.getBalance();
-        return (balance>=pay);
-    }
-
 }

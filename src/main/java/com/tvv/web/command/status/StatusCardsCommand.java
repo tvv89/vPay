@@ -5,14 +5,18 @@ import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.tvv.db.dao.CardDAO;
 import com.tvv.db.entity.Card;
+import com.tvv.db.entity.Role;
+import com.tvv.db.entity.User;
 import com.tvv.service.exception.AppException;
 import com.tvv.web.command.Command;
 import com.tvv.web.command.UtilCommand;
+import com.tvv.web.webutil.Path;
 import org.apache.log4j.Logger;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.util.Map;
 
@@ -29,10 +33,17 @@ public class StatusCardsCommand extends Command {
     public void executePost(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
 
         request.setCharacterEncoding("UTF-8");
-        Map<String, Object> jsonParameters =
-                null;
+        HttpSession session = request.getSession();
+        Role userRole = (Role) session.getAttribute("userRole");
+        User currentUser = (User) session.getAttribute("currentUser");
+        if (userRole!=Role.ADMIN && userRole!=Role.USER)
+        {
+            response.sendRedirect(request.getContextPath()+ Path.COMMAND__START_PAGE);
+            return;
+        }
+        Map<String, Object> jsonParameters = null;
         try {
-            jsonParameters = UtilCommand.parseRequestJSON(request,"cardId");
+            jsonParameters = UtilCommand.parseRequestJSON(request);
         } catch (AppException e) {
             e.printStackTrace();
         }
@@ -44,7 +55,7 @@ public class StatusCardsCommand extends Command {
             cardIdById = CardDAO.findCardById(cardId.longValue());
         }
         catch (Exception e) {
-            System.out.println(e);
+            UtilCommand.errorMessageJSON()
         }
 
         JsonObject innerObject = new JsonObject();

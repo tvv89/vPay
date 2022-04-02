@@ -2,6 +2,7 @@ package com.tvv.db.dao;
 
 import com.tvv.db.DBManager;
 import com.tvv.db.entity.*;
+import com.tvv.service.exception.AppException;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -29,7 +30,7 @@ public class CardDAO {
             "insert into cards (id, name, number, expDate, user_id, statusCard) "+
             "values (default,?,?,?,?,?)";
 
-    public static Card insertCard (Card card) {
+    public static Card insertCard (Card card) throws AppException {
         PreparedStatement pstmt = null;
         Connection con = null;
         try {
@@ -46,13 +47,14 @@ public class CardDAO {
         } catch (SQLException ex) {
             DBManager.getInstance().rollbackCloseConnection(con);
             ex.printStackTrace();
+            throw new AppException("Can not insert card to DB",ex);
         } finally {
             DBManager.getInstance().commitCloseConnection(con);
         }
         return card;
     }
 
-    public static List<Card> findAllCards() {
+    public static List<Card> findAllCards() throws AppException {
         List<Card> cards = new ArrayList<>();
         Statement stmt = null;
         ResultSet rs = null;
@@ -66,16 +68,17 @@ public class CardDAO {
             while (rs.next()) cards.add(mapper.loadRow(rs));
             rs.close();
             stmt.close();
-        } catch (SQLException ex) {
+        } catch (Exception ex) {
             DBManager.getInstance().rollbackCloseConnection(con);
             ex.printStackTrace();
+            throw new AppException("Can not find any cards in DB",ex);
         } finally {
             DBManager.getInstance().commitCloseConnection(con);
         }
         return cards;
     }
 
-    public static Card findCardById(Long id) {
+    public static Card findCardById(Long id) throws AppException {
         Card card = new Card();
         PreparedStatement pstmt = null;
         ResultSet rs = null;
@@ -90,24 +93,25 @@ public class CardDAO {
                 card = mapper.loadRow(rs);
             rs.close();
             pstmt.close();
-        } catch (SQLException ex) {
+        } catch (Exception ex) {
             DBManager.getInstance().rollbackCloseConnection(con);
             ex.printStackTrace();
+            throw new AppException("Can not find card by id in DB",ex);
         } finally {
             DBManager.getInstance().commitCloseConnection(con);
         }
         return card;
     }
 
-    public static List<Card> findCardByAccount(Long accountId) {
+    public static List<Card> findCardByAccount(Long accountId) throws AppException {
         return getCards(accountId, SQL__FIND_CARDS_BY_ACCOUNT);
     }
 
-    public static List<Card> findCardsByUser(Long userId) {
+    public static List<Card> findCardsByUser(Long userId) throws AppException {
         return getCards(userId, SQL__FIND_CARDS_BY_USER_ID);
     }
 
-    private static List<Card> getCards(Long userId, String sqlRequest) {
+    private static List<Card> getCards(Long userId, String sqlRequest) throws AppException {
         List<Card> cards = new ArrayList<>();
         PreparedStatement pstmt = null;
         ResultSet rs = null;
@@ -121,16 +125,17 @@ public class CardDAO {
             while (rs.next()) cards.add(mapper.loadRow(rs));
             rs.close();
             pstmt.close();
-        } catch (SQLException ex) {
+        } catch (Exception ex) {
             DBManager.getInstance().rollbackCloseConnection(con);
             ex.printStackTrace();
+            throw new AppException("Can not find cards in DB",ex);
         } finally {
             DBManager.getInstance().commitCloseConnection(con);
         }
         return cards;
     }
 
-    public static boolean updateStatusCardById(Long id, int newStatus) {
+    public static boolean updateStatusCardById(Long id, int newStatus) throws AppException {
         boolean result = false;
         PreparedStatement pstmt = null;
         Connection con = null;
@@ -144,6 +149,7 @@ public class CardDAO {
         } catch (SQLException ex) {
             DBManager.getInstance().rollbackCloseConnection(con);
             ex.printStackTrace();
+            throw new AppException("Can not update status card by id in DB",ex);
         } finally {
             DBManager.getInstance().commitCloseConnection(con);
         }
@@ -153,7 +159,7 @@ public class CardDAO {
     private static class CardLoad implements LoadEntity<Card> {
 
         @Override
-        public Card loadRow(ResultSet rs) {
+        public Card loadRow(ResultSet rs) throws AppException {
             try {
                 Card card = new Card();
                 card.setId(rs.getLong(Fields.ENTITY__ID));
@@ -167,7 +173,7 @@ public class CardDAO {
                 card.setStatus(rs.getBoolean(Fields.CARD__STATUS));
                 return card;
             } catch (SQLException e) {
-                throw new IllegalStateException(e);
+                throw new AppException("Can not load card from DB",e);
             }
         }
     }

@@ -2,6 +2,7 @@ package com.tvv.web.command.update;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
+import com.mysql.cj.util.Util;
 import com.tvv.db.dao.CardDAO;
 import com.tvv.db.entity.Card;
 import com.tvv.db.entity.Role;
@@ -19,15 +20,18 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.io.Serializable;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
+/**
+ * Update list command for single page application include pagination and sorting
+ */
 public class UpdateListCardsCommand extends Command {
 
     private static final Logger log = Logger.getLogger(UpdateListCardsCommand.class);
 
+    /**
+     * Comparator for sorting by card name
+     */
     private static class CompareByName implements Comparator<Card>, Serializable {
 
         @Override
@@ -35,6 +39,9 @@ public class UpdateListCardsCommand extends Command {
             return u1.getName().compareTo(u2.getName());
         }
     }
+    /**
+     * Comparator for sorting by card number
+     */
     private static class CompareByNumber implements Comparator<Card>, Serializable {
 
         @Override
@@ -42,7 +49,9 @@ public class UpdateListCardsCommand extends Command {
             return u1.getNumber().compareTo(u2.getNumber());
         }
     }
-
+    /**
+     * Comparator for sorting by card owner login
+     */
     private static class CompareByOwner implements Comparator<Card>, Serializable {
 
         @Override
@@ -55,57 +64,92 @@ public class UpdateListCardsCommand extends Command {
     private static Comparator<Card> compareByNumber = new CompareByNumber();
     private static Comparator<Card> compareByOwner = new CompareByOwner();
 
+    /**
+     * Execute GET function for Controller. This function doesn't have GET request, and redirect to error page
+     * @param request servlet request
+     * @param response servlet response
+     * @throws IOException
+     * @throws ServletException
+     */
     @Override
     public void executeGet(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
-
+        UtilCommand.bedGETRequest(request,response);
     }
 
+    /**
+     * Execute POST function for Controller. This function use JSON data from request, parse it, and send response for
+     * single page application. Function has different ways for USER and ADMIN
+     * @param request
+     * @param response
+     * @throws IOException
+     * @throws ServletException
+     */
     @Override
     public void executePost(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
-
+        log.trace("Start POST command "+ this.getClass());
+        /**
+         * Check user role
+         */
+        request.setCharacterEncoding("UTF-8");
         HttpSession session = request.getSession();
         Role userRole = (Role) session.getAttribute("userRole");
         User currentUser = (User) session.getAttribute("currentUser");
+        if (userRole!=Role.ADMIN && userRole!=Role.USER)
+        {
+            response.sendRedirect(request.getContextPath()+ Path.COMMAND__START_PAGE);
+            log.debug("User role is not correct");
+            return;
+        }
+        /**
+         * Start JSON parsing request
+         */
 
-        request.setCharacterEncoding("UTF-8");
-        Map<String, Object> jsonParameters =
-                null;
-
+        JsonObject innerObject = new JsonObject();
+        Map<String, Object> jsonParameters = null;
         try {
             jsonParameters = UtilCommand.parseRequestJSON(request);
         } catch (AppException e) {
-            e.printStackTrace();
+            log.error(e.getMessage());
         }
 
+        /**
+         * Create pagination and sorting
+         */
         Integer currentPage = null;
         Integer itemPerPage = null;
         Integer sorting = null;
 
         try {
             currentPage = (Integer)(jsonParameters.get("currentPage"));
-        }
-        catch (Exception e) {
-            System.out.println(e);
-        }
-        try {
             itemPerPage = (Integer)(jsonParameters.get("items"));
-        }
-        catch (Exception e) {
-            System.out.println(e);
-        }
-        try {
             sorting = (Integer)(jsonParameters.get("sorting"));
         }
         catch (Exception e) {
-            System.out.println(e);
+            currentPage = 1;
+            itemPerPage = 5;
+            sorting = 1;
+            log.error("Bad input data");
         }
-
-        List<Card> list;
-        if (userRole==Role.ADMIN) list = CardDAO.findAllCards();
-        else if (userRole==Role.USER) list = CardDAO.findCardsByUser(currentUser.getId());
-        else list = null;
-
-
+        /**
+         * Select and show card list
+         */
+        List<Card> list = new ArrayList<>();
+        try {
+            if (userRole == Role.ADMIN) list = CardDAO.findAllCards();
+            else if (userRole == Role.USER) list = CardDAO.findCardsByUser(currentUser.getId());
+            else list = null;
+            log.debug("Create list of cards");
+        }
+        catch (AppException ex) {
+            UtilCommand.sendJSONData(response,UtilCommand.errorMessageJSON(ex.getMessage()));
+            log.error(ex.getMessage());
+            return;
+        }
+        /**
+         * Sorting
+         *
+         */
+        log.debug("Sorting parameter: "+ sorting);
         switch (sorting){
             case 1:
                 Collections.sort(list, compareByName);
@@ -120,7 +164,9 @@ public class UpdateListCardsCommand extends Command {
 
         List<Card> listX;
         int pages;
-        JsonObject innerObject = new JsonObject();
+        /**
+         * Create response with JSON files
+         */
         if (itemPerPage==null) itemPerPage = 5;
         if (itemPerPage>0) {
             if (currentPage==null) currentPage=1;
@@ -130,18 +176,23 @@ public class UpdateListCardsCommand extends Command {
             innerObject.add("page", new Gson().toJsonTree(currentPage));
             innerObject.add("pages", new Gson().toJsonTree(pages));
             innerObject.add("list", new Gson().toJsonTree(listX));
+            log.debug("Create data for sending "+ itemPerPage +" item per page, " + currentPage+" is curren page");
         } else if (itemPerPage==-1) {
             innerObject.add("status", new Gson().toJsonTree("OK"));
             innerObject.add("page", new Gson().toJsonTree(1));
             innerObject.add("pages", new Gson().toJsonTree(1));
             innerObject.add("list", new Gson().toJsonTree(list));
+            log.debug("Create data for sending All Items");
         } else {
             innerObject.add("status", new Gson().toJsonTree("ERROR"));
             innerObject.add("message", new Gson().toJsonTree("Bad input data"));
+            log.debug("Bad input data");
         }
-
-        if (userRole!=Role.ADMIN && userRole!=Role.USER) response.sendRedirect(request.getContextPath()+ Path.COMMAND__START_PAGE);
-        else UtilCommand.sendJSONData(response,innerObject);
+        /**
+         * Send result response for single page
+         */
+        UtilCommand.sendJSONData(response,innerObject);
+        log.trace("End POST command "+ this.getClass());
 
     }
 }
