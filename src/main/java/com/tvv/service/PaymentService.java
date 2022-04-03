@@ -60,7 +60,7 @@ public class PaymentService {
                 return UtilCommand.errorMessageJSON("Not enough funds in the account");
             if ("Account".equals(payment.getRecipientType())) {
                 Account accountTo = AccountDAO.findAccountByUID(payment.getRecipientId());
-                Double totalPaymentTo = PaymentService.currencyExchange(payment.getSum(), accountTo.getCurrency(), payment.getCurrencySum());
+                Double totalPaymentTo = PaymentService.currencyExchange(payment.getSum(), payment.getCurrencySum(), accountTo.getCurrency());
                 AccountService.depositAccount(accountFrom, accountTo, totalPaymentFrom, totalPaymentTo);
                 payment.setStatus("Submitted");
                 PaymentDAO.updatePaymentStatus(payment.getId(),"Submitted");

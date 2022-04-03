@@ -316,7 +316,8 @@ public class CreatePaymentCommand extends Command {
                     Double accountFromBalance = accountFrom.getBalance();
                     if (accountFromBalance < totalPaymentFrom)
                         return UtilCommand.errorMessageJSON("Not enough funds in the account");
-                    Double totalPaymentTo = PaymentService.currencyExchange(value, accountTo.getCurrency(), currencyTo);
+                    Double totalPaymentTo = Double.valueOf(df.format(
+                            PaymentService.currencyExchange(value, currencyTo, accountTo.getCurrency())));
                     /**
                      * Create payment object from parameters
                      */
@@ -330,7 +331,7 @@ public class CreatePaymentCommand extends Command {
                     payment.setTimeOfLog(datetime);
                     payment.setCurrency(currencyFrom);
                     payment.setCommission(0D);
-                    payment.setTotal(totalPaymentTo);
+                    payment.setTotal(totalPaymentFrom);
                     payment.setSum(value);
                     payment.setCurrencySum(currencyTo);
                     payment.setStatus(statusPayment);
@@ -339,7 +340,7 @@ public class CreatePaymentCommand extends Command {
                      * Use service for transfer money
                      */
                     if ("Submitted".equals(statusPayment))
-                        AccountService.depositAccount(accountFrom, null, totalPaymentFrom, 0D);
+                        AccountService.depositAccount(accountFrom, accountTo, totalPaymentFrom, totalPaymentTo);
                     innerObject.add("status", new Gson().toJsonTree("OK"));
 
                 } else {

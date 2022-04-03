@@ -16,7 +16,7 @@
             <option value=1>Sort by Guid</option>
             <option value=2>Sort by Total</option>
             <option value=3>Sort by Asc Time</option>
-            <option value=4>Sort by Des Time</option>
+            <option value=4 selected>Sort by Des Time</option>
         </select>
 
         <%@ include file="/WEB-INF/jspf/item.per.page.jspf" %>

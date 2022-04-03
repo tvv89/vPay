@@ -10,16 +10,22 @@ import com.tvv.utils.UtilsGenerator;
 import com.tvv.web.webutil.ErrorMessageEN;
 import com.tvv.web.webutil.ErrorString;
 
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Random;
 
 public class AccountService {
     public static boolean depositAccount(Account accountFrom, Account accountTo, Double valueFrom, Double valueTo) throws AppException {
         Double balanceFrom = accountFrom.getBalance();
-        AccountDAO.updateAccountBalance(accountFrom.getId(),balanceFrom-valueFrom);
+        DecimalFormat df = new DecimalFormat("#.##", new DecimalFormatSymbols(Locale.ENGLISH));
+        Double newBalanceFrom = Double.valueOf(df.format(balanceFrom-valueFrom));
+        AccountDAO.updateAccountBalance(accountFrom.getId(), newBalanceFrom);
         if (accountTo!=null) {
             Double balanceTo = accountTo.getBalance();
-            AccountDAO.updateAccountBalance(accountTo.getId(), balanceTo + valueTo);
+            Double newBalanceTo = Double.valueOf(df.format(balanceTo + valueTo));
+            AccountDAO.updateAccountBalance(accountTo.getId(), newBalanceTo);
         }
         return true;
     }

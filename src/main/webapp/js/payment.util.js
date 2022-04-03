@@ -1,6 +1,6 @@
 var itemsPerPage=5;
 var currentPGPage=1;
-var sortBy=1;
+var sortBy=4;
 window.addEventListener('DOMContentLoaded', (event) => {
         callPOSTRequest(1,0);
 });

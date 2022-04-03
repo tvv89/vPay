@@ -26,18 +26,26 @@ public class UpdateAccountBalanceCommand extends Command {
 
     @Override
     public void executeGet(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
-
+        UtilCommand.bedGETRequest(request,response);
     }
 
     @Override
     public void executePost(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
+        log.trace("Start POST command "+ this.getClass().getSimpleName());
+        request.setCharacterEncoding("UTF-8");
 
         HttpSession session = request.getSession();
         Role userRole = (Role) session.getAttribute("userRole");
         User currentUser = (User) session.getAttribute("currentUser");
+        if (userRole!=Role.ADMIN && userRole!=Role.USER)
+        {
+            response.sendRedirect(request.getContextPath()+ Path.COMMAND__START_PAGE);
+            log.debug("User role is not correct");
+            return;
+        }
 
-        request.setCharacterEncoding("UTF-8");
 
+        JsonObject innerObject = new JsonObject();
         Map<String, Object> jsonParameters = null;
         try {
             jsonParameters = UtilCommand.parseRequestJSON(request);
@@ -47,7 +55,7 @@ public class UpdateAccountBalanceCommand extends Command {
         Integer accountId = null;
         Double accountCoin = null;
         Account accountById = null;
-        JsonObject innerObject = new JsonObject();
+
 
         try {
             accountId = (Integer)jsonParameters.get("accountId");
@@ -58,27 +66,26 @@ public class UpdateAccountBalanceCommand extends Command {
             log.error("Bad input value");
         }
 
-
         try {
-            if (accountById != null && userRole == Role.USER) {
+            if (accountById != null && userRole == Role.USER && accountById.getOwnerUser().getId().equals(currentUser.getId())) {
                 if (accountById.getCard() != null) {
-                    AccountDAO.updateAccountBalance(accountById.getId(), accountById.getBalance() + accountCoin);
-                    accountById = AccountDAO.findAccountById(accountId.longValue());
-                    innerObject.add("status", new Gson().toJsonTree("OK"));
-                    innerObject.add("account", new Gson().toJsonTree(accountById));
+                    if (accountById.getCard().getStatus()) {
+                        AccountDAO.updateAccountBalance(accountById.getId(), accountById.getBalance() + accountCoin);
+                        accountById = AccountDAO.findAccountById(accountId.longValue());
+                        innerObject.add("status", new Gson().toJsonTree("OK"));
+                        innerObject.add("account", new Gson().toJsonTree(accountById));
+                    } else innerObject = UtilCommand.errorMessageJSON("Card is locked. Please select another card.");
                 } else {
                     innerObject = UtilCommand.errorMessageJSON("Account doesn't have card. Please add card before top up balance.");
                 }
             } else {
                 innerObject = UtilCommand.errorMessageJSON("Cannot change account balance");
             }
-        }
-        catch (AppException ex) {
+        } catch (AppException ex) {
             innerObject = UtilCommand.errorMessageJSON(ex.getMessage());
         }
 
-        if (userRole!=Role.ADMIN && userRole!=Role.USER) response.sendRedirect(request.getContextPath()+ Path.COMMAND__START_PAGE);
-        else UtilCommand.sendJSONData(response,innerObject);
+        UtilCommand.sendJSONData(response,innerObject);
 
     }
 }
