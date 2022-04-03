@@ -28,7 +28,6 @@ public class LoginCommand extends Command {
 	 * @param response
 	 * @throws IOException
 	 * @throws ServletException
-	 * @throws AppException
 	 */
 	@Override
 	public void executePost(HttpServletRequest request,
