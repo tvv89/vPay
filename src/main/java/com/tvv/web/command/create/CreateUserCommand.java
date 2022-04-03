@@ -31,6 +31,14 @@ public class CreateUserCommand extends Command {
 
 	private static final Logger log = Logger.getLogger(CreateUserCommand.class);
 
+	/**
+	 * Execute POST function for Controller. This function use request data and send response to
+	 * page user list. Create user with photo file in new page
+	 * @param request servlet request
+	 * @param response servlet response
+	 * @throws IOException
+	 * @throws ServletException
+	 */
 	@Override
 	public void executePost(HttpServletRequest request,
 							HttpServletResponse response) throws IOException, ServletException {
