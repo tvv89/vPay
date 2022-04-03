@@ -44,16 +44,7 @@ public class CreateUserCommand extends Command {
 							HttpServletResponse response) throws IOException, ServletException {
 		log.debug("Start registration POST command "+ this.getClass().getSimpleName());
 		request.setCharacterEncoding("UTF-8");
-		/**
-		 * Check user role
-		 */
 		HttpSession session = request.getSession();
-		Role userRole = (Role) session.getAttribute("userRole");
-		User currentUser = (User) session.getAttribute("currentUser");
-		if (userRole != Role.ADMIN && userRole != Role.USER) {
-			response.sendRedirect(request.getContextPath() + Path.COMMAND__START_PAGE);
-			return;
-		}
 		/**
 		 * Create stream for read loaded photo
 		 */
@@ -89,11 +80,10 @@ public class CreateUserCommand extends Command {
 		} catch (AppException e) {
 			log.trace(e.getMessage());
 
-			request.setAttribute("errorHeader", "Create user");
-			request.setAttribute("errorMessage", e.getMessage());
+			session.setAttribute("errorHeader", "Create user");
+			session.setAttribute("errorMessage", e.getMessage());
 
-			RequestDispatcher disp = request.getRequestDispatcher(Path.PAGE__ERROR_PAGE);
-			disp.forward(request, response);
+			UtilCommand.goToErrorPage(request,response);
 		}
 
 		log.debug("Finish registration POST command "+this.getClass().getSimpleName());
