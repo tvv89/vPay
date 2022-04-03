@@ -21,11 +21,6 @@ public class FieldsChecker {
         return checkRegEx(password,regex);
     }
 
-    public static boolean checkIBAN (String iban) {
-        String regex = "^[A-Z]{2}[0-9]{27}";
-        return checkRegEx(iban,regex);
-    }
-
     public static boolean checkIPN (String ipn) {
         String regex = "[0-9]{10}";
         return checkRegEx(ipn,regex);
