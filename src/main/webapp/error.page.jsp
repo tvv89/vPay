@@ -10,8 +10,8 @@
     <img class="uk-preserve-width uk-border-pill uk-align-center"
          src="images/_error.png"
          width="300" alt="">
-    <h1 class="uk-align-center">${errorHeader}</h1>
-    <p class="uk-align-center">${errorMessage}</p>
+    <h1 class="uk-align-center">${sessionScope.errorHeader}</h1>
+    <p class="uk-align-center">${sessionScope.errorMessage}</p>
 
 </div>
 </body>

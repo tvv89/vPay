@@ -24,6 +24,7 @@ public class User extends EntityID{
 
     private int role;
     private String email;
+    private String local;
 
     public String getLogin() {
         return login;
@@ -113,6 +114,14 @@ public class User extends EntityID{
         this.email = email;
     }
 
+    public String getLocal() {
+        return local;
+    }
+
+    public void setLocal(String local) {
+        this.local = local;
+    }
+
     @Override
     public String toString() {
         return "User{" +
@@ -121,13 +130,13 @@ public class User extends EntityID{
                 ", status=" + status +
                 ", firstName='" + firstName + '\'' +
                 ", lastName='" + lastName + '\'' +
-                ", email=" + email +
-                ", dayOfBirth=" + dayOfBirth +
+                ", dayOfBirth='" + dayOfBirth + '\'' +
                 ", sex='" + sex + '\'' +
                 ", gender='" + gender + '\'' +
                 ", photo='" + photo + '\'' +
                 ", role=" + role +
+                ", email='" + email + '\'' +
+                ", local='" + local + '\'' +
                 '}';
     }
-
 }

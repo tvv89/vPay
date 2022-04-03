@@ -77,6 +77,12 @@ public class UtilCommand {
         log.trace("Forward to: " + Path.PAGE__ACCESS_DENIED);
     }
 
+    public static void goToErrorPage (HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
+        log.trace("Start error page with method " + request.getMethod());
+        response.sendRedirect(request.getContextPath() + Path.PAGE__ERROR_PAGE);
+        log.trace("Forward to: " + Path.PAGE__ERROR_PAGE);
+    }
+
     public static JsonObject errorMessageJSON (String message) {
         JsonObject innerObject = new JsonObject();
         innerObject.add("status", new Gson().toJsonTree("ERROR"));

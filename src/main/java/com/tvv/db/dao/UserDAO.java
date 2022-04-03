@@ -246,6 +246,7 @@ public class UserDAO {
                 user.setGender(rs.getString(Fields.USER__GENDER));
                 user.setPhoto(rs.getString(Fields.USER__PHOTO));
                 user.setEmail(rs.getString(Fields.USER__EMAIL));
+                user.setLocal(rs.getString(Fields.USER__LOCAL));
                 return user;
             } catch (SQLException e) {
                 throw new AppException("Not loaded row for user from DB",e);

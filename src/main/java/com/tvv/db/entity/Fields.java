@@ -15,6 +15,7 @@ public final class Fields {
 	public static final String USER__GENDER = "gender";
 	public static final String USER__PHOTO = "photo";
 	public static final String USER__EMAIL = "email";
+	public static final String USER__LOCAL = "local";
 
 	public static final String ACCOUNT__IBAN = "iban";
 	public static final String ACCOUNT__IPN = "ipn";

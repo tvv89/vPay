@@ -35,7 +35,7 @@ public class StatusUsersCommand extends Command {
      */
     @Override
     public void executeGet(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
-
+        UtilCommand.bedGETRequest(request,response);
     }
 
     /**
@@ -90,7 +90,7 @@ public class StatusUsersCommand extends Command {
          * Check payment owner and select action from request
          */
         try {
-            if (userById != null && currentUser!=null && userById.getId().equals(currentUser.getId())) {
+            if (userById != null && currentUser!=null) {
                 int newStatus = userById.isStatus() ? 0 : 1;
                 UserDAO.updateStatusUserById(Long.valueOf(userId), newStatus);
                 userById = UserDAO.findUserById(userId.longValue());
