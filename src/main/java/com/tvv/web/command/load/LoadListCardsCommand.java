@@ -1,9 +1,7 @@
 package com.tvv.web.command.load;
 
-import com.tvv.db.dao.AccountDAO;
 import com.tvv.db.entity.Role;
 import com.tvv.db.entity.User;
-import com.tvv.service.exception.AppException;
 import com.tvv.web.command.Command;
 import com.tvv.web.webutil.Path;
 import org.apache.log4j.Logger;
