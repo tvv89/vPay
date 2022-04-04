@@ -10,7 +10,9 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
-
+/**
+ * DAO functions for CRUD operation Payment
+ */
 public class PaymentDAO {
     private static final String SQL__FIND_ALL_PAYMENT =
             "SELECT * FROM payments where archive!=1";
@@ -36,6 +38,11 @@ public class PaymentDAO {
             "UPDATE payments SET archive=1"+
                     "	WHERE id=?";
 
+    /**
+     * Find all payments
+     * @return List of Payment
+     * @throws AppException
+     */
     public static List<Payment> findAllPayments() throws AppException {
         List<Payment> payments = new ArrayList<>();
         Statement stmt = null;
@@ -60,6 +67,12 @@ public class PaymentDAO {
         return payments;
     }
 
+    /**
+     * Find payment by id
+     * @param id Payment id
+     * @return object Payment
+     * @throws AppException
+     */
     public static Payment findPaymentById (Long id) throws AppException {
         Payment payment = new Payment();
         PreparedStatement pstmt = null;
@@ -85,6 +98,12 @@ public class PaymentDAO {
         return payment;
     }
 
+    /**
+     * Find list of payment by user id
+     * @param id User id
+     * @return List of payment
+     * @throws AppException
+     */
     public static List<Payment> findPaymentsByUser (Long id) throws AppException {
         List<Payment> payments = new ArrayList<>();
         PreparedStatement pstmt = null;
@@ -109,6 +128,13 @@ public class PaymentDAO {
         return payments;
     }
 
+    /**
+     * Update payment status by id
+     * @param id Payment id
+     * @param status Payment status: 'Ready', 'Submitted'
+     * @return successful oparetion
+     * @throws AppException
+     */
     public static boolean updatePaymentStatus(Long id, String status) throws AppException {
         boolean result = false;
         PreparedStatement pstmt = null;
@@ -132,6 +158,12 @@ public class PaymentDAO {
         return result;
     }
 
+    /**
+     * Insert payment into DB
+     * @param payment current payment
+     * @return successful operation
+     * @throws AppException
+     */
     public static boolean insertPayment (Payment payment) throws AppException {
         PreparedStatement pstmt = null;
         Connection con = null;
@@ -164,6 +196,12 @@ public class PaymentDAO {
         return result;
     }
 
+    /**
+     * Delete payment. Payment is not deleted from DB, only mark like archive
+     * @param id Payment id
+     * @return successful oparetion
+     * @throws AppException
+     */
     public static boolean deletePaymentById(Long id) throws AppException {
         boolean result = false;
         PreparedStatement pstmt = null;
@@ -186,8 +224,17 @@ public class PaymentDAO {
         return result;
     }
 
+    /**
+     * Class for load object from DB
+     */
     private static class PaymentLoad implements LoadEntity<Payment> {
 
+        /**
+         * Load object from ResultSet
+         * @param rs ResultSet
+         * @return Payment object
+         * @throws AppException
+         */
         @Override
         public Payment loadRow(ResultSet rs) throws AppException {
             try {
