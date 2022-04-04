@@ -20,20 +20,41 @@ import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.util.Map;
 
+/**
+ * Update account balance command for single page application
+ */
 public class UpdateAccountBalanceCommand extends Command {
 
     private static final Logger log = Logger.getLogger(UpdateAccountBalanceCommand.class);
 
+    /**
+     * Execute GET function for Controller. This function doesn't have GET request, and redirect to error page
+     * @param request servlet request
+     * @param response servlet response
+     * @throws IOException
+     * @throws ServletException
+     */
     @Override
     public void executeGet(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
         UtilCommand.bedGETRequest(request,response);
     }
 
+    /**
+     * Execute POST function for Controller. This function use JSON data from request, parse it, and send response for
+     * single page application. Function has access for USER role
+     * @param request servlet request
+     * @param response servlet response
+     * @throws IOException
+     * @throws ServletException
+     */
     @Override
     public void executePost(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
         log.trace("Start POST command "+ this.getClass().getSimpleName());
         request.setCharacterEncoding("UTF-8");
-
+        JsonObject innerObject = new JsonObject();
+        /**
+         * Check user role
+         */
         HttpSession session = request.getSession();
         Role userRole = (Role) session.getAttribute("userRole");
         User currentUser = (User) session.getAttribute("currentUser");
@@ -44,8 +65,9 @@ public class UpdateAccountBalanceCommand extends Command {
             return;
         }
 
-
-        JsonObject innerObject = new JsonObject();
+        /**
+         * Start JSON parsing request
+         */
         Map<String, Object> jsonParameters = null;
         try {
             jsonParameters = UtilCommand.parseRequestJSON(request);
@@ -56,7 +78,9 @@ public class UpdateAccountBalanceCommand extends Command {
         Double accountCoin = null;
         Account accountById = null;
 
-
+        /**
+         * Find account for change balance
+         */
         try {
             accountId = (Integer)jsonParameters.get("accountId");
             accountCoin = Double.parseDouble(jsonParameters.get("coin").toString());
@@ -66,6 +90,9 @@ public class UpdateAccountBalanceCommand extends Command {
             log.error("Bad input value");
         }
 
+        /**
+         * Create response with JSON files
+         */
         try {
             if (accountById != null && userRole == Role.USER && accountById.getOwnerUser().getId().equals(currentUser.getId())) {
                 if (accountById.getCard() != null) {
@@ -85,7 +112,11 @@ public class UpdateAccountBalanceCommand extends Command {
             innerObject = UtilCommand.errorMessageJSON(ex.getMessage());
         }
 
+        /**
+         * Send result response for single page
+         */
         UtilCommand.sendJSONData(response,innerObject);
+        log.trace("End POST command "+ this.getClass().getName());
 
     }
 }
