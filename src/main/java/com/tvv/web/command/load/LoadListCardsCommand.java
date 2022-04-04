@@ -15,10 +15,20 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
 
+/**
+ * This command show page with list of Cards
+ */
 public class LoadListCardsCommand extends Command {
 
     private static final Logger log = Logger.getLogger(LoadListCardsCommand.class);
 
+    /**
+     * Function for GET request. This function redirect user to list cards
+     * @param request servlet request
+     * @param response servlet response
+     * @throws IOException
+     * @throws ServletException
+     */
     @Override
     public void executeGet(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
 
@@ -26,6 +36,13 @@ public class LoadListCardsCommand extends Command {
 
     }
 
+    /**
+     * Function for POST request. This function redirect user to list cards
+     * @param request servlet request
+     * @param response servlet response
+     * @throws IOException
+     * @throws ServletException
+     */
     @Override
     public void executePost(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
 
@@ -33,6 +50,14 @@ public class LoadListCardsCommand extends Command {
 
     }
 
+    /**
+     * Main function is the same for POST and GET method. Forward user to list of cards: for ADMIN it is list of all
+     * cards; USER - only user's cards. If user didn't authorize, command redirect him to start page
+     * @param request servlet request
+     * @param response servlet response
+     * @throws IOException
+     * @throws ServletException
+     */
     private void process(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
         log.trace("Start load command with method" + request.getMethod());
         HttpSession session = request.getSession();
@@ -41,13 +66,6 @@ public class LoadListCardsCommand extends Command {
         if (userRole != Role.ADMIN && userRole != Role.USER)
             response.sendRedirect(request.getContextPath() + Path.COMMAND__START_PAGE);
         else {
-            if (userRole == Role.USER) {
-                try {
-                    session.setAttribute("userAccounts", AccountDAO.findAccountByUserId(currentUser.getId()));
-                } catch (AppException e) {
-                    log.error(e.getMessage());
-                }
-            }
             request.getSession().setAttribute("currentPage", "cards");
             RequestDispatcher disp = request.getRequestDispatcher(Path.PAGE__LIST_CARDS);
             disp.forward(request, response);
