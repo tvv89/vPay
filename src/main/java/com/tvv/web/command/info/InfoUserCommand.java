@@ -19,7 +19,7 @@ import java.io.IOException;
 import java.util.Map;
 
 /**
- * This command will be used in the future for show user information via send JSON response
+ * This command show user information via send JSON response
  */
 public class InfoUserCommand extends Command {
 
