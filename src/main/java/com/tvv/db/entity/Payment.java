@@ -1,5 +1,20 @@
 package com.tvv.db.entity;
 
+/**
+ * Class for payment object
+ * guid - id of payment, generate automatically in system
+ * user - object User, user owner
+ * sender - account which create payment
+ * recipientType - type of recipient (Account; Card)
+ * recipientId - recipient id (for Account: IBAN, for Card: card number)
+ * timeOfLog - time of payment
+ * currency - account currency which create payment
+ * commission - commission of payment
+ * total - total sum with commission
+ * currencySum - currency of payment
+ * sum - sum of payment
+ * status  - payment status (Ready, Submitted)
+ */
 
 public class Payment extends EntityID {
     private String guid;

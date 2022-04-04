@@ -1,5 +1,13 @@
 package com.tvv.db.entity;
 
+/**
+ * Class for Card. Use data from table accounts
+ * name - name of card
+ * number - card number
+ * expDate - expiration date for card
+ * user - user owner (object User)
+ * status - status card (boolean value)
+ */
 
 public class Card extends EntityID {
     private String name;

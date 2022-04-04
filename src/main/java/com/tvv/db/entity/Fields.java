@@ -1,5 +1,8 @@
 package com.tvv.db.entity;
 
+/**
+ * Fields for database access
+ */
 public final class Fields {
 
 	public static final String ENTITY__ID = "id";

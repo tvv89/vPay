@@ -1,7 +1,20 @@
 package com.tvv.db.entity;
 
-import java.time.LocalDate;
-
+/**
+ * Class User for users in DB
+ * login - user login in system
+ * password - user password, hide real password with hash function
+ * status - user status
+ * firstName - first name
+ * lastName - last name
+ * dayOfBirth - date of birth
+ * sex - sex
+ * gender - not used, will be developed in the future
+ * photo - photo file, use only file name
+ * role - user role
+ * email - e-mail address
+ * local - current user localization
+ */
 public class User extends EntityID{
 
     private String login;
