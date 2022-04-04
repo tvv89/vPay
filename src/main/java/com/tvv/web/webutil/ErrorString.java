@@ -1,7 +1,6 @@
 package com.tvv.web.webutil;
 
 public interface ErrorString {
-    String errorHeaderUser();
 
     String no18YearsOld();
 

@@ -3,9 +3,6 @@ package com.tvv.web.webutil;
 public class ErrorMessageEN implements ErrorString{
 
     @Override
-    public String errorHeaderUser() { return "User creation failed: "; }
-
-    @Override
     public String no18YearsOld() {
         return "You have to be 18 years old";
     }

@@ -3,23 +3,26 @@ package com.tvv.web.command.update;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.tvv.db.dao.UserDAO;
+import com.tvv.db.entity.Role;
 import com.tvv.db.entity.User;
 import com.tvv.service.exception.AppException;
 import com.tvv.utils.PaginationList;
 import com.tvv.web.command.Command;
 import com.tvv.web.command.UtilCommand;
+import com.tvv.web.webutil.Path;
 import org.apache.log4j.Logger;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.io.Serializable;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
+/**
+ * Update list of users command for single page application include pagination and sorting
+ */
 public class UpdateListUsersCommand extends Command {
 
     private static final Logger log = Logger.getLogger(UpdateListUsersCommand.class);
@@ -57,78 +60,102 @@ public class UpdateListUsersCommand extends Command {
     }
 
     @Override
-    public void executePost(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException, AppException {
-
+    public void executePost(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
+        log.trace("Start POST command " + this.getClass().getName());
+        JsonObject innerObject = new JsonObject();
+        /**
+         * Check user role
+         */
         request.setCharacterEncoding("UTF-8");
-        Map<String, Object> jsonParameters =
-                null;
+        HttpSession session = request.getSession();
+        Role userRole = (Role) session.getAttribute("userRole");
+        User currentUser = (User) session.getAttribute("currentUser");
+        if (userRole != Role.ADMIN && userRole != Role.USER) {
+            response.sendRedirect(request.getContextPath() + Path.COMMAND__START_PAGE);
+            log.debug("User role is not correct");
+            return;
+        }
+        if (userRole == Role.USER) {
+            response.sendRedirect(request.getContextPath() + Path.COMMAND__LIST_ACCOUNTS);
+            log.debug("User role is not correct for this command");
+            return;
+        }
 
+        /**
+         * Start JSON parsing request
+         */
+        Map<String, Object> jsonParameters = new HashMap<>();
         try {
             jsonParameters = UtilCommand.parseRequestJSON(request);
         } catch (AppException e) {
             e.printStackTrace();
         }
 
+        /**
+         * Create pagination and sorting
+         */
         Integer currentPage = null;
         Integer itemPerPage = null;
         Integer sorting = null;
 
         try {
-            currentPage = (Integer)(jsonParameters.get("currentPage"));
-        }
-        catch (Exception e) {
-            System.out.println(e);
-        }
-        try {
-            itemPerPage = (Integer)(jsonParameters.get("items"));
-        }
-        catch (Exception e) {
-            System.out.println(e);
+            currentPage = (Integer) (jsonParameters.get("currentPage"));
+        } catch (Exception e) {
+            currentPage = 1;
         }
         try {
-            sorting = (Integer)(jsonParameters.get("sorting"));
+            itemPerPage = (Integer) (jsonParameters.get("items"));
+        } catch (Exception e) {
+            itemPerPage = 5;
         }
-        catch (Exception e) {
-            System.out.println(e);
-        }
-
-        List<User> list = UserDAO.findAllUsers();
-        list.stream().forEach(l->l.setPassword(""));
-        switch (sorting){
-            case 1:
-                Collections.sort(list, compareByLogin);
-                break;
-            case 2:
-                Collections.sort(list, compareByFN);
-                break;
-            case 3:
-                Collections.sort(list, compareByLN);
-                break;
+        try {
+            sorting = (Integer) (jsonParameters.get("sorting"));
+        } catch (Exception e) {
+            sorting = 1;
         }
 
-        List<User> listX;
-        int pages;
-        JsonObject innerObject = new JsonObject();
-        if (itemPerPage==null) itemPerPage = 5;
-        if (itemPerPage>0) {
-            if (currentPage==null) currentPage=1;
-            pages = PaginationList.getPages(list, itemPerPage);
-            listX = PaginationList.getListPage(list, currentPage, itemPerPage);
-            innerObject.add("status", new Gson().toJsonTree("OK"));
-            innerObject.add("page", new Gson().toJsonTree(currentPage));
-            innerObject.add("pages", new Gson().toJsonTree(pages));
-            innerObject.add("list", new Gson().toJsonTree(listX));
-        } else if (itemPerPage==-1) {
-            innerObject.add("status", new Gson().toJsonTree("OK"));
-            innerObject.add("page", new Gson().toJsonTree(1));
-            innerObject.add("pages", new Gson().toJsonTree(1));
-            innerObject.add("list", new Gson().toJsonTree(list));
-        } else {
-            innerObject.add("status", new Gson().toJsonTree("ERROR"));
-            innerObject.add("message", new Gson().toJsonTree("Bad input data"));
-        }
+        try {
+            List<User> list = UserDAO.findAllUsers();
+            list.stream().forEach(l -> l.setPassword(""));
+            switch (sorting) {
+                case 1:
+                    Collections.sort(list, compareByLogin);
+                    break;
+                case 2:
+                    Collections.sort(list, compareByFN);
+                    break;
+                case 3:
+                    Collections.sort(list, compareByLN);
+                    break;
+            }
 
-        UtilCommand.sendJSONData(response,innerObject);
+            List<User> listX;
+            /**
+             * Select and show user list
+             */
+            if (itemPerPage > 0) {
+                int pages = PaginationList.getPages(list, itemPerPage);
+                listX = PaginationList.getListPage(list, currentPage, itemPerPage);
+                innerObject.add("status", new Gson().toJsonTree("OK"));
+                innerObject.add("page", new Gson().toJsonTree(currentPage));
+                innerObject.add("pages", new Gson().toJsonTree(pages));
+                innerObject.add("list", new Gson().toJsonTree(listX));
+            } else if (itemPerPage == -1) {
+                innerObject.add("status", new Gson().toJsonTree("OK"));
+                innerObject.add("page", new Gson().toJsonTree(1));
+                innerObject.add("pages", new Gson().toJsonTree(1));
+                innerObject.add("list", new Gson().toJsonTree(list));
+            } else {
+                innerObject = UtilCommand.errorMessageJSON("Bad input data");
+            }
+        } catch (AppException ex) {
+            innerObject = UtilCommand.errorMessageJSON(ex.getMessage());
+        }
+        /**
+         * Send result response for single page
+         */
+        UtilCommand.sendJSONData(response, innerObject);
+        log.trace("End POST command " + this.getClass().getName());
 
     }
 }
