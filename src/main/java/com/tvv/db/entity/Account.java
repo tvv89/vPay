@@ -13,15 +13,15 @@ package com.tvv.db.entity;
  * card - object card, which top up balance account
  */
 public class Account extends EntityID {
-    String iban;
-    String ipn;
-    String bankCode;
-    String name;
-    String currency;
-    Double balance;
-    User ownerUser;
-    String status;
-    Card card;
+    private String iban;
+    private String ipn;
+    private String bankCode;
+    private String name;
+    private String currency;
+    private Double balance;
+    private User ownerUser;
+    private String status;
+    private Card card;
 
     public Card getCard() {
         return card;
