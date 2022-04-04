@@ -21,10 +21,20 @@ import java.io.IOException;
 import java.rmi.server.ExportException;
 import java.util.Map;
 
+/**
+ * This command will be used in the future for show account information via send JSON response
+ */
 public class InfoAccountCommand extends Command {
 
     private static final Logger log = Logger.getLogger(InfoAccountCommand.class);
 
+    /**
+     * Function for GET request. This command class don't use GET method, and redirect to list account page
+     * @param request servlet request
+     * @param response servlet response
+     * @throws IOException
+     * @throws ServletException
+     */
     @Override
     public void executeGet(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
         log.trace("Start load command with method" + request.getMethod());
@@ -39,13 +49,31 @@ public class InfoAccountCommand extends Command {
         log.trace("Forward to: " + Path.PAGE__LIST_ACCOUNTS);
     }
 
+    /**
+     * Execute POST function for Controller. This function use JSON data from request, parse it, and send response for
+     * single page application. Function can show general information about Account info.
+     * This is function will be used in the future
+     * @param request servlet request
+     * @param response servlet response
+     * @throws IOException
+     * @throws ServletException
+     */
     @Override
     public void executePost(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
+        log.trace("Start POST method "+this.getClass().getSimpleName());
         JsonObject innerObject = new JsonObject();
+        /**
+         * Check user role
+         */
         HttpSession session = request.getSession();
         Role userRole = (Role) session.getAttribute("userRole");
         User currentUser = (User) session.getAttribute("currentUser");
-        request.setCharacterEncoding("UTF-8");
+        if (userRole!=Role.ADMIN && userRole!=Role.USER)
+        {
+            response.sendRedirect(request.getContextPath()+ Path.COMMAND__START_PAGE);
+            return;
+        }
+
 
         Integer accountId = null;
         try {
@@ -59,8 +87,12 @@ public class InfoAccountCommand extends Command {
         }
 
         try {
+            /**
+             * will add checking for owner
+             */
             Account accountById = AccountDAO.findAccountById(accountId.longValue());
             log.trace("Info for user: " + accountById);
+            accountById.getOwnerUser().setPassword("");
             if (accountById != null) {
                 innerObject.add("status", new Gson().toJsonTree("OK"));
                 innerObject.add("account", new Gson().toJsonTree(accountById));
@@ -76,8 +108,10 @@ public class InfoAccountCommand extends Command {
             log.error(ex.getMessage());
         }
 
-        if (userRole!=Role.ADMIN && userRole!=Role.USER) response.sendRedirect(request.getContextPath()+ Path.COMMAND__START_PAGE);
-        else UtilCommand.sendJSONData(response,innerObject);
-
+        /**
+         * Send result response for single page
+         */
+        UtilCommand.sendJSONData(response,innerObject);
+        log.trace("End POST method "+this.getClass().getSimpleName());
     }
 }
