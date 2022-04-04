@@ -61,9 +61,16 @@ public class UpdateListUsersCommand extends Command {
     private static Comparator<User> compareByLN = new CompareByLN();
     private static Comparator<User> compareByFN = new CompareByFN();
 
+    /**
+     * Execute GET function for Controller. This function doesn't have GET request, and redirect to error page
+     * @param request servlet request
+     * @param response servlet response
+     * @throws IOException
+     * @throws ServletException
+     */
     @Override
     public void executeGet(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
-
+        UtilCommand.bedGETRequest(request,response);
     }
 
     @Override
