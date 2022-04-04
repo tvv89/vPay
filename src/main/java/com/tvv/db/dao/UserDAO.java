@@ -13,6 +13,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * DAO functions for CRUD operation User
+ */
 public class UserDAO {
 
     public static final String SQL__FIND_ALL_USERS =
@@ -44,6 +47,12 @@ public class UserDAO {
             "UPDATE users SET role=?"+
                     "	WHERE id=?";
 
+    /**
+     * Insert user into DB
+     * @param user current user
+     * @return result User
+     * @throws AppException
+     */
     public static User insertUser (User user) throws AppException {
         PreparedStatement pstmt = null;
         ResultSet rs = null;
@@ -75,6 +84,12 @@ public class UserDAO {
         return user;
     }
 
+    /**
+     * Find user by id
+     * @param id User id
+     * @return object USer
+     * @throws AppException
+     */
     public static User findUserById(Long id) throws AppException {
         User user = null;
         PreparedStatement pstmt = null;
@@ -100,6 +115,12 @@ public class UserDAO {
         return user;
     }
 
+    /**
+     * Find user: id, first name, last name by account UID
+     * @param accountUID string account UID
+     * @return Map<String, String> with key id, lastname, firstname
+     * @throws AppException
+     */
     public static Map<String,String> findUserByAccountUID(String accountUID) throws AppException {
         Map<String,String> user = new HashMap<>();
         PreparedStatement pstmt = null;
@@ -127,6 +148,11 @@ public class UserDAO {
         return user;
     }
 
+    /**
+     * Find all user
+     * @return List of User
+     * @throws AppException
+     */
     public static List<User> findAllUsers() throws AppException {
         List<User> users = new ArrayList<>();
         User user = null;
@@ -154,6 +180,12 @@ public class UserDAO {
         return users;
     }
 
+    /**
+     * Find user by login
+     * @param login String login
+     * @return object User
+     * @throws AppException
+     */
     public User findUserByLogin(String login) throws AppException {
         User user = null;
         PreparedStatement pstmt = null;
@@ -179,11 +211,24 @@ public class UserDAO {
         return user;
     }
 
+    /**
+     * Check unic login. Will be used in the future
+     * @param login String login
+     * @return boolean result (yes or no)
+     * @throws AppException
+     */
     public boolean checkUniqueLogin(String login) throws AppException {
         User user = findUserByLogin(login);
         return (user==null);
     }
 
+    /**
+     * Update status user by id
+     * @param id User id
+     * @param status new status (true or false; 1 or 0)
+     * @return successful operation
+     * @throws AppException
+     */
     public static boolean updateStatusUserById(Long id, int status) throws AppException {
         boolean result = false;
         PreparedStatement pstmt = null;
@@ -206,6 +251,13 @@ public class UserDAO {
         return result;
     }
 
+    /**
+     * Update user role by id
+     * @param id User id
+     * @param role new user role
+     * @return successful operation
+     * @throws AppException
+     */
     public static boolean updateRoleUserById(Long id, int role) throws AppException {
         boolean result = false;
         PreparedStatement pstmt = null;
@@ -228,8 +280,16 @@ public class UserDAO {
         return result;
     }
 
+    /**
+     * Class for load object from DB
+     */
     private static class UserLoad implements LoadEntity<User> {
-
+        /**
+         * Load object from ResultSet
+         * @param rs ResultSet
+         * @return Payment object
+         * @throws AppException
+         */
         @Override
         public User loadRow(ResultSet rs) throws AppException {
             try {
