@@ -12,10 +12,20 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
 
+/**
+ * This command show page with list of Accounts
+ */
 public class LoadListAccountsCommand extends Command {
 
     private static final Logger log = Logger.getLogger(LoadListAccountsCommand.class);
 
+    /**
+     * Function for GET request. This function redirect user to list account
+     * @param request servlet request
+     * @param response servlet response
+     * @throws IOException
+     * @throws ServletException
+     */
     @Override
     public void executeGet(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
 
@@ -23,6 +33,13 @@ public class LoadListAccountsCommand extends Command {
 
     }
 
+    /**
+     * Function for POST request. This function redirect user to list account
+     * @param request servlet request
+     * @param response servlet response
+     * @throws IOException
+     * @throws ServletException
+     */
     @Override
     public void executePost(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
 
@@ -30,6 +47,14 @@ public class LoadListAccountsCommand extends Command {
 
     }
 
+    /**
+     * Main function is the same for POST and GET method. Forward user to list of accounts. If user didn't
+     * authorize, command redirect him to start page
+     * @param request servlet request
+     * @param response servlet response
+     * @throws IOException
+     * @throws ServletException
+     */
     private void process(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
         log.trace("Start load command with method" + request.getMethod());
         HttpSession session = request.getSession();
