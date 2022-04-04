@@ -22,7 +22,7 @@ import java.io.IOException;
 import java.util.Map;
 
 /**
- * This command will be used in the future for show account information via send JSON response
+ * This command will be used in the future for show card information via send JSON response
  */
 public class InfoCardCommand extends Command {
 
