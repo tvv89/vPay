@@ -8,6 +8,9 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * DAO functions for CRUD operation with Account
+ */
 public class AccountDAO {
     private static final String SQL__FIND_ALL_ACCOUNT =
             "SELECT * FROM accounts";
@@ -47,6 +50,12 @@ public class AccountDAO {
     private static final String SQL_DELETE_ACCOUNT =
             "delete from accounts WHERE id=?";
 
+    /**
+     * Update item in DB. Will be developed in the future
+     * @param account - account which will be updated
+     * @return return updated account
+     * @throws AppException
+     */
     public static Account updateAccount (Account account) throws AppException {
         PreparedStatement pstmt = null;
         Connection con = null;
@@ -70,6 +79,12 @@ public class AccountDAO {
         return account;
     }
 
+    /**
+     * Insert account in DB
+     * @param account account to be added
+     * @return
+     * @throws AppException
+     */
     public static Account insertAccount (Account account) throws AppException {
         PreparedStatement pstmt = null;
         Connection con = null;
@@ -101,6 +116,12 @@ public class AccountDAO {
         return account;
     }
 
+    /**
+     * Delete account form DB
+     * @param account account to be deleted
+     * @return successful operation
+     * @throws AppException
+     */
     public static boolean deleteAccount (Account account) throws AppException {
         PreparedStatement pstmt = null;
         Connection con = null;
@@ -121,6 +142,11 @@ public class AccountDAO {
         return result;
     }
 
+    /**
+     * List of all accounts
+     * @return List of Account
+     * @throws AppException
+     */
     public static List<Account> findAllAccount() throws AppException {
         List<Account> accounts = new ArrayList<>();
         Statement stmt = null;
@@ -144,6 +170,12 @@ public class AccountDAO {
         return accounts;
     }
 
+    /**
+     * Find account by ID
+     * @param id Long value id
+     * @return object Account
+     * @throws AppException
+     */
     public static Account findAccountById (Long id) throws AppException {
         Account account = new Account();
         PreparedStatement pstmt = null;
@@ -168,6 +200,13 @@ public class AccountDAO {
         return account;
     }
 
+    /**
+     * Update balance for Account with 'id'
+     * @param id Account id
+     * @param newBalance new balance
+     * @return successful operation
+     * @throws AppException
+     */
     public static boolean updateAccountBalance (Long id, Double newBalance) throws AppException {
         boolean result = false;
         PreparedStatement pstmt = null;
@@ -189,6 +228,13 @@ public class AccountDAO {
         return result;
     }
 
+    /**
+     * Update card for Account by id
+     * @param id Account id
+     * @param cardId Card id
+     * @return successful operation
+     * @throws AppException
+     */
     public static boolean updateAccountCard (Long id, Integer cardId) throws AppException {
         boolean result = false;
         PreparedStatement pstmt = null;
@@ -210,6 +256,12 @@ public class AccountDAO {
         return result;
     }
 
+    /**
+     * Find all accounts by owner user
+     * @param id User id
+     * @return List of Accounts
+     * @throws AppException
+     */
     public static List<Account> findAccountByUserId (Long id) throws AppException {
         List<Account> accounts = new ArrayList<>();
         PreparedStatement pstmt = null;
@@ -235,6 +287,13 @@ public class AccountDAO {
 
     }
 
+    /**
+     * Update account status by id
+     * @param id Account id
+     * @param status new account status
+     * @return successful operation
+     * @throws AppException
+     */
     public static boolean updateStatusAccountById(Long id, String status) throws AppException {
         boolean result = false;
         PreparedStatement pstmt = null;
@@ -256,6 +315,12 @@ public class AccountDAO {
         return result;
     }
 
+    /**
+     * Find account by UID (IBAN in DB)
+     * @param accountNumber Account UID
+     * @return Account from DB
+     * @throws AppException
+     */
     public static Account findAccountByUID(String accountNumber) throws AppException {
         Account account = null;
         PreparedStatement pstmt = null;
@@ -280,7 +345,16 @@ public class AccountDAO {
         return account;
     }
 
+    /**
+     * Class for load object from DB
+     */
     private static class AccountLoad implements LoadEntity<Account> {
+        /**
+         * Load object from ResultSet
+         * @param rs ResultSet
+         * @return Account object
+         * @throws AppException
+         */
         @Override
         public Account loadRow(ResultSet rs) throws AppException {
             try {
