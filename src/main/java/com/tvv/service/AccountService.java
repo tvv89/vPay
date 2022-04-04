@@ -18,6 +18,7 @@ import java.util.Random;
 
 public class AccountService {
     public static boolean depositAccount(Account accountFrom, Account accountTo, Double valueFrom, Double valueTo) throws AppException {
+        if (accountTo!=null && accountFrom.getIban().equals(accountTo.getIban())) return true;
         Double balanceFrom = accountFrom.getBalance();
         DecimalFormat df = new DecimalFormat("#.##", new DecimalFormatSymbols(Locale.ENGLISH));
         Double newBalanceFrom = Double.valueOf(df.format(balanceFrom-valueFrom));
