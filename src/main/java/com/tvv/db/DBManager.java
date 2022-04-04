@@ -24,6 +24,11 @@ public class DBManager {
         return instance;
     }
 
+    /**
+     * Get connection from pool
+     * @return Connection for operation with DB
+     * @throws SQLException
+     */
     public Connection getConnection() throws SQLException {
         Connection con = null;
         try {
