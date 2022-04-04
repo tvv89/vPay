@@ -26,7 +26,9 @@ import java.util.*;
 public class UpdateListUsersCommand extends Command {
 
     private static final Logger log = Logger.getLogger(UpdateListUsersCommand.class);
-
+    /**
+     * Comparator for sorting by login
+     */
     private static class CompareByLogin implements Comparator<User>, Serializable {
 
         @Override
@@ -34,6 +36,9 @@ public class UpdateListUsersCommand extends Command {
             return u1.getLogin().compareTo(u2.getLogin());
         }
     }
+    /**
+     * Comparator for sorting by first name
+     */
     private static class CompareByFN implements Comparator<User>, Serializable {
 
         @Override
@@ -41,7 +46,9 @@ public class UpdateListUsersCommand extends Command {
             return u1.getFirstName().compareTo(u2.getFirstName());
         }
     }
-
+    /**
+     * Comparator for sorting by last name
+     */
     private static class CompareByLN implements Comparator<User>, Serializable {
 
         @Override
