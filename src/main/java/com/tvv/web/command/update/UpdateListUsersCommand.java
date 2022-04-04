@@ -73,6 +73,14 @@ public class UpdateListUsersCommand extends Command {
         UtilCommand.bedGETRequest(request,response);
     }
 
+    /**
+     * Execute POST function for Controller. This function use JSON data from request, parse it, and send response for
+     * single page application. Function is enabled ADMIN and show list of users
+     * @param request servlet request
+     * @param response servlet response
+     * @throws IOException
+     * @throws ServletException
+     */
     @Override
     public void executePost(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
         log.trace("Start POST command " + this.getClass().getName());
