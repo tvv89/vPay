@@ -59,7 +59,7 @@ function createTable(tx) {
                 <td>${tx[i].commission}</td>
                 <td>${tx[i].total}</td>
                 <td id="td_status_${tx[i].id}">${statusP}</td>
-                <td><a uk-icon="icon: file-pdf; ratio: 1.5" onclick=""></a></td>
+                <td><a uk-icon="icon: file-pdf; ratio: 1.5" onclick="pdfPayment(${tx[i].id})"></a></td>
                 <td><a uk-icon="icon: trash; ratio: 1.5" onclick="deletePayment(${tx[i].id})"></a></td>
                 </tr>`
         table.innerHTML += row;
@@ -138,6 +138,30 @@ function deletePayment(id) {
     });
 
 }
+
+function pdfPayment(id) {
+    fetch('controller?command=statusPayment', {
+        headers: {
+            'Content-Type': 'application/json; charset=utf-8'
+        },
+        method: 'POST',
+        responseType: "arraybuffer",
+        body: JSON.stringify({
+            action: 'pdf',
+            paymentId: id
+        })
+    }).then(response => {return response.arrayBuffer()})
+        .then(data => {
+        const blob = new Blob([data], { type: 'application/pdf' })
+        const link = document.createElement('a');
+        link.href = window.URL.createObjectURL(blob)
+        link.download = 'payment.pdf';
+        link.click()
+    });
+    console.log('Payment in PDF')
+}
+
+
 
 function changeStatusButton(e) {
     UIkit.modal.confirm('Payment status will be changed to submitted. Are you sure?').then(function () {

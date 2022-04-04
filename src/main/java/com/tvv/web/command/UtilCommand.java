@@ -15,9 +15,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.PrintWriter;
+import java.io.*;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -46,6 +44,20 @@ public class UtilCommand {
         PrintWriter out = response.getWriter();
         out.print(sendData);
         out.flush();
+    }
+
+    public static void sendPDFData(HttpServletResponse response, ByteArrayOutputStream output) {
+        response.setContentType("application/pdf");
+        response.setHeader("Content-Disposition", "filename="+response.getContentType()+"");
+        response.setContentLength(output.size());
+
+        try (OutputStream os = response.getOutputStream()) {
+            os.write(output.toByteArray() , 0, output.toByteArray().length);
+        } catch (Exception excp) {
+            //handle error
+        } finally {
+
+        }
     }
 
     public static Map<String, Object> parseRequestJSON(HttpServletRequest request, String ... keys) throws IOException, AppException {

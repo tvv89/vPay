@@ -7,6 +7,7 @@ import com.tvv.db.entity.Role;
 import com.tvv.db.entity.User;
 import com.tvv.service.PaymentService;
 import com.tvv.service.exception.AppException;
+import com.tvv.utils.PDFCreator;
 import com.tvv.web.command.Command;
 import com.tvv.web.command.UtilCommand;
 import com.tvv.web.webutil.Path;
@@ -118,6 +119,13 @@ public class StatusPaymentsCommand extends Command {
                         log.error(e.getMessage());
                     }
                     break;
+                /**
+                 * Save payment to PDF
+                 */
+                case "pdf":
+                    UtilCommand.sendPDFData(response,
+                            PDFCreator.createPDF(paymentById,request.getServletContext().getRealPath("fonts")));
+                    return;
             }
         } else {
             innerObject = UtilCommand.errorMessageJSON("Current user is not owner for this payment");
