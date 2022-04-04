@@ -74,7 +74,6 @@ public class InfoAccountCommand extends Command {
             return;
         }
 
-
         Integer accountId = null;
         try {
             Map<String, Object> jsonParameters =
