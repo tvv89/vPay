@@ -1,22 +1,34 @@
 package com.tvv.service;
 
-import com.tvv.db.dao.AccountDAO;
 import com.tvv.db.dao.CardDAO;
 import com.tvv.db.dao.UserDAO;
 import com.tvv.db.entity.Card;
 import com.tvv.service.exception.AppException;
+import com.tvv.utils.FieldsChecker;
 import com.tvv.web.webutil.ErrorMessageEN;
 import com.tvv.web.webutil.ErrorString;
 
+import java.lang.reflect.Field;
 import java.util.Map;
 
+/**
+ * Business logic for Cards
+ */
 public class CardService {
+    /**
+     * Create card with checking field. Checking will be developed in the future
+     * @param cardData Map - account data
+     * @throws AppException
+     */
     public static void createCard(Map<String,String> cardData) throws AppException {
         StringBuilder errorMessage = new StringBuilder();
         ErrorString error = new ErrorMessageEN();
+        //check card number and expiration date
+        String cardCheck = cardData.get("cardnumber");
+        cardCheck = cardCheck.replace(" ", "");
+        if (!FieldsChecker.checkCardNumber(cardCheck)) errorMessage.append("Bad card number");
 
         if (errorMessage.length()==0) {
-
             Card card = new Card();
             card.setId(1L);
             card.setName(cardData.get("name"));
@@ -32,6 +44,11 @@ public class CardService {
         else throw new AppException(errorMessage.toString(), new IllegalArgumentException());
     }
 
+    /**
+     * Create card format '#### #### #### ####'
+     * @param cardNumber String card number
+     * @return String with new format
+     */
     public static String formatCard (String cardNumber) {
         if (cardNumber==null) return "";
         cardNumber.replace(" ","");
@@ -41,8 +58,6 @@ public class CardService {
             result.append(cardNumber.toCharArray()[i]);
         }
         return result.toString().trim();
-
     }
-
 
 }
