@@ -14,25 +14,46 @@ import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.util.Locale;
 
+/**
+ * Class for PDF operation
+ */
 public class PDFCreator {
 
-    public static ByteArrayOutputStream createPDF(Payment payment, String path) throws IOException {
+    /**
+     * Create PDF byte stream
+     * @param payment current payment which will be transformed to PDF
+     * @param path path to custom fonts
+     * @return byte array stream
+     */
+    public static ByteArrayOutputStream createPDF(Payment payment, String path){
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         try {
+            /**
+             * Use Apache PDFBox for create PDF document
+             */
             PDDocument doc = new PDDocument();
             PDPage page = new PDPage();
             doc.addPage(page);
+            /**
+             * Load font
+             */
             String fileFont = path + "\\cour.ttf";
             PDFont font = PDType0Font.load(doc, new File(fileFont));
             PDPageContentStream contentStream = new PDPageContentStream(doc, page);
             contentStream.setFont(font, 14);
 
+            /**
+             * Coordinates for markup (lines and text)
+             */
             float maxY = page.getCropBox().getUpperRightY();
             float startX = page.getCropBox().getLowerLeftX() + 30;
             float endX = page.getCropBox().getUpperRightX() - 30;
             float startX1 = page.getCropBox().getUpperRightX() / 2;
             float startY1 = page.getCropBox().getUpperRightY() - 10;
 
+            /**
+             * Draw lines
+             */
             //horizontal line
             contentStream.moveTo(startX, maxY - 70);
             contentStream.lineTo(endX, maxY - 70);
@@ -42,14 +63,23 @@ public class PDFCreator {
             contentStream.lineTo(startX1, maxY - 70);
             contentStream.stroke();
 
+            /**
+             * General X points
+             */
             float divX1 = 40;
             float divX2 = 315;
             float divX3 = 35;
             float divX4 = 310;
 
+            /**
+             * Decimal format for double value
+             */
             DecimalFormat df = new DecimalFormat("#.##", new DecimalFormatSymbols(Locale.ENGLISH));
             double sumWithoutCommission = Double.parseDouble(df.format(payment.getTotal() - payment.getCommission()));
 
+            /**
+             * Create content and draw text
+             */
             drawText(contentStream, font, 14, divX1, maxY - 40, "vPAY | MONEY TRANSFER SERVICE");
 
             drawText(contentStream, font, 8, divX2, maxY - 36, "vPay System ltd.");
@@ -74,6 +104,9 @@ public class PDFCreator {
 
             contentStream.close();
 
+            /**
+             * Save PDF to stream
+             */
             doc.save(outputStream);
             doc.close();
 
@@ -83,6 +116,16 @@ public class PDFCreator {
         return outputStream;
     }
 
+    /**
+     * Function for draw formatted text
+     * @param contentStream PDF document content
+     * @param font font object
+     * @param size font size
+     * @param x X coordinate at page
+     * @param y Y coordinate at page
+     * @param text text for drawing
+     * @throws IOException
+     */
     private static void drawText(PDPageContentStream contentStream, PDFont font, float size, float x, float y, String text) throws IOException {
         contentStream.beginText();
         contentStream.newLineAtOffset(x, y);
