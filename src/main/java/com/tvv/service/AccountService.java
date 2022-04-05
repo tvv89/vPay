@@ -16,7 +16,19 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Random;
 
+/**
+ * Business logic for Accounts
+ */
 public class AccountService {
+    /**
+     * Add money to accountTo balance and subtract money form accountFrom balance
+     * @param accountFrom debit account object
+     * @param accountTo deposit account object
+     * @param valueFrom subtract value from accountFrom
+     * @param valueTo add value to accountTo
+     * @return successful operation
+     * @throws AppException
+     */
     public static boolean depositAccount(Account accountFrom, Account accountTo, Double valueFrom, Double valueTo) throws AppException {
         if (accountTo!=null && accountFrom.getIban().equals(accountTo.getIban())) return true;
         Double balanceFrom = accountFrom.getBalance();
@@ -31,6 +43,11 @@ public class AccountService {
         return true;
     }
 
+    /**
+     * Will be used in the future. Lock account
+     * @param account
+     * @throws AppException
+     */
     public static void lockAccount(Account account) throws AppException {
         if (account!=null) {
             account.setStatus("disable");
@@ -39,6 +56,12 @@ public class AccountService {
         else throw new AppException("Can not find account for locking", new NullPointerException());
     }
 
+    /**
+     * Create account with checking field. Checking will be developed in the future
+     * @param accountData Map - account data
+     * @param user account owner user
+     * @throws AppException
+     */
     public static void createAccount(Map<String,String> accountData, User user) throws AppException {
         StringBuilder errorMessage = new StringBuilder();
         ErrorString error = new ErrorMessageEN();
