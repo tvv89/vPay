@@ -15,6 +15,14 @@ public class CharacterEncodingFilter implements Filter {
     public void destroy() {
     }
 
+    /**
+     * Function doFilter
+     * @param request servlet request
+     * @param response servlet response
+     * @param chain filter chain
+     * @throws ServletException
+     * @throws IOException
+     */
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws ServletException, IOException {
         /**
