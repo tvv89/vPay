@@ -14,8 +14,17 @@ import java.time.LocalDate;
 import java.util.Locale;
 import java.util.Map;
 
+/**
+ * Business logic for User
+ */
 public class UserService {
 
+    /**
+     * Create user function
+     * @param userData Map with user fields values
+     * @return successful operation
+     * @throws AppException
+     */
     public static void createUser (Map<String,String> userData) throws AppException {
         StringBuilder errorMessage = new StringBuilder();
         ErrorString error = new ErrorMessageEN();
@@ -27,12 +36,18 @@ public class UserService {
             date = LocalDate.now();
         }
 
+        /**
+         * Check field for creating user
+         */
         if (!FieldsChecker.checkAge18YearsOld(date)) errorMessage.append(error.no18YearsOld()).append("<br/>");
         if (!FieldsChecker.checkNameField(userData.get("firstname"))) errorMessage.append(error.badFirstName()).append("<br/>");
         if (!FieldsChecker.checkNameField(userData.get("lastname"))) errorMessage.append(error.badLastName()).append("<br/>");
         if (!FieldsChecker.checkEMailAddress(userData.get("email"))) errorMessage.append(error.badEmail()).append("<br/>");
         if (!FieldsChecker.checkPasswordField(userData.get("password"))) errorMessage.append(error.badPassword()).append("<br/>");
         if (!userData.get("password").equals(userData.get("confirmpassword"))) errorMessage.append(error.bedConfirmPassword());
+        /**
+         * if all fields are OK - create user
+         */
         if (errorMessage.length()==0) {
 
             User user = new User();
@@ -54,6 +69,12 @@ public class UserService {
         else throw new AppException(errorMessage.toString(), new IllegalArgumentException());
     }
 
+    /**
+     * Hide user first and last name "user name" -> "us** **me"
+     * @param firstName user first name
+     * @param lastName user last name
+     * @return hide name string
+     */
     public static String hideUserName(String firstName, String lastName) {
         StringBuilder result = new StringBuilder();
         String fn = firstName.toUpperCase(Locale.ROOT);
