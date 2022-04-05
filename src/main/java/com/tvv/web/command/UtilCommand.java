@@ -19,16 +19,18 @@ import java.io.*;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Class extended functions for Commands
+ */
 public class UtilCommand {
     private static final Logger log = Logger.getLogger(UtilCommand.class);
 
-    public static boolean noUserRedirect(HttpServletRequest request,
-                                         HttpServletResponse response){
-        HttpSession session = request.getSession();
-        User user = (User) session.getAttribute("currentUser");
-        return user==null;
-    }
-
+    /**
+     * Return current user from request
+     * @param request
+     * @param response
+     * @return
+     */
     public static User currentUser(HttpServletRequest request,
                                    HttpServletResponse response){
         User user = null;
@@ -37,6 +39,12 @@ public class UtilCommand {
         return user;
     }
 
+    /**
+     * Function send JSOM data in response
+     * @param response servlet response
+     * @param innerObject JSON object (JSON data)
+     * @throws IOException
+     */
     public static void sendJSONData(HttpServletResponse response, com.google.gson.JsonObject innerObject) throws IOException {
         String sendData = new Gson().toJson(innerObject);
         response.setContentType("application/json");
@@ -46,21 +54,33 @@ public class UtilCommand {
         out.flush();
     }
 
+    /**
+     * Send bytearray stream  (PDF file) to client
+     * @param response servlet response
+     * @param output PDF byte stream
+     */
     public static void sendPDFData(HttpServletResponse response, ByteArrayOutputStream output) {
         response.setContentType("application/pdf");
-        response.setHeader("Content-Disposition", "filename="+response.getContentType()+"");
+        response.setHeader("Content-Disposition", "filename=payment.pdf");
         response.setContentLength(output.size());
 
         try (OutputStream os = response.getOutputStream()) {
             os.write(output.toByteArray() , 0, output.toByteArray().length);
         } catch (Exception excp) {
-            //handle error
+            log.error("Can not get response output stream");
         } finally {
 
         }
     }
 
-    public static Map<String, Object> parseRequestJSON(HttpServletRequest request, String ... keys) throws IOException, AppException {
+    /**
+     * Function for parsing JSON request
+     * @param request servlet request
+     * @return Map: key - string, value - object from JSON data
+     * @throws IOException
+     * @throws AppException
+     */
+    public static Map<String, Object> parseRequestJSON(HttpServletRequest request) throws IOException, AppException {
         Map<String, Object> result = new HashMap<>();
         StringBuffer sb = new StringBuffer();
         String line = null;
@@ -82,6 +102,13 @@ public class UtilCommand {
         return result;
     }
 
+    /**
+     * Show Access denied page for user
+     * @param request servlet request
+     * @param response servlet response
+     * @throws IOException
+     * @throws ServletException
+     */
     public static void bedGETRequest (HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
         log.trace("Start load command with method" + request.getMethod());
             RequestDispatcher disp = request.getRequestDispatcher(Path.PAGE__ACCESS_DENIED);
@@ -89,12 +116,24 @@ public class UtilCommand {
         log.trace("Forward to: " + Path.PAGE__ACCESS_DENIED);
     }
 
+    /**
+     * Redirect to Error Page (with parameters)
+     * @param request servlet request
+     * @param response servlet response
+     * @throws IOException
+     * @throws ServletException
+     */
     public static void goToErrorPage (HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
         log.trace("Start error page with method " + request.getMethod());
         response.sendRedirect(request.getContextPath() + Path.PAGE__ERROR_PAGE);
         log.trace("Forward to: " + Path.PAGE__ERROR_PAGE);
     }
 
+    /**
+     * Generate JSON object with Error message (for POST response)
+     * @param message String error
+     * @return JSON object (usually use for 'sendJSONData')
+     */
     public static JsonObject errorMessageJSON (String message) {
         JsonObject innerObject = new JsonObject();
         innerObject.add("status", new Gson().toJsonTree("ERROR"));
