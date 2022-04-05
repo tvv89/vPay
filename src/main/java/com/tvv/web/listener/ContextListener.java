@@ -7,6 +7,9 @@ import javax.servlet.*;
 import javax.servlet.http.*;
 import javax.servlet.annotation.*;
 
+/**
+ * Context listener for start initialize procedures
+ */
 @WebListener
 public class ContextListener implements ServletContextListener, HttpSessionListener, HttpSessionAttributeListener {
 
@@ -16,6 +19,10 @@ public class ContextListener implements ServletContextListener, HttpSessionListe
 
     }
 
+    /**
+     * Initialization services
+     * @param event
+     */
     public void contextInitialized(ServletContextEvent event) {
         log("Initialization services starts");
 
@@ -27,6 +34,10 @@ public class ContextListener implements ServletContextListener, HttpSessionListe
         log("Initialization services finished");
     }
 
+    /**
+     * Initialization photo path service. Don't use
+     * @param servletContext
+     */
     private void initPhotoParameters(ServletContext servletContext) {
         log.debug("Photo path initialization started");
         String photoPath = servletContext.getInitParameter("photoPath");
@@ -35,9 +46,16 @@ public class ContextListener implements ServletContextListener, HttpSessionListe
         log.debug("Photo path initialization finished");
     }
 
+    /**
+     * Initialization logging. Use Log4j
+     * @param servletContext
+     */
     private void initLog4J(ServletContext servletContext) {
         log("Log4J initialization started");
         try {
+            /**
+             * Read general properties from WEB-INF/log4j.properties
+             */
             PropertyConfigurator.configure(servletContext.getRealPath(
                     "WEB-INF/log4j.properties"));
         } catch (Exception ex) {
@@ -47,6 +65,9 @@ public class ContextListener implements ServletContextListener, HttpSessionListe
         log("Log4J initialization finished");
     }
 
+    /**
+     * Initialization command container
+     */
     private void initCommandContainer() {
         log.debug("Command container initialization started");
 
@@ -59,6 +80,10 @@ public class ContextListener implements ServletContextListener, HttpSessionListe
         log.debug("Command container initialization finished");
     }
 
+    /**
+     * Console logging
+     * @param msg string message
+     */
     private void log(String msg) {
         System.out.println("[ContextListener] " + msg);
     }
