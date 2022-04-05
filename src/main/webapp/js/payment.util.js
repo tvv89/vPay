@@ -59,8 +59,8 @@ function createTable(tx) {
                 <td>${tx[i].commission}</td>
                 <td>${tx[i].total}</td>
                 <td id="td_status_${tx[i].id}">${statusP}</td>
-                <td><a uk-icon="icon: file-pdf; ratio: 1.5" onclick="pdfPayment(${tx[i].id})"></a></td>
-                <td><a uk-icon="icon: trash; ratio: 1.5" onclick="deletePayment(${tx[i].id})"></a></td>
+                <td><a uk-icon="icon: file-pdf; ratio: 1.5" onclick="pdfPayment(${tx[i].id})"></a>
+                <a uk-icon="icon: trash; ratio: 1.5" onclick="deletePayment(${tx[i].id})"></a></td>
                 </tr>`
         table.innerHTML += row;
     }

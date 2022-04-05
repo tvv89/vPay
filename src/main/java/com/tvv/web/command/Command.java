@@ -9,6 +9,9 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+/**
+ * Abstract class for servlet command. Use PEST function and GET function
+ */
 public abstract class Command implements Serializable {	
 
 	public abstract void executePost(HttpServletRequest request, HttpServletResponse response)
