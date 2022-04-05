@@ -5,8 +5,15 @@ import com.tvv.db.entity.Card;
 import java.time.LocalDate;
 import java.util.Random;
 
+/**
+ * Utility generator fields
+ */
 public class UtilsGenerator {
 
+    /**
+     * Do not use. Generate card
+     * @return new card object
+     */
     public static Card getGenerateCard(){
         Card card = new Card();
         StringBuilder number = new StringBuilder("4125");
@@ -30,6 +37,10 @@ public class UtilsGenerator {
         return card;
     }
 
+    /**
+     * Generate GUID for payment
+     * @return string GUID
+     */
     public static String getGUID (){
         StringBuilder result = new StringBuilder();
         for (int i = 0; i < 10; i++) {
@@ -38,6 +49,10 @@ public class UtilsGenerator {
         return result.toString();
     }
 
+    /**
+     * Generate UID for account
+     * @return String account UID
+     */
     public static String getAccountUID() {
         int startSymbol = 48;
         int endSymbol = 122;
