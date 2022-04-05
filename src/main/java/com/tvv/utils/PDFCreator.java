@@ -75,6 +75,7 @@ public class PDFCreator {
             contentStream.close();
 
             doc.save(outputStream);
+            doc.close();
 
         } catch (IOException ie) {
             ie.printStackTrace();

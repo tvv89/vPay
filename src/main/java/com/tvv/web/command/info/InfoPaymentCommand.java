@@ -68,7 +68,7 @@ public class InfoPaymentCommand extends Command {
         Integer paymentId = null;
         try {
             Map<String, Object> jsonParameters =
-                    UtilCommand.parseRequestJSON(request,"paymentId");
+                    UtilCommand.parseRequestJSON(request);
             paymentId = (Integer) jsonParameters.get("paymentId");
             log.trace("Read payment id for info: " + paymentId);
         }

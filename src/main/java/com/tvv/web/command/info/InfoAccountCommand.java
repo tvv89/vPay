@@ -77,7 +77,7 @@ public class InfoAccountCommand extends Command {
         Integer accountId = null;
         try {
             Map<String, Object> jsonParameters =
-                    UtilCommand.parseRequestJSON(request,"accountId");
+                    UtilCommand.parseRequestJSON(request);
             accountId = (Integer) jsonParameters.get("accountId");
             log.trace("Read user id for info: " + accountId);
         }

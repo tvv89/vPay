@@ -70,7 +70,7 @@ public class StatusUsersCommand extends Command {
         JsonObject innerObject = new JsonObject();
         Map<String, Object> jsonParameters = null;
         try {
-            jsonParameters = UtilCommand.parseRequestJSON(request,"userId");
+            jsonParameters = UtilCommand.parseRequestJSON(request);
         } catch (AppException e) {
             e.printStackTrace();
             log.error(e.getMessage());

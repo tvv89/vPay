@@ -15,6 +15,7 @@ import java.util.Locale;
 import java.util.Map;
 
 public class UserService {
+
     public static void createUser (Map<String,String> userData) throws AppException {
         StringBuilder errorMessage = new StringBuilder();
         ErrorString error = new ErrorMessageEN();

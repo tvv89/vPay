@@ -118,7 +118,7 @@ public class UserDAO {
     /**
      * Find user: id, first name, last name by account UID
      * @param accountUID string account UID
-     * @return Map<String, String> with key id, lastname, firstname
+     * @return Map(String, String) with key id, lastname, firstname
      * @throws AppException
      */
     public static Map<String,String> findUserByAccountUID(String accountUID) throws AppException {
