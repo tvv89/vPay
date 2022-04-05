@@ -62,9 +62,9 @@ public class LoadListPaymentsCommand extends Command {
         if (userRole!= Role.ADMIN && userRole!=Role.USER) response.sendRedirect(request.getContextPath() + Path.COMMAND__START_PAGE);
         else {
             request.getSession().setAttribute("currentPage", "payments");
-            RequestDispatcher disp = request.getRequestDispatcher(Path.PAGE__LIST_PAYMANT);
+            RequestDispatcher disp = request.getRequestDispatcher(Path.PAGE__LIST_PAYMENT);
             disp.forward(request, response);
-            log.trace("Forward to: " + Path.PAGE__LIST_PAYMANT);
+            log.trace("Forward to: " + Path.PAGE__LIST_PAYMENT);
         }
         log.trace("Finish load command with method" + request.getMethod());
 
