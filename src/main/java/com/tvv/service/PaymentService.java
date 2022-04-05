@@ -19,8 +19,6 @@ import java.util.Locale;
  * Business logic for Payment
  */
 public class PaymentService {
-
-
     /**
      * Currency
      */
