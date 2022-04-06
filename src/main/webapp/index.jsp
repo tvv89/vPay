@@ -3,6 +3,7 @@
 
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 
 <head>
   <meta charset="utf-8">
@@ -14,7 +15,7 @@
 </head>
 
 <body class="uk-height-1-1">
-
+<fmt:message key="settings_jsp.label.localization"/>
 <c:choose>
   <c:when test="${sessionScope.userRole=='ADMIN'}">
     <%

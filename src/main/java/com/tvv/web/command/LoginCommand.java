@@ -13,6 +13,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import javax.servlet.jsp.jstl.core.Config;
 import java.io.IOException;
 
 /**
@@ -129,6 +130,7 @@ public class LoginCommand extends Command {
 			session.setAttribute("currentPage", "users");
 			log.trace("Set the session attribute: currentPage " + "users");
 
+			Config.set(session, "javax.servlet.jsp.jstl.fmt.locale", "uk");
 		}
 		
 		log.debug("Command finished");

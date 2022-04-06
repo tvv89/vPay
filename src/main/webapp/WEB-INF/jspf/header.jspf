@@ -1,3 +1,4 @@
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <meta charset="UTF-8">
 <link rel="stylesheet" href="css/uikit.min.css">
 <script src="js/uikit.js"></script>

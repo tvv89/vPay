@@ -1,23 +1,23 @@
 <div id="modal-add-account" uk-modal>
     <div class="uk-modal-dialog uk-modal-body">
         <form class="uk-form-horizontal" method="post" action="controller" enctype="multipart/form-data">
-            <h2 class="uk-modal-title">Add account</h2>
+            <h2 class="uk-modal-title"><fmt:message key="account_create_form.title"/></h2>
             <input type="hidden" name="command" value="createAccount"/>
             <div class="uk-margin">
-                <label class="uk-form-label" for="name">Name</label>
+                <label class="uk-form-label" for="name"><fmt:message key="account_create_form.name"/></label>
                 <div class="uk-form-controls">
                     <input class="uk-input uk-form-width-large" id="name" name="name" type="text" form-field>
                 </div>
             </div>
             <div class="uk-margin">
-                <label class="uk-form-label" for="iban">UID</label>
+                <label class="uk-form-label" for="iban"><fmt:message key="account_create_form.uid"/></label>
                 <div class="uk-form-controls">
                     <input class="uk-input uk-disabled" id="iban" type="text" name="iban" form-field>
                 </div>
             </div>
 
             <div class="uk-margin">
-                <label class="uk-form-label" for="currency">Currency</label>
+                <label class="uk-form-label" for="currency"><fmt:message key="account_create_form.currency"/></label>
                 <div class="uk-form-controls">
                     <select class="uk-select" id="currency" name="currency" form-field>
                         <option>UAH</option>
@@ -28,7 +28,7 @@
             </div>
             <div>
                 <input class="uk-width-1-1 uk-button uk-button-primary uk-button-default" type="submit"
-                       id="createAccountSubmit" value="Submit"/>
+                       id="createAccountSubmit" value="<fmt:message key="account_create_form.submit"/>"/>
             </div>
         </form>
     </div>

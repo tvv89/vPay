@@ -6,6 +6,9 @@ import org.apache.log4j.PropertyConfigurator;
 import javax.servlet.*;
 import javax.servlet.http.*;
 import javax.servlet.annotation.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.StringTokenizer;
 
 /**
  * Context listener for start initialize procedures
@@ -29,6 +32,7 @@ public class ContextListener implements ServletContextListener, HttpSessionListe
         ServletContext servletContext = event.getServletContext();
         initLog4J(servletContext);
         initCommandContainer();
+        initI18N(servletContext);
         initPhotoParameters(servletContext);
         log("Init photo path: "+ servletContext.getInitParameter(""));
         log("Initialization services finished");
@@ -63,6 +67,30 @@ public class ContextListener implements ServletContextListener, HttpSessionListe
         }
 
         log("Log4J initialization finished");
+    }
+
+    /**
+     * Initialization i18n subsystem.
+     */
+    private void initI18N(ServletContext servletContext) {
+        log.debug("I18N subsystem initialization started");
+
+        String localesValue = servletContext.getInitParameter("locales");
+        if (localesValue == null || localesValue.isEmpty()) {
+            log.warn("'locales' init parameter is empty, the default encoding will be used");
+        } else {
+            List<String> locales = new ArrayList<String>();
+            StringTokenizer st = new StringTokenizer(localesValue);
+            while (st.hasMoreTokens()) {
+                String localeName = st.nextToken();
+                locales.add(localeName);
+            }
+
+            log.debug("Application attribute set: locales " + locales);
+            servletContext.setAttribute("locales", locales);
+        }
+
+        log.debug("I18N subsystem initialization finished");
     }
 
     /**

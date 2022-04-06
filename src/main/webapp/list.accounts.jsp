@@ -11,6 +11,7 @@
 </head>
 <body>
 <div>
+    <fmt:message key="settings_jsp.label.localization"/>
     <%@ include file="/WEB-INF/jspf/navigation.jspf" %>
     <div>
         <select class="uk-select uk-width-1-4@s" id="sortAccountsOption" name="items" form-field onchange="changeSort()">
