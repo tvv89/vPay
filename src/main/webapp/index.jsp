@@ -8,14 +8,13 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Login vPay</title>
+  <title><fmt:message key="index.login_page.title"/></title>
   <link rel="stylesheet" href="css/uikit.min.css">
   <script src="js/uikit.min.js"></script>
   <script src="js/uikit-icons.js"></script>
 </head>
 
 <body class="uk-height-1-1">
-<fmt:message key="settings_jsp.label.localization"/>
 <c:choose>
   <c:when test="${sessionScope.userRole=='ADMIN'}">
     <%
@@ -36,16 +35,19 @@
         <form class="uk-panel uk-panel-box uk-form" method="post" action="controller">
           <div class="uk-form-row">
             <input type="hidden" name="command" value="login"/>
-            <input class="uk-width-1-1 uk-form-large" type="text" id="login" name="login" placeholder="Username">
+            <input class="uk-width-1-1 uk-form-large" type="text"
+                   id="login" name="login" placeholder="<fmt:message key="index.login_page.login"/>">
           </div>
           <div class="uk-form-row">
-            <input class="uk-width-1-1 uk-form-large" type="password" id="password" name="password" placeholder="Password">
+            <input class="uk-width-1-1 uk-form-large" type="password"
+                   id="password" name="password" placeholder="<fmt:message key="index.login_page.password"/>">
           </div>
           <div class="uk-form-row">
-            <input class="uk-width-1-1 uk-button uk-button-primary uk-button-large" type="submit" value="Login"/>
+            <input class="uk-width-1-1 uk-button uk-button-primary uk-button-large"
+                   type="submit" value="<fmt:message key="index.login_page.submit"/>"/>
           </div>
           <div class="uk-form-row">
-            <a href="controller?command=registration">Register</a>
+            <a href="controller?command=registration"><fmt:message key="index.login_page.registration"/></a>
           </div>
         </form>
       </div>
