@@ -34,10 +34,10 @@ public class UserDAO {
             "insert into users " +
                     "(id, login, password, statususer, " +
                     "role, firstname, lastname, " +
-                    "dateofbirth, sex, gender, photo, email) "+
+                    "dateofbirth, sex, gender, photo, email,local) "+
                     "values (default, ?, ?, ?," +
                     "?, ?, ?," +
-                    "?, ?, ?, ?, ?);";
+                    "?, ?, ?, ?, ?, ?);";
 
     private static final String SQL_UPDATE_STATUS_USER =
             "UPDATE users SET statususer=?"+
@@ -46,6 +46,11 @@ public class UserDAO {
     private static final String SQL_UPDATE_ROLE_USER =
             "UPDATE users SET role=?"+
                     "	WHERE id=?";
+
+    private static final String SQL_UPDATE_LOCALE_USER =
+            "UPDATE users SET local=?"+
+                    "	WHERE id=?";
+
 
     /**
      * Insert user into DB
@@ -71,6 +76,7 @@ public class UserDAO {
             pstmt.setString(9, user.getGender());
             pstmt.setString(10, user.getPhoto());
             pstmt.setString(11, user.getEmail());
+            pstmt.setString(12, user.getLocal());
             pstmt.execute();
             pstmt.close();
 
@@ -274,6 +280,34 @@ public class UserDAO {
             DBManager.getInstance().rollbackCloseConnection(con);
             ex.printStackTrace();
             throw new AppException("Not updated user role by id in DB",ex);
+        } finally {
+            DBManager.getInstance().commitCloseConnection(con);
+        }
+        return result;
+    }
+
+    /**
+     * Update user locale by id
+     * @param id User id
+     * @param local new user local
+     * @return successful operation
+     * @throws AppException
+     */
+    public static boolean updateLocalUserById(Long id, String local) throws AppException {
+        boolean result = false;
+        PreparedStatement pstmt = null;
+        Connection con = null;
+        try {
+            con = DBManager.getInstance().getConnection();
+            pstmt = con.prepareStatement(SQL_UPDATE_LOCALE_USER);
+            pstmt.setString(1, local);
+            pstmt.setLong(2, id);
+            pstmt.executeUpdate();
+            pstmt.close();
+        } catch (SQLException ex) {
+            DBManager.getInstance().rollbackCloseConnection(con);
+            ex.printStackTrace();
+            throw new AppException("Not updated user locale by id in DB",ex);
         } finally {
             DBManager.getInstance().commitCloseConnection(con);
         }

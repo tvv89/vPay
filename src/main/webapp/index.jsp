@@ -12,6 +12,7 @@
   <link rel="stylesheet" href="css/uikit.min.css">
   <script src="js/uikit.min.js"></script>
   <script src="js/uikit-icons.js"></script>
+  <script src="js/vpaykit.mini.js"></script>
 </head>
 
 <body class="uk-height-1-1">
@@ -29,6 +30,7 @@
     %>
   </c:when>
   <c:otherwise>
+
     <div class="uk-align-center uk-position-center uk-text-center uk-height-1-1">
       <div class="uk-align-center" style="width: 250px;">
         <h1>vPay</h1>

@@ -130,7 +130,16 @@ public class LoginCommand extends Command {
 			session.setAttribute("currentPage", "users");
 			log.trace("Set the session attribute: currentPage " + "users");
 
-			Config.set(session, "javax.servlet.jsp.jstl.fmt.locale", "uk");
+			String lang = "en";
+			try {
+				lang = currentUser.getLocal();
+			}
+			catch (Exception e)
+			{
+				lang = "en";
+			}
+			Config.set(session, "javax.servlet.jsp.jstl.fmt.locale", lang);
+			session.setAttribute("currentLanguage", lang);
 		}
 		
 		log.debug("Command finished");

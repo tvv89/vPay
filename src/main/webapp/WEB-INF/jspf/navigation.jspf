@@ -20,11 +20,14 @@
                 <a href="controller?command=logout"><fmt:message key="navigation.navbar.logout"/></a>
             </li>
 
+
         </ul>
     </div>
     <div class="uk-navbar-right">
         <ul class="uk-navbar-nav">
+
             <li>
+
                 <img class="uk-preserve-width uk-border-circle" src="images/${sessionScope.currentUser.photo}"
                      width="40" alt="" uk-toggle="target: #offcanvas-flip">
                 ${sessionScope.currentUser.login}
@@ -35,16 +38,30 @@
                         <img class="uk-preserve-width uk-border-circle"
                              src="images/${sessionScope.currentUser.photo}"
                              width="80" alt="">
+                        </br>
+                        </br>
+                        <div>
+                            <select class="uk-select" id="languageSelect" onchange="changeLanguage()">
+                                <option value="en" <c:if test='${sessionScope.currentLanguage == "en"}'> selected </c:if>>English</option>
+                                <option value="uk" <c:if test='${sessionScope.currentLanguage == "uk"}'> selected </c:if>>Ukrainian</option>
+                            </select>
+                        </div>
                         <p><fmt:message key="navigation.user.info.login"/>: ${sessionScope.currentUser.login}</p>
-                        <p><fmt:message key="navigation.user.info.first_name"/>: ${sessionScope.currentUser.firstName}</p>
+                        <p><fmt:message
+                                key="navigation.user.info.first_name"/>: ${sessionScope.currentUser.firstName}</p>
                         <p><fmt:message key="navigation.user.info.last_name"/>: ${sessionScope.currentUser.lastName}</p>
-                        <p><fmt:message key="navigation.user.info.day_of_birth"/>: ${sessionScope.currentUser.dayOfBirth}</p>
+                        <p><fmt:message
+                                key="navigation.user.info.day_of_birth"/>: ${sessionScope.currentUser.dayOfBirth}</p>
                         <button class="uk-button-default" onclick="location.href = 'controller?command=logout'">
                             <fmt:message key="navigation.user.info.logout"/>
                         </button>
                     </div>
                 </div>
             </li>
+            <li>
+
+            </li>
+
         </ul>
     </div>
 </nav>

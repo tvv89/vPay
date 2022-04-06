@@ -73,6 +73,7 @@ public class CommandCollection {
 		commands.put("statusCard", new StatusCardsCommand());
 		commands.put("createCard", new CreateCardCommand());
 
+		commands.put("language", new LanguageCommand());
 		log.debug("Command container was initialized");
 		log.trace("Number of commands: " + commands.size());
 	}

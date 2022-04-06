@@ -3,4 +3,5 @@
 <link rel="stylesheet" href="css/uikit.min.css">
 <script src="js/uikit.js"></script>
 <script src="js/uikit-icons.js"></script>
+<script src="js/vpaykit.mini.js"></script>
 <script src="js/jquery.min.js"></script>

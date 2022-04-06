@@ -8,6 +8,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import com.tvv.db.dao.UserDAO;
+import com.tvv.db.entity.Role;
+import com.tvv.db.entity.User;
+import com.tvv.service.exception.AppException;
 import com.tvv.web.webutil.Path;
 import org.apache.log4j.Logger;
 
@@ -50,10 +54,28 @@ public class LogoutCommand extends Command {
 	 * @param response
 	 * @throws IOException
 	 */
-	void process (HttpServletRequest request, HttpServletResponse response) throws IOException {
-		log.debug("Command starts "+ request.getMethod());
+	void process (HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
+		log.trace("Command starts "+ request.getMethod());
+		HttpSession session = request.getSession();
+		Role userRole = (Role) session.getAttribute("userRole");
+		User currentUser = (User) session.getAttribute("currentUser");
+		String currentLanguage = (String) session.getAttribute("currentLanguage");
+		if (userRole!=Role.ADMIN && userRole!=Role.USER)
+		{
+			response.sendRedirect(request.getContextPath()+ Path.COMMAND__START_PAGE);
+			log.debug("User role is not correct");
+			return;
+		}
+		try {
+			UserDAO.updateLocalUserById(currentUser.getId(), currentLanguage);
+			log.debug("Save currentLanguage to user");
+		}
+		catch (AppException ex)
+		{
+			log.error("Can not save currentLanguage to user");
+		}
 
-		HttpSession session = request.getSession(false);
+		session = request.getSession(false);
 		if (session != null)
 			session.invalidate();
 
