@@ -5,7 +5,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 <head>
     <%@ include file="/WEB-INF/jspf/header.jspf" %>
-    <title>User page</title>
+    <title><fmt:message key="list_users.title"/></title>
     <script src="js/user.util.js"></script>
 
 </head>
@@ -14,9 +14,9 @@
     <%@ include file="/WEB-INF/jspf/navigation.jspf" %>
     <div>
         <select class="uk-select uk-width-1-4@s" id="sortUsersOption" name="items" form-field onchange="changeSort()">
-            <option value=1>Sort by Login</option>
-            <option value=2>Sort by First Name</option>
-            <option value=3>Sort by Last Name</option>
+            <option value=1><fmt:message key="list_users.sort.by_login"/></option>
+            <option value=2><fmt:message key="list_users.sort.by_first_name"/></option>
+            <option value=3><fmt:message key="list_users.sort.by_last_name"/></option>
         </select>
 
         <%@ include file="/WEB-INF/jspf/item.per.page.jspf" %>
@@ -31,14 +31,14 @@
             <table class="uk-table uk-table-hover uk-table-middle uk-table-divider uk-table-striped">
                 <thead>
                 <tr>
-                    <th class="uk-table-shrink">Photo</th>
-                    <th>Login</th>
-                    <th>First Name</th>
-                    <th>Last Name</th>
-                    <th>Role</th>
-                    <th>Date of birth</th>
-                    <th>Sex</th>
-                    <th>Status</th>
+                    <th class="uk-table-shrink"><fmt:message key="list_users.table.header.photo"/></th>
+                    <th><fmt:message key="list_users.table.header.login"/></th>
+                    <th><fmt:message key="list_users.table.header.first_name"/></th>
+                    <th><fmt:message key="list_users.table.header.last_name"/></th>
+                    <th><fmt:message key="list_users.table.header.role"/></th>
+                    <th><fmt:message key="list_users.table.header.date_of_birth"/></th>
+                    <th><fmt:message key="list_users.table.header.sex"/></th>
+                    <th><fmt:message key="list_users.table.header.status"/></th>
                 </tr>
                 </thead>
                 <tbody id="table">
