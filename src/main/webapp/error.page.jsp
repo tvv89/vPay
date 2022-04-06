@@ -1,7 +1,8 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <html>
 <head>
-    <title>Access denied</title>
+    <title><fmt:message key="error_page.title"/></title>
     <link rel="stylesheet" href="css/uikit.css">
 </head>
 <body>

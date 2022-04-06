@@ -182,6 +182,7 @@ public class UpdateListAccountsCommand extends Command {
 
             } else if (itemPerPage == -1) {
                 innerObject.add("status", new Gson().toJsonTree("OK"));
+                innerObject.add("userRole", new Gson().toJsonTree(userRole));
                 innerObject.add("page", new Gson().toJsonTree(1));
                 innerObject.add("pages", new Gson().toJsonTree(1));
                 innerObject.add("list", new Gson().toJsonTree(list));
