@@ -5,26 +5,25 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 <head>
     <%@ include file="/WEB-INF/jspf/header.jspf" %>
-    <title>Account page</title>
+    <title><fmt:message key="list_accounts.title"/></title>
     <script src="js/account.util.js"></script>
 
 </head>
 <body>
 <div>
-    <fmt:message key="settings_jsp.label.localization"/>
     <%@ include file="/WEB-INF/jspf/navigation.jspf" %>
     <div>
         <select class="uk-select uk-width-1-4@s" id="sortAccountsOption" name="items" form-field onchange="changeSort()">
-            <option value=1>Sort by Name</option>
-            <option value=2>Sort by Balance</option>
-            <option value=3>Sort by IBAN</option>
+            <option value=1><fmt:message key="list_accounts.sort.by_name"/></option>
+            <option value=2><fmt:message key="list_accounts.sort.by_balance"/></option>
+            <option value=3><fmt:message key="list_accounts.sort.by_uid"/></option>
         </select>
 
         <%@ include file="/WEB-INF/jspf/item.per.page.jspf" %>
 
         <c:if test="${sessionScope.userRole=='USER'}">
             <button class="uk-button uk-button-primary" href="#modal-add-account"
-                    uk-toggle>Add account
+                    uk-toggle><fmt:message key="list_accounts.add_account"/>
             </button>
         </c:if>
     </div>
@@ -37,15 +36,15 @@
             <table class="uk-table uk-table-hover uk-table-middle uk-table-divider uk-table-striped">
                 <thead>
                 <tr>
-                    <th>Name</th>
-                    <th>UID</th>
-                    <th>Currency</th>
-                    <th>Balance</th>
-                    <th>Owner</th>
-                    <th>Status</th>
+                    <th><fmt:message key="list_accounts.table.header.name"/></th>
+                    <th><fmt:message key="list_accounts.table.header.uid"/></th>
+                    <th><fmt:message key="list_accounts.table.header.currency"/></th>
+                    <th><fmt:message key="list_accounts.table.header.balance"/></th>
+                    <th><fmt:message key="list_accounts.table.header.owner"/></th>
+                    <th><fmt:message key="list_accounts.table.header.status"/></th>
                     <c:if test="${sessionScope.userRole=='USER'}">
-                        <th>Action</th>
-                        <th>Card</th>
+                        <th><fmt:message key="list_accounts.table.header.action"/></th>
+                        <th><fmt:message key="list_accounts.table.header.card"/></th>
                     </c:if>
                 </tr>
                 </thead>
