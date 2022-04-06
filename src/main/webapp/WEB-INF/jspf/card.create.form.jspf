@@ -1,22 +1,22 @@
 <div id="modal-add-card" uk-modal>
     <div class="uk-modal-dialog uk-modal-body">
         <form class="uk-form-horizontal" method="post" action="controller" enctype="multipart/form-data">
-            <h2 class="uk-modal-title">Add card</h2>
+            <h2 class="uk-modal-title"><fmt:message key="card_create_from.title"/></h2>
             <input type="hidden" name="command" value="createCard"/>
             <div class="uk-margin">
-                <label class="uk-form-label" for="name">Name</label>
+                <label class="uk-form-label" for="name"><fmt:message key="card_create_from.card_name"/></label>
                 <div class="uk-form-controls">
                     <input class="uk-input uk-form-width-large" id="name" name="name" type="text" form-field>
                 </div>
             </div>
             <div class="uk-margin">
-                <label class="uk-form-label" for="cardnumber">Card number</label>
+                <label class="uk-form-label" for="cardnumber"><fmt:message key="card_create_from.card_number"/></label>
                 <div class="uk-form-controls">
                     <input class="uk-input" id="cardnumber" type="text" name="cardnumber" form-field>
                 </div>
             </div>
             <div class="uk-margin">
-                <label class="uk-form-label" >Expiration date</label>
+                <label class="uk-form-label" ><fmt:message key="card_create_from.expiration_date"/></label>
                 <div class="uk-form-controls uk-margin">
                     <select class="uk-select uk-width-1-4" id="expMM" name="expMM" form-field>
                         <option>01</option>
@@ -45,7 +45,7 @@
             </div>
             <div>
                 <input class="uk-width-1-1 uk-button uk-button-primary uk-button-default" type="submit"
-                       id="createCardSubmit" value="Submit"/>
+                       id="createCardSubmit" value="<fmt:message key="card_create_from.submit"/>"/>
             </div>
         </form>
     </div>
