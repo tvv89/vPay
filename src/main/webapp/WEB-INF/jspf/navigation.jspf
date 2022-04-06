@@ -4,20 +4,20 @@
         <ul class="uk-navbar-nav uk-hidden-small">
             <c:if test="${userRole=='ADMIN'}">
                 <li <c:if test="${currentPage=='users'}">class="uk-active" </c:if>>
-                    <a href="controller?command=listUsers">Users</a>
+                    <a href="controller?command=listUsers"><fmt:message key="navigation.navbar.users"/></a>
                 </li>
             </c:if>
             <li <c:if test="${currentPage=='accounts'}">class="uk-active" </c:if>>
-                <a href="controller?command=listAccounts">Accounts</a>
+                <a href="controller?command=listAccounts"><fmt:message key="navigation.navbar.accounts"/></a>
             </li>
             <li <c:if test="${currentPage=='payments'}">class="uk-active" </c:if>>
-                <a href="controller?command=listPayments">Payments</a>
+                <a href="controller?command=listPayments"><fmt:message key="navigation.navbar.payments"/></a>
             </li>
             <li <c:if test="${currentPage=='cards'}">class="uk-active" </c:if>>
-                <a href="controller?command=listCards">Cards</a>
+                <a href="controller?command=listCards"><fmt:message key="navigation.navbar.cards"/></a>
             </li>
             <li>
-                <a href="controller?command=logout">Logout</a>
+                <a href="controller?command=logout"><fmt:message key="navigation.navbar.logout"/></a>
             </li>
 
         </ul>
@@ -31,16 +31,16 @@
                 <div id="offcanvas-flip" uk-offcanvas="flip: true; overlay: true">
                     <div class="uk-offcanvas-bar">
                         <button class="uk-offcanvas-close" type="button" uk-close></button>
-                        <h3>Information</h3>
+                        <h3><fmt:message key="navigation.user.info.title"/></h3>
                         <img class="uk-preserve-width uk-border-circle"
                              src="images/${sessionScope.currentUser.photo}"
                              width="80" alt="">
-                        <p>Login: ${sessionScope.currentUser.login}</p>
-                        <p>First name: ${sessionScope.currentUser.firstName}</p>
-                        <p>Last name: ${sessionScope.currentUser.lastName}</p>
-                        <p>Day of birth: ${sessionScope.currentUser.dayOfBirth}</p>
+                        <p><fmt:message key="navigation.user.info.login"/>: ${sessionScope.currentUser.login}</p>
+                        <p><fmt:message key="navigation.user.info.first_name"/>: ${sessionScope.currentUser.firstName}</p>
+                        <p><fmt:message key="navigation.user.info.last_name"/>: ${sessionScope.currentUser.lastName}</p>
+                        <p><fmt:message key="navigation.user.info.day_of_birth"/>: ${sessionScope.currentUser.dayOfBirth}</p>
                         <button class="uk-button-default" onclick="location.href = 'controller?command=logout'">
-                            Logout
+                            <fmt:message key="navigation.user.info.logout"/>
                         </button>
                     </div>
                 </div>
