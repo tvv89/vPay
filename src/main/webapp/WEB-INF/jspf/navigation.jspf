@@ -25,9 +25,7 @@
     </div>
     <div class="uk-navbar-right">
         <ul class="uk-navbar-nav">
-
             <li>
-
                 <img class="uk-preserve-width uk-border-circle" src="images/${sessionScope.currentUser.photo}"
                      width="40" alt="" uk-toggle="target: #offcanvas-flip">
                 ${sessionScope.currentUser.login}
@@ -42,8 +40,10 @@
                         </br>
                         <div>
                             <select class="uk-select" id="languageSelect" onchange="changeLanguage()">
-                                <option value="en" <c:if test='${sessionScope.currentLanguage == "en"}'> selected </c:if>>English</option>
-                                <option value="uk" <c:if test='${sessionScope.currentLanguage == "uk"}'> selected </c:if>>Ukrainian</option>
+                                <option value="en" <c:if test='${sessionScope.currentLanguage == "en"}'> selected </c:if>>
+                                    <fmt:message key="navigation.user.info.language.english"/></option>
+                                <option value="uk" <c:if test='${sessionScope.currentLanguage == "uk"}'> selected </c:if>>
+                                    <fmt:message key="navigation.user.info.language.ukrainian"/></option>
                             </select>
                         </div>
                         <p><fmt:message key="navigation.user.info.login"/>: ${sessionScope.currentUser.login}</p>
@@ -58,10 +58,6 @@
                     </div>
                 </div>
             </li>
-            <li>
-
-            </li>
-
         </ul>
     </div>
 </nav>
