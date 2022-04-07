@@ -22,6 +22,12 @@ public class SystemParameters {
      */
     public static final Double MAX_PAYMENT_SUM = 100000D;
 
+    /**
+     * Function for select resources with
+     * @param local String locale ISO 639-1
+     * @return ResourceBundle for use in code
+     * @throws IOException
+     */
     public static ResourceBundle getLocale(String local) throws IOException {
         Locale locale = new Locale(local);
         ResourceBundle message = ResourceBundle.getBundle("resources",locale);
