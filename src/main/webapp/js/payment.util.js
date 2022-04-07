@@ -95,7 +95,7 @@ function changePaymentStatus(id) {
 }
 
 function deletePayment(id) {
-    UIkit.modal.confirm('Payment status will be changed to submitted. Are you sure?').then(function () {
+    UIkit.modal.confirm(javascript_payment_delete_modal_message).then(function () {
         fetch('controller?command=statusPayment', {
             headers: {
                 'Content-Type': 'application/json; charset=utf-8'
