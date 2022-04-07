@@ -49,11 +49,11 @@ public class CardService {
      */
     public static String formatCard (String cardNumber) {
         if (cardNumber==null) return "";
-        cardNumber.replace(" ","");
+        String trueCard = cardNumber.replace(" ","");
         StringBuilder result = new StringBuilder();
-        for (int i = 0; i < cardNumber.toCharArray().length; i++) {
+        for (int i = 0; i < trueCard.toCharArray().length; i++) {
             if (i%4==0) result.append(' ');
-            result.append(cardNumber.toCharArray()[i]);
+            result.append(trueCard.toCharArray()[i]);
         }
         return result.toString().trim();
     }

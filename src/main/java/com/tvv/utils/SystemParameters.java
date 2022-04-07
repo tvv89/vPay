@@ -43,7 +43,6 @@ public class SystemParameters {
                 .stream()
                 .filter(value->value.contains("javascript."))
                 .collect(Collectors.toList());
-
         for (String key: keyList) {
             String keys = key.replace(".", "_");
             result.put(keys,data.getString(key));

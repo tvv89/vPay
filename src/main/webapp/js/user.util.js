@@ -41,7 +41,7 @@ function createTable(tx) {
     var table = document.getElementById('table')
     table.innerHTML = "";
     for (var i = 0; i < tx.length; i++) {
-        var userStatusButton = tx[i].status == true ? "Disable User" : "Enable User";
+        var userStatusButton = tx[i].status == true ? javascript_user_table_status_disable : javascript_user_table_status_enable;
         var userRole = tx[i].role == 0 ? "ADMIN" : "USER";
         var row = `<tr id="tr_${tx[i].id}">
           
