@@ -82,9 +82,8 @@ public class PDFCreator {
             /**
              * Create content and draw text with localization
              */
-            Locale locale = new Locale(local);
-            ResourceBundle message = ResourceBundle.getBundle("resources",locale);
 
+            ResourceBundle message = SystemParameters.getLocale(local);
 
             drawText(contentStream, font, 14, divX1, maxY - 40, message.getString("pdf.system.name"));
 
