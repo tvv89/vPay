@@ -62,6 +62,7 @@ public class StatusPaymentsCommand extends Command {
         HttpSession session = request.getSession();
         Role userRole = (Role) session.getAttribute("userRole");
         User currentUser = (User) session.getAttribute("currentUser");
+        String currentLanguage = (String) session.getAttribute("currentLanguage");
         if (userRole!=Role.ADMIN && userRole!=Role.USER)
         {
             response.sendRedirect(request.getContextPath()+ Path.COMMAND__START_PAGE);
@@ -124,7 +125,7 @@ public class StatusPaymentsCommand extends Command {
                  */
                 case "pdf":
                     UtilCommand.sendPDFData(response,
-                            PDFCreator.createPDF(paymentById,request.getServletContext().getRealPath("fonts")));
+                            PDFCreator.createPDF(paymentById,request.getServletContext().getRealPath("fonts"),currentLanguage));
                     return;
             }
         } else {

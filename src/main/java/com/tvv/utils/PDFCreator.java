@@ -13,6 +13,8 @@ import java.io.IOException;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.util.Locale;
+import java.util.Properties;
+import java.util.ResourceBundle;
 
 /**
  * Class for PDF operation
@@ -25,7 +27,7 @@ public class PDFCreator {
      * @param path path to custom fonts
      * @return byte array stream
      */
-    public static ByteArrayOutputStream createPDF(Payment payment, String path){
+    public static ByteArrayOutputStream createPDF(Payment payment, String path, String local){
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         try {
             /**
@@ -78,29 +80,45 @@ public class PDFCreator {
             double sumWithoutCommission = Double.parseDouble(df.format(payment.getTotal() - payment.getCommission()));
 
             /**
-             * Create content and draw text
+             * Create content and draw text with localization
              */
-            drawText(contentStream, font, 14, divX1, maxY - 40, "vPAY | MONEY TRANSFER SERVICE");
+            Locale locale = new Locale(local);
+            ResourceBundle message = ResourceBundle.getBundle("resources",locale);
 
-            drawText(contentStream, font, 8, divX2, maxY - 36, "vPay System ltd.");
-            drawText(contentStream, font, 8, divX2, maxY - 46, "Tel. 08001234321");
-            drawText(contentStream, font, 8, divX2, maxY - 56, "Address: Kyiv, Khreshatyk 1, 01000");
 
-            drawText(contentStream, font, 14, divX3, maxY - 95, "Payment #" + payment.getGuid() + " from " + payment.getTimeOfLog());
+            drawText(contentStream, font, 14, divX1, maxY - 40, message.getString("pdf.system.name"));
 
-            drawText(contentStream, font, 11, divX3, maxY - 125, "Sender: ");
-            drawText(contentStream, font, 11, divX3, maxY - 145, payment.getUser().getFirstName() + " " + payment.getUser().getLastName());
-            drawText(contentStream, font, 11, divX3, maxY - 165, "Account: "+payment.getSenderId().getName());
+            drawText(contentStream, font, 8, divX2, maxY - 36, message.getString("pdf.company.name"));
+            drawText(contentStream, font, 8, divX2, maxY - 46, message.getString("pdf.company.phone"));
+            drawText(contentStream, font, 8, divX2, maxY - 56, message.getString("pdf.company.address"));
+
+            drawText(contentStream, font, 14, divX3, maxY - 95, message.getString("pdf.body.payment")+" #" +
+                    payment.getGuid() + " " +
+                    message.getString("pdf.body.from") + " " +
+                    payment.getTimeOfLog());
+
+            drawText(contentStream, font, 11, divX3, maxY - 125, message.getString("pdf.body.sender.title")+": ");
+            drawText(contentStream, font, 11, divX3, maxY - 145, payment.getUser().getFirstName() + " " +
+                    payment.getUser().getLastName());
+            drawText(contentStream, font, 11, divX3, maxY - 165, message.getString("pdf.body.sender.account")+": "+
+                    payment.getSenderId().getName());
             drawText(contentStream, font, 11, divX3, maxY - 185, "(" + payment.getSenderId().getIban() + ")");
-            drawText(contentStream, font, 11, divX3, maxY - 215, "Sum of transaction (" + payment.getCurrency() + "): " + sumWithoutCommission);
-            drawText(contentStream, font, 11, divX3, maxY - 235, "Commission (" + payment.getCurrency() + "): " + payment.getCommission());
-            drawText(contentStream, font, 11, divX3, maxY - 255, "Total (" + payment.getCurrency() + "): " + payment.getTotal());
-            drawText(contentStream, font, 11, divX3, maxY - 295, "Date and time of transaction: " + payment.getTimeOfLog());
+            drawText(contentStream, font, 11, divX3, maxY - 215, message.getString("pdf.body.sender.sum")+
+                    " (" + payment.getCurrency() + "): " + sumWithoutCommission);
+            drawText(contentStream, font, 11, divX3, maxY - 235, message.getString("pdf.body.sender.commission") +
+                    " (" + payment.getCurrency() + "): " + payment.getCommission());
+            drawText(contentStream, font, 11, divX3, maxY - 255, message.getString("pdf.body.sender.total")+
+                    " (" + payment.getCurrency() + "): " + payment.getTotal());
+            drawText(contentStream, font, 11, divX3, maxY - 295, message.getString("pdf.body.sender.datetime_title")+
+                    ": " + payment.getTimeOfLog());
 
-            drawText(contentStream, font, 11, divX4, maxY - 125, "Recipient:");
-            drawText(contentStream, font, 11, divX4, maxY - 145, "type: " + payment.getRecipientType());
-            drawText(contentStream, font, 11, divX4, maxY - 165, "number: " + payment.getRecipientId());
-            drawText(contentStream, font, 11, divX4, maxY - 215, "Sum for recipient (" + payment.getCurrencySum() + "): " + payment.getSum());
+            drawText(contentStream, font, 11, divX4, maxY - 125, message.getString("pdf.body.recipient.title")+":");
+            drawText(contentStream, font, 11, divX4, maxY - 145, message.getString("pdf.body.recipient.type")+
+                    ": " + payment.getRecipientType());
+            drawText(contentStream, font, 11, divX4, maxY - 165, message.getString("pdf.body.recipient.number")+
+                    ": " + payment.getRecipientId());
+            drawText(contentStream, font, 11, divX4, maxY - 215, message.getString("pdf.body.recipient.sum")+
+                    " (" + payment.getCurrencySum() + "): " + payment.getSum());
 
             contentStream.close();
 
