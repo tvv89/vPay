@@ -16,7 +16,7 @@ public class FieldsChecker {
      * @return correct or not
      */
     public static boolean checkNameField(String name) {
-        String regex = "^([A-Za-zА-Яа-яїЇёЁъЪ]+)";
+        String regex = "^([A-Za-zА-Яа-яіІїЇёЁъЪ]+)";
         return checkRegEx(name,regex);
     }
 
@@ -67,7 +67,8 @@ public class FieldsChecker {
      */
     public static boolean checkCardNumber (String number) {
         String regex = "^[0-9]{12}(?:[0-9]{4})?$";
-        return checkRegEx(number,regex);
+        String checkNumber = number.replace(" ", "");
+        return checkRegEx(checkNumber,regex);
     }
 
     /**

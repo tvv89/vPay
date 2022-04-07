@@ -44,10 +44,10 @@ function createTable(tx) {
         var status
             if (tx[i].status==true) status= `<span class="uk-label uk-label-success" 
                                             onclick="changeStatusButton(${tx[i].id})">
-                                            Enabled</span>`;
+                                            ${javascript_general_enabled}</span>`;
             else status= `<span class="uk-label uk-label-danger" 
                                             onclick="changeStatusButton(${tx[i].id})">
-                                            Disabled</span>`;
+                                            ${javascript_general_disabled}</span>`;
         var row = `<tr id="tr_${tx[i].id}">
                 <td>${tx[i].name}</td>
                 <td>${tx[i].number}</td>
@@ -61,19 +61,6 @@ function createTable(tx) {
         table.innerHTML += row;
     }
 
-}
-
-function createPagination(page,pages) {
-    var paginat = document.getElementById('pagination')
-    paginat.innerHTML = "";
-    var row = `<li class="uk-margin-small-right ${page == 1 ? 'uk-disabled' : ''}" id="previous-page" onclick="callPOSTRequest(2,-1)">
-                            <a><span class="uk-margin-small-right" uk-pagination-previous></span> Previous</a>
-                        </li>
-                        <li class="uk-margin-small uk-align-center">Page ${page} of ${pages} </li>
-                        <li class="uk-margin-small-left ${page == pages ? 'uk-disabled' : ''}" id="next-page" onclick="callPOSTRequest(2,1)">
-                            <a>Next <span class="uk-margin-small-left" uk-pagination-next></span></a>
-                        </li>`
-    paginat.innerHTML += row;
 }
 
 function changeCardStatus(id) {
@@ -90,10 +77,10 @@ function changeCardStatus(id) {
                     var status = "";
                     if (data.card.status==true) status= `<span class="uk-label uk-label-success" 
                                             onclick="changeStatusButton(${data.card.id})">
-                                            Enabled</span>`;
+                                            ${javascript_general_enabled}</span>`;
                     else status= `<span class="uk-label uk-label-danger" 
                                             onclick="changeStatusButton(${data.card.id})">
-                                            Disabled</span>`;
+                                            ${javascript_general_disabled}</span>`;
                     var newHtml = `
                 <td>${data.card.name}</td>
                 <td>${data.card.number}</td>
@@ -116,7 +103,7 @@ function changeCardStatus(id) {
 }
 
 function changeStatusButton(e) {
-    UIkit.modal.confirm('Card status will be changed. Are you sure?').then(function () {
+    UIkit.modal.confirm(javascript_card_status_modal).then(function () {
         changeCardStatus(e);
         console.log('Card is enabled')
     }, function () {

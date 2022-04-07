@@ -41,14 +41,13 @@ function createTable(tx) {
     var table = document.getElementById('table')
     table.innerHTML = "";
     for (var i = 0; i < tx.length; i++) {
-        //var paymentStatusButton = tx[i].status == true ? "Disable Payment" : "Enable Payment";
         var statusP;
             if (tx[i].status=='Ready') statusP = `<span class="uk-label uk-label-warning" 
                                             onclick="changeStatusButton(${tx[i].id})">
-                                            Ready</span>`;
+                                            ${javascript_payment_status_ready}</span>`;
             else statusP = `<span class="uk-label uk-label-success" 
                                             onclick="">
-                                            Submitted</span>`;
+                                            ${javascript_payment_status_submitted}</span>`;
         var row = `<tr id="tr_${tx[i].id}">
                 <td>${tx[i].timeOfLog}</td>
                 <td>${tx[i].guid}</td>
@@ -67,19 +66,6 @@ function createTable(tx) {
 
 }
 
-function createPagination(page,pages) {
-    var paginat = document.getElementById('pagination')
-    paginat.innerHTML = "";
-    var row = `<li class="uk-margin-small-right ${page == 1 ? 'uk-disabled' : ''}" id="previous-page" onclick="callPOSTRequest(2,-1)">
-                            <a><span class="uk-margin-small-right" uk-pagination-previous></span> Previous</a>
-                        </li>
-                        <li class="uk-margin-small uk-align-center">Page ${page} of ${pages} </li>
-                        <li class="uk-margin-small-left ${page == pages ? 'uk-disabled' : ''}" id="next-page" onclick="callPOSTRequest(2,1)">
-                            <a>Next <span class="uk-margin-small-left" uk-pagination-next></span></a>
-                        </li>`
-    paginat.innerHTML += row;
-}
-
 function changePaymentStatus(id) {
     fetch('controller?command=statusPayment', {
         headers: {
@@ -96,7 +82,7 @@ function changePaymentStatus(id) {
                     if (data.statusPayment == 'Submitted') {
                         statusP = `<span class="uk-label uk-label-success" 
                                          onclick="">
-                                         Submitted</span>`;
+                                         ${javascript_payment_status_submitted}</span>`;
                         $('#td_status_' + data.id).html(statusP);
                     }
                 }
@@ -122,7 +108,7 @@ function deletePayment(id) {
                 if (data.status =='OK') {
                     callPOSTRequest(1,0);
                     UIkit.notification({
-                        message: 'Success! Payment was deleted.',
+                        message: javascript_payment_delete_message,
                         status: 'success',
                         timeout: 2000
                     });
@@ -161,10 +147,8 @@ function pdfPayment(id) {
     console.log('Payment in PDF')
 }
 
-
-
 function changeStatusButton(e) {
-    UIkit.modal.confirm('Payment status will be changed to submitted. Are you sure?').then(function () {
+    UIkit.modal.confirm(javascript_payment_status_modal_message).then(function () {
         changePaymentStatus(e);
         console.log('Payment is submitted')
     }, function () {

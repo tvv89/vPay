@@ -5,6 +5,7 @@ import com.tvv.db.entity.Role;
 import com.tvv.db.entity.User;
 import com.tvv.service.exception.AppException;
 import com.tvv.utils.StringHash;
+import com.tvv.utils.SystemParameters;
 import com.tvv.web.webutil.Path;
 import org.apache.log4j.Logger;
 
@@ -140,6 +141,7 @@ public class LoginCommand extends Command {
 			}
 			Config.set(session, "javax.servlet.jsp.jstl.fmt.locale", lang);
 			session.setAttribute("currentLanguage", lang);
+			session.setAttribute("langPack", SystemParameters.jsLanguagePack(lang));
 		}
 		
 		log.debug("Command finished");

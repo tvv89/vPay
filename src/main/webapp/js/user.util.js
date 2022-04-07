@@ -64,19 +64,6 @@ function createTable(tx) {
 
 }
 
-function createPagination(page,pages) {
-    var paginat = document.getElementById('pagination')
-    paginat.innerHTML = "";
-    var row = `<li class="uk-margin-small-right ${page == 1 ? 'uk-disabled' : ''}" id="previous-page" onclick="callPOSTRequest(2,-1)">
-                            <a><span class="uk-margin-small-right" uk-pagination-previous></span> Previous</a>
-                        </li>
-                        <li class="uk-margin-small uk-align-center">Page ${page} of ${pages} </li>
-                        <li class="uk-margin-small-left ${page == pages ? 'uk-disabled' : ''}" id="next-page" onclick="callPOSTRequest(2,1)">
-                            <a>Next <span class="uk-margin-small-left" uk-pagination-next></span></a>
-                        </li>`
-    paginat.innerHTML += row;
-}
-
 function changeUserStatus(id) {
     fetch('controller?command=statusUser', {
         headers: {
@@ -90,7 +77,7 @@ function changeUserStatus(id) {
         .then(data =>  {
             if (data.status =='OK') {
                 if ($('#tr_' + data.user.id).length) {
-                    var userStatusButton = data.user.status == true ? "Disable User" : "Enable User";
+                    var userStatusButton = data.user.status == true ? javascript_user_table_status_disable : javascript_user_table_status_enable;
                     var userRole = data.user.role == 0 ? "ADMIN" : "USER";
                     var newHtml = `
                 <td><img class="uk-preserve-width uk-border-circle" src="images/${data.user.photo}" width="40"
@@ -130,7 +117,7 @@ function changeRoleStatus(id) {
         .then(data =>  {
             if (data.status =='OK') {
                 if ($('#tr_' + data.user.id).length) {
-                    var userStatusButton = data.user.status == true ? "Disable User" : "Enable User";
+                    var userStatusButton = data.user.status == true ? javascript_user_table_status_disable : javascript_user_table_status_enable;
                     var userRole = data.user.role == 0 ? "ADMIN" : "USER";
                     var newHtml = `
                 <td><img class="uk-preserve-width uk-border-circle" src="images/${data.user.photo}" width="40"
@@ -158,7 +145,7 @@ function changeRoleStatus(id) {
 }
 
 function changeStatusButton(e) {
-    UIkit.modal.confirm('User status will be changed. Are you sure?').then(function () {
+    UIkit.modal.confirm(javascript_user_status_modal_message).then(function () {
         changeUserStatus(e);
         console.log('User is enabled')
     }, function () {
@@ -167,7 +154,7 @@ function changeStatusButton(e) {
 };
 
 function changeRoleButton(e) {
-    UIkit.modal.confirm('User role will be changed. Are you sure?').then(function () {
+    UIkit.modal.confirm(javascript_user_role_modal_message).then(function () {
         changeRoleStatus(e);
         console.log('User is enabled')
     }, function () {
@@ -186,18 +173,18 @@ function userInfo(id) {
             var status = data.user.status==true ? "uk-label-success" : "uk-label-danger";
             var role = data.user.role==0 ? "ADMIN" : "USER";
             var row = `<div class="uk-modal-dialog uk-modal-body">
-        <h2 class="uk-modal-title">Information</h2>
+        <h2 class="uk-modal-title">${javascript_user_info_title}</h2>
         <button class="uk-modal-close-default" type="button" uk-close></button>
         <img class="uk-preserve-width uk-border-circle" src="images/${data.user.photo}" width="100"
                                  alt=""><br>
-        <span class="uk-label ${status}">Status</span><br>
-        <label>Login: ${data.user.login}</label><br>
-        <label>First name: ${data.user.firstName}</label><br>
-        <label>Last name: ${data.user.lastName}</label><br>
-        <label>Day of birth: ${data.user.dayOfBirth}</label><br>
-        <label>Sex: ${data.user.sex}</label><br>
-        <label>Email: ${data.user.email}</label><br>
-        <label>Role: ${role}</label><br>
+        <span class="uk-label ${status}">${javascript_user_info_status}</span><br>
+        <label>${javascript_user_info_login}: ${data.user.login}</label><br>
+        <label>${javascript_user_info_first_name}: ${data.user.firstName}</label><br>
+        <label>${javascript_user_info_last_name}: ${data.user.lastName}</label><br>
+        <label>${javascript_user_info_day_of_birth}: ${data.user.dayOfBirth}</label><br>
+        <label>${javascript_user_info_sex}: ${data.user.sex}</label><br>
+        <label>${javascript_user_info_email}: ${data.user.email}</label><br>
+        <label>${javascript_user_info_role}: ${role}</label><br>
 
     </div>`
             usermodal.innerHTML += row;

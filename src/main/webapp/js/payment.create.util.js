@@ -1,11 +1,8 @@
 var accountCurrency='';
 var sortBy=1;
 window.addEventListener('DOMContentLoaded', (event) => {
-
     changeAccount();
 });
-
-
 
 function changeAccount(){
     var currentAccountId = parseInt($('#currentPaymentAccount').val());
@@ -123,8 +120,6 @@ function submitPayment(){
             callErrorAlert(err);
         });
 }
-
-
 
 function callErrorAlert(message){
     UIkit.modal.alert(message);

@@ -46,23 +46,23 @@ function createTable(tx,cards,userRole) {
         var accountStatusButton;
         var statusStyle;
         if (tx[i].status == "Enabled") {
-            accountStatusButton = "Disable Account";
+            accountStatusButton = javascript_account_table_status_disable;
             statusStyle =  "uk-label-success";
         }
         else if (tx[i].status == "Disabled") {
-            accountStatusButton = "Enable Account";
+            accountStatusButton = javascript_account_table_status_enable;
             statusStyle =  "uk-label-danger";
 
         }
         else {
-            accountStatusButton = "Waiting for enable";
+            accountStatusButton = javascript_account_table_status_waiting;
             statusStyle =  "uk-label-warning";
         }
 
         if (tx[i].status != "Enabled" && userRole == "USER") statusStyle += " uk-disabled";
         var statusButtonTopUp = "";
         if (userRole != 'USER') statusButtonTopUp = "display:none;";
-        var selectcard = ` <label>Added card to account</label></br>
+        var selectcard = ` <label>${javascript_account_table_card_label}</label></br>
                             <select class="uk-select uk-width-1-1@m" 
                                   id="selectCardAccount_${tx[i].id}" 
                                   name="selectCardAccount_${tx[i].id}" 
@@ -78,7 +78,7 @@ function createTable(tx,cards,userRole) {
                                     class="uk-button uk-button-primary uk-width-1-1@m" 
                                     type="button"
                                     value="${tx[i].id}" 
-                                    onclick="selectCardFunction(${tx[i].id})">Applay
+                                    onclick="selectCardFunction(${tx[i].id})">${javascript_account_table_card_button}
                             </button>`
         var row = `<tr id="tr_${tx[i].id}">
                 <td>${tx[i].name}</td>
@@ -97,21 +97,21 @@ function createTable(tx,cards,userRole) {
                                     type="button" 
                                     name="topup"
                                     value="${tx[i].id}" 
-                                    onclick="addCoinButton(${tx[i].id})">Top up
+                                    onclick="addCoinButton(${tx[i].id})">${javascript_account_table_action_top_up}
                     </button></br>
                     <button id="js-modal-status-delete" 
                                     class="uk-button uk-button-danger uk-width-1-1@m" 
                                     type="button" 
                                     name="delete"
                                     value="${tx[i].id}" 
-                                    onclick="removeAccountButton(${tx[i].id})">Remove
+                                    onclick="removeAccountButton(${tx[i].id})">${javascript_account_table_action_remove}
                     </button></br>
                     <button id="js-modal-info-card" 
                                     class="uk-button uk-button-primary uk-width-1-1@m" 
                                     type="button" 
                                     name="infocard"
                                     value="${tx[i].id}" 
-                                    onclick="cardInfoFunction(${tx[i].id})" uk-toggle="target: #cardinfo">Card
+                                    onclick="cardInfoFunction(${tx[i].id})" uk-toggle="target: #cardinfo">${javascript_account_table_action_card}
                     </button>                
                 </td>
                 <td style="${statusButtonTopUp}">`
@@ -130,19 +130,6 @@ function createTable(tx,cards,userRole) {
 
 }
 
-function createPagination(page,pages) {
-    var paginat = document.getElementById('pagination')
-    paginat.innerHTML = "";
-    var row = `<li class="uk-margin-small-right ${page == 1 ? 'uk-disabled' : ''}" id="previous-page" onclick="callPOSTRequest(2,-1)">
-                            <a><span class="uk-margin-small-right" uk-pagination-previous></span> Previous</a>
-                        </li>
-                        <li class="uk-margin-small uk-align-center">Page ${page} of ${pages} </li>
-                        <li class="uk-margin-small-left ${page == pages ? 'uk-disabled' : ''}" id="next-page" onclick="callPOSTRequest(2,1)">
-                            <a>Next <span class="uk-margin-small-left" uk-pagination-next></span></a>
-                        </li>`
-    paginat.innerHTML += row;
-}
-
 function changeAccountFunction(id) {
     fetch('controller?command=statusAccount', {
         headers: {
@@ -157,16 +144,16 @@ function changeAccountFunction(id) {
                     var accountStatusButton;
                     var statusStyle;
                     if (data.account.status == "Enabled") {
-                        accountStatusButton = "Disable Account";
+                        accountStatusButton = javascript_account_table_status_disable;
                         statusStyle =  "uk-label-success";
                     }
                     else if (data.account.status == "Disabled") {
-                        accountStatusButton = "Enable Account";
+                        accountStatusButton = javascript_account_table_status_enable;
                         statusStyle =  "uk-label-danger";
 
                     }
                     else {
-                        accountStatusButton = "Waiting for enable";
+                        accountStatusButton = javascript_account_table_status_waiting;
                         statusStyle =  "uk-label-warning";
                     }
                     if (data.account.status != "Enabled" && data.userRole=="USER") statusStyle += " uk-disabled";
@@ -180,21 +167,21 @@ function changeAccountFunction(id) {
                                     class="uk-button ${data.account.status != "Enabled" ? 'uk-disabled' : 'uk-button-secondary'} uk-width-1-1@m" 
                                     type="button" 
                                     name="topup"
-                                    value="${data.account.id}" onclick="addCoinButton(${data.account.id})">Top up
+                                    value="${data.account.id}" onclick="addCoinButton(${data.account.id})">${javascript_account_table_action_top_up}
                         </button></br>
                         <button id="js-modal-status-delete" 
                                     class="uk-button uk-button-danger uk-width-1-1@m" 
                                     type="button" 
                                     name="delete"
                                     value="${data.account.id}" 
-                                    onclick="removeAccountButton(${data.account.id})">Remove
+                                    onclick="removeAccountButton(${data.account.id})">${javascript_account_table_action_remove}
                         </button></br>
                         <button id="js-modal-status-card" 
                                     class="uk-button uk-button-primary uk-width-1-1@m" 
                                     type="button" 
                                     name="delete"
                                     value="${data.account.id}" 
-                                    onclick="cardActionButton(${data.account.id})">Card
+                                    onclick="cardActionButton(${data.account.id})">${javascript_account_table_action_card}
                         </button> `
                     $('#td_addbalance_' + data.account.id).html(newHtmlTopUp);
                 }
@@ -257,7 +244,7 @@ function selectCardFunction(id) {
     }).then(response => response.json())
         .then(data => {
             if (data.status=='OK') {
-                UIkit.notification({message: 'Success! Card is changed.',
+                UIkit.notification({message: javascript_account_select_card_message,
                     status: 'success',
                     timeout: 2000});
             } else {
@@ -281,7 +268,7 @@ function addCoinFunction(id,value) {
                 if ($('#tr_' + data.account.id).length) {
                     var newHtml = `${data.account.balance}`
                     $('#td_balance_' + data.account.id).html(newHtml);
-                    UIkit.notification({message: 'Success! Balance is changed.',
+                    UIkit.notification({message: javascript_account_coin_function_message,
                                         status: 'success',
                                         timeout: 2000});
                 }
@@ -307,7 +294,7 @@ function removeAccountFunction(id,value) {
             if (data.status == 'OK') {
                 callPOSTRequest(1, 0);
                 UIkit.notification({
-                    message: 'Success! Account was deleted.',
+                    message: javascript_account_remove_message,
                     status: 'success',
                     timeout: 2000
                 });
@@ -319,7 +306,7 @@ function removeAccountFunction(id,value) {
 }
 
 function changeStatusButton(e) {
-    UIkit.modal.confirm('Account status will be changed. Are you sure?').then(function () {
+    UIkit.modal.confirm(javascript_account_status_modal_message).then(function () {
         changeAccountFunction(e);
         console.log('Account is enabled')
     }, function () {
@@ -328,7 +315,7 @@ function changeStatusButton(e) {
 };
 
 function addCoinButton(e) {
-    UIkit.modal.prompt('How much money do you want to add?').then(function (value) {
+    UIkit.modal.prompt(javascript_account_coin_function_modal_message).then(function (value) {
         var regex = new RegExp("^\\d+(?:\\.\\d{0,2})?$");
         if(regex.test(value)) {
             addCoinFunction(e,value);
@@ -343,7 +330,7 @@ function addCoinButton(e) {
 };
 
 function removeAccountButton(e) {
-    UIkit.modal.confirm('Do you want to delete this account?').then(function () {
+    UIkit.modal.confirm(javascript_account_remove_modal_message).then(function () {
             removeAccountFunction(e);
             console.log('Account was deleted')
     }, function () {
@@ -355,9 +342,4 @@ function changeSort(){
     sortBy = parseInt($('#sortAccountsOption').val());
     currentPGPage=1;
     callPOSTRequest(1, 0);
-}
-
-function callErrorAlert(message){
-    console.log(message);
-    UIkit.modal.alert(message);
 }

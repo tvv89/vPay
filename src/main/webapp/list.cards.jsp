@@ -61,4 +61,5 @@
 
 </script>
 </body>
+<%@ include file="/WEB-INF/jspf/javascript.language.pack.jspf" %>
 </html>
