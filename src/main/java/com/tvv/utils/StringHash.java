@@ -22,6 +22,7 @@ public class StringHash {
              * use SHA-256
              */
             MessageDigest digest = MessageDigest.getInstance("SHA-256");
+            if (input==null || input.isEmpty()) return outputHash;
             byte[] encodedHash = digest.digest(input.getBytes(StandardCharsets.UTF_8));
             BigInteger number = new BigInteger(1, encodedHash);
             StringBuilder hexString = new StringBuilder(number.toString(16));

@@ -12,7 +12,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class SystemParametersTest {
 
     @Test
-    void getLocaleEnTest() {
+    void testGetLocaleEnTest() {
         try {
             ResourceBundle rb = SystemParameters.getLocale("en");
             String keyCardNumber = rb.getString("card_create_from.card_number");
@@ -29,7 +29,7 @@ class SystemParametersTest {
     }
 
     @Test
-    void getLocaleUkTest() {
+    void testGetLocaleUkTest() {
         try {
             ResourceBundle rb = SystemParameters.getLocale("uk");
             String keyCardNumber = rb.getString("card_create_from.card_number");
@@ -46,7 +46,7 @@ class SystemParametersTest {
     }
 
     @Test
-    void getLocaleNullTest() {
+    void testGetLocaleNullTest() {
         try {
             ResourceBundle rb = SystemParameters.getLocale(null);
             String keyCardNumber = rb.getString("card_create_from.card_number");
@@ -71,7 +71,7 @@ class SystemParametersTest {
     }
 
     @Test
-    void jsLanguagePackEnTest() {
+    void testJsLanguagePackEnTest() {
         Map<String,String> assertMap = SystemParameters.jsLanguagePack("en");
         long keysCount = assertMap.keySet().stream().filter(e->e.contains("javascript")).count();
         assertEquals(assertMap.size(),keysCount);
@@ -86,7 +86,7 @@ class SystemParametersTest {
     }
 
     @Test
-    void jsLanguagePackUkTest() {
+    void testJsLanguagePackUkTest() {
         Map<String,String> assertMap = SystemParameters.jsLanguagePack("uk");
         long keysCount = assertMap.keySet().stream().filter(e->e.contains("javascript")).count();
         assertEquals(assertMap.size(),keysCount);
@@ -101,7 +101,7 @@ class SystemParametersTest {
     }
 
     @Test
-    void jsLanguagePackNullTest() {
+    void testJsLanguagePackNullTest() {
         Map<String,String> assertMap = SystemParameters.jsLanguagePack(null);
         long keysCount = assertMap.keySet().stream().filter(e->e.contains("javascript")).count();
         assertEquals(assertMap.size(),keysCount);

@@ -19,7 +19,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class UserDAOTest {
 
     @Test
-    void findAllUsers() throws SQLException, AppException {
+    void testFindAllUsers() throws SQLException, AppException {
        /* ResultSet rs = Mockito.mock(ResultSet.class);
         Mockito.when(rs.next())
                 .thenReturn(true)

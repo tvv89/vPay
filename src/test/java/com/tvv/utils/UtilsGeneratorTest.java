@@ -10,7 +10,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class UtilsGeneratorTest {
 
     @Test
-    void getGUID() {
+    void testGetGUID() {
         String guid = UtilsGenerator.getGUID();
         String regex = "[0-9]{10}";
         Pattern pattern = Pattern.compile(regex);
@@ -19,7 +19,7 @@ class UtilsGeneratorTest {
     }
 
     @Test
-    void getAccountUID() {
+    void testGetAccountUID() {
         String uid = UtilsGenerator.getAccountUID();
         String regex = "[a-zA-Z0-9]{25}";
         Pattern pattern = Pattern.compile(regex);

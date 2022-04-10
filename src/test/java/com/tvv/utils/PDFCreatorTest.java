@@ -10,6 +10,7 @@ import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
 import org.apache.pdfbox.pdmodel.font.PDFont;
 import org.apache.pdfbox.pdmodel.font.PDType0Font;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.io.ByteArrayOutputStream;
@@ -22,7 +23,8 @@ import static org.mockito.Mockito.*;
 
 class PDFCreatorTest {
     Payment payment;
-    {
+    @BeforeEach
+    private void init(){
         User user = new User();
         user.setId(1L);
         user.setPassword("");
@@ -64,31 +66,20 @@ class PDFCreatorTest {
     }
 
     @Test
-    void createPDFCorrectTest(){
+    void testCreatePDFCorrectTest(){
         String local = "en";
-
         String path = System.getProperty("user.dir")+"\\src\\main\\webapp\\fonts\\";
-
         ByteArrayOutputStream pdf = PDFCreator.createPDF(payment,path,local);
-
         assertTrue(pdf.size()>0);
 
     }
 
     @Test
-    void createPDFExceptionTest(){
-
+    void testCreatePDFExceptionTest(){
             String local = "en";
-
             String path = System.getProperty("user.dir")+"\\s1rc\\main\\webapp\\fonts\\";
-
             ByteArrayOutputStream pdf = PDFCreator.createPDF(payment,path,local);
-
             assertTrue(pdf.size()==0);
-
-
-
-
 
     }
 }

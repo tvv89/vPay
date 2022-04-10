@@ -16,7 +16,7 @@ import static org.mockito.Mockito.*;
 class ControllerTest {
 
     @Test
-    void doGetBadPasswordTest() throws ServletException, IOException {
+    void testDoGetBadPasswordTest() throws ServletException, IOException {
 
         HttpServletRequest request = mock(HttpServletRequest.class);
         HttpServletResponse response = mock(HttpServletResponse.class);
@@ -34,7 +34,7 @@ class ControllerTest {
     }
 
     @Test
-    void doGetBadLoginTest() throws ServletException, IOException {
+    void testDoGetBadLoginTest() throws ServletException, IOException {
 
         HttpServletRequest request = mock(HttpServletRequest.class);
         HttpServletResponse response = mock(HttpServletResponse.class);
@@ -52,7 +52,7 @@ class ControllerTest {
     }
 
     @Test
-    void doPost() throws ServletException, IOException {
+    void testDoPost() throws ServletException, IOException {
 
 
         HttpServletRequest request = mock(HttpServletRequest.class);
