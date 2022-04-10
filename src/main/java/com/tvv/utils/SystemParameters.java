@@ -30,13 +30,20 @@ public class SystemParameters {
      * @throws IOException
      */
     public static ResourceBundle getLocale(String local) throws IOException {
+        if (local==null || local.isEmpty()) local="";
         Locale locale = new Locale(local);
         ResourceBundle message = ResourceBundle.getBundle("resources",locale);
         return message;
     }
 
+    /**
+     * Load to JSP language keys for javascript
+     * @param local string language ISO 639-1
+     * @return
+     */
     public static Map<String,String> jsLanguagePack(String local) {
         Map<String,String> result = new HashMap<>();
+        if (local==null || local.isEmpty()) local="";
         Locale locale = new Locale(local);
         ResourceBundle data = ResourceBundle.getBundle("resources",locale);
         List<String> keyList = data.keySet()

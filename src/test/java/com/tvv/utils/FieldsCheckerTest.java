@@ -12,7 +12,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class FieldsCheckerTest {
 
     @Test
-    void checkNameField() {
+    void testCheckNameField() {
         assertEquals(true,FieldsChecker.checkNameField("Smith"));
         assertEquals(true,FieldsChecker.checkNameField("john"));
         assertEquals(true,FieldsChecker.checkNameField("Віньямін"));
@@ -24,7 +24,7 @@ class FieldsCheckerTest {
     }
 
     @Test
-    void checkEMailAddress() {
+    void testCheckEMailAddress() {
         assertEquals(true, FieldsChecker.checkEMailAddress("email@site.com"));
         assertEquals(true, FieldsChecker.checkEMailAddress("ema_123il@site.com"));
         assertEquals(false, FieldsChecker.checkEMailAddress("email_site.com"));
@@ -32,7 +32,7 @@ class FieldsCheckerTest {
     }
 
     @Test
-    void checkPasswordField() {
+    void testCheckPasswordField() {
         assertEquals(true, FieldsChecker.checkPasswordField("Admin123."));
         assertEquals(true, FieldsChecker.checkPasswordField("uSer.15"));
         assertEquals(false, FieldsChecker.checkPasswordField("A1."));
@@ -40,7 +40,7 @@ class FieldsCheckerTest {
     }
 
     @Test
-    void checkCardNumber() {
+    void testCheckCardNumber() {
         assertEquals(true, FieldsChecker.checkCardNumber("1234 1234 1234 1234"));
         assertEquals(true, FieldsChecker.checkCardNumber("1234123412341234"));
         assertEquals(false, FieldsChecker.checkCardNumber("123412341234123"));
@@ -48,7 +48,7 @@ class FieldsCheckerTest {
     }
 
     @Test
-    void checkBalanceDouble() {
+    void testCheckBalanceDouble() {
         assertEquals(true, FieldsChecker.checkBalanceDouble("1.2"));
         assertEquals(true, FieldsChecker.checkBalanceDouble("10000.38"));
         assertEquals(false, FieldsChecker.checkBalanceDouble("1,2"));
@@ -58,7 +58,7 @@ class FieldsCheckerTest {
     }
 
     @Test
-    void checkEqualsPassword() {
+    void testCheckEqualsPassword() {
         assertEquals(true, FieldsChecker.checkEqualsPassword("passWord1","passWord1"));
         assertEquals(true, FieldsChecker.checkEqualsPassword("12345","12345"));
         assertEquals(false, FieldsChecker.checkEqualsPassword("passWord1","password1"));
@@ -66,7 +66,7 @@ class FieldsCheckerTest {
     }
 
     @Test
-    void checkAge18YearsOld() {
+    void testCheckAge18YearsOld() {
         LocalDate date = LocalDate.parse("2000-05-07");
         assertEquals(true, FieldsChecker.checkAge18YearsOld(date));
         date = LocalDate.parse("1990-01-01");

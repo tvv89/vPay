@@ -5,13 +5,24 @@ import com.tvv.db.entity.Account;
 import com.tvv.db.entity.Card;
 import com.tvv.db.entity.Payment;
 import com.tvv.db.entity.User;
+import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdmodel.PDPage;
+import org.apache.pdfbox.pdmodel.PDPageContentStream;
+import org.apache.pdfbox.pdmodel.font.PDFont;
+import org.apache.pdfbox.pdmodel.font.PDType0Font;
 import org.junit.jupiter.api.Test;
 
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
 class PDFCreatorTest {
     Payment payment;
-    PDFCreatorTest () {
+    {
         User user = new User();
         user.setId(1L);
         user.setPassword("");
@@ -53,8 +64,30 @@ class PDFCreatorTest {
     }
 
     @Test
-    void createPDF() {
+    void createPDFCorrectTest(){
         String local = "en";
+
+        String path = System.getProperty("user.dir")+"\\src\\main\\webapp\\fonts\\";
+
+        ByteArrayOutputStream pdf = PDFCreator.createPDF(payment,path,local);
+
+        assertTrue(pdf.size()>0);
+
+    }
+
+    @Test
+    void createPDFExceptionTest(){
+
+            String local = "en";
+
+            String path = System.getProperty("user.dir")+"\\s1rc\\main\\webapp\\fonts\\";
+
+            ByteArrayOutputStream pdf = PDFCreator.createPDF(payment,path,local);
+
+            assertTrue(pdf.size()==0);
+
+
+
 
 
     }

@@ -51,6 +51,14 @@ public class UserDAO {
             "UPDATE users SET local=?"+
                     "	WHERE id=?";
 
+    /*
+    private final DBManager dbManager;
+
+    public UserDAO(DBManager dbManager) {
+
+        this.dbManager = dbManager;
+    }
+    */
 
     /**
      * Insert user into DB

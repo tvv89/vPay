@@ -20,7 +20,7 @@ class UserDAOTest {
 
     @Test
     void findAllUsers() throws SQLException, AppException {
-        ResultSet rs = Mockito.mock(ResultSet.class);
+       /* ResultSet rs = Mockito.mock(ResultSet.class);
         Mockito.when(rs.next())
                 .thenReturn(true)
                 .thenReturn(true)
@@ -54,7 +54,7 @@ class UserDAOTest {
 
         List<User> users = UserDAO.findAllUsers();
 
-        System.out.println(users);
+        System.out.println(users);*/
 
     }
 }

@@ -23,6 +23,7 @@ import java.io.IOException;
 public class LoginCommand extends Command {
 
 	private static final Logger log = Logger.getLogger(LoginCommand.class);
+	public static final String USER_LOGIN = "User login";
 
 	/**
 	 * Function for POST request. Check user  login and password, redirect to different page for USER and ADMIN
@@ -40,7 +41,7 @@ public class LoginCommand extends Command {
 		HttpSession session = request.getSession();
 
 		String login = request.getParameter("login");
-		log.trace("Request parameter: loging " + login);
+		log.trace("Request parameter: login " + login);
 		
 		String password = request.getParameter("password");
 
@@ -52,7 +53,7 @@ public class LoginCommand extends Command {
 		 */
 		if (login == null || password == null || login.isEmpty() || password.isEmpty()) {
 			errorMessage = "Login/password cannot be empty";
-			session.setAttribute("errorHeader", "User login");
+			session.setAttribute("errorHeader", USER_LOGIN);
 			session.setAttribute("errorMessage", errorMessage);
 			UtilCommand.goToErrorPage(request, response);
 			log.error("errorMessage " + errorMessage);
@@ -67,7 +68,7 @@ public class LoginCommand extends Command {
 			currentUser = new UserDAO().findUserByLogin(login);
 		} catch (AppException e) {
 			errorMessage = "Login/password cannot be empty";
-			session.setAttribute("errorHeader", "User login");
+			session.setAttribute("errorHeader", USER_LOGIN);
 			session.setAttribute("errorMessage", errorMessage);
 			UtilCommand.goToErrorPage(request, response);
 			log.error("errorMessage " + errorMessage);
@@ -80,7 +81,7 @@ public class LoginCommand extends Command {
 		 */
 		if (currentUser == null) {
 			errorMessage = "Can't find user with this login";
-			session.setAttribute("errorHeader", "User login");
+			session.setAttribute("errorHeader", USER_LOGIN);
 			session.setAttribute("errorMessage", errorMessage);
 			UtilCommand.goToErrorPage(request, response);
 			log.error("errorMessage: " + errorMessage);
@@ -92,7 +93,7 @@ public class LoginCommand extends Command {
 		 */
 		else if (!currentUser.isStatus()) {
 			errorMessage = "User is locked, please, contact to administrator";
-			session.setAttribute("errorHeader", "User login");
+			session.setAttribute("errorHeader", USER_LOGIN);
 			session.setAttribute("errorMessage", errorMessage);
 			UtilCommand.goToErrorPage(request, response);
 			log.error("errorMessage: " + errorMessage);
@@ -103,7 +104,7 @@ public class LoginCommand extends Command {
 		 */
 		else if (!StringHash.getHashString(password).equals(currentUser.getPassword())) {
 			errorMessage = "Bad password";
-			session.setAttribute("errorHeader", "User login");
+			session.setAttribute("errorHeader", USER_LOGIN);
 			session.setAttribute("errorMessage", errorMessage);
 			UtilCommand.goToErrorPage(request, response);
 			log.error("errorMessage: " + errorMessage);
