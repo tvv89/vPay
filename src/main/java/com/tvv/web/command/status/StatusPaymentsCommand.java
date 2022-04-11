@@ -1,10 +1,12 @@
 package com.tvv.web.command.status;
 
 import com.google.gson.JsonObject;
+import com.tvv.db.dao.AccountDAO;
 import com.tvv.db.dao.PaymentDAO;
 import com.tvv.db.entity.Payment;
 import com.tvv.db.entity.Role;
 import com.tvv.db.entity.User;
+import com.tvv.service.AccountService;
 import com.tvv.service.PaymentService;
 import com.tvv.service.exception.AppException;
 import com.tvv.utils.PDFCreator;
@@ -30,6 +32,12 @@ public class StatusPaymentsCommand extends Command {
 
     private static final Logger log = Logger.getLogger(StatusPaymentsCommand.class);
 
+    private PaymentDAO paymentDAO;
+    private PaymentService service;
+    private void init() {
+        paymentDAO = new PaymentDAO();
+        service = new PaymentService(new AccountService(new AccountDAO()),new AccountDAO(),paymentDAO);
+    }
     /**
      * Execute GET function for Controller. This function doesn't have GET request, and redirect to error page
      * @param request servlet request
@@ -53,9 +61,7 @@ public class StatusPaymentsCommand extends Command {
     @Override
     public void executePost(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
         log.trace("Start POST command");
-
-        request.setCharacterEncoding("UTF-8");
-
+        init();
         /**
          * Check user role
          */
@@ -88,7 +94,7 @@ public class StatusPaymentsCommand extends Command {
         try {
             action = (String)jsonParameters.get("action");
             paymentId = (Integer)jsonParameters.get("paymentId");
-            paymentById = PaymentDAO.findPaymentById(paymentId.longValue());
+            paymentById = paymentDAO.findPaymentById(paymentId.longValue());
         }
         catch (Exception e) {
             log.error(e.getMessage());
@@ -103,7 +109,7 @@ public class StatusPaymentsCommand extends Command {
                  */
                 case "status":
                     try {
-                        innerObject = PaymentService.changeStatusPayment(paymentById);
+                        innerObject = service.changeStatusPayment(paymentById);
                     } catch (AppException e) {
                         innerObject = UtilCommand.errorMessageJSON(e.getMessage());
                         log.error(e.getMessage());
@@ -114,7 +120,7 @@ public class StatusPaymentsCommand extends Command {
                  */
                 case "delete":
                     try {
-                        innerObject = PaymentService.deletePayment(paymentById);
+                        innerObject = service.deletePayment(paymentById);
                     } catch (AppException e) {
                         innerObject = UtilCommand.errorMessageJSON(e.getMessage());
                         log.error(e.getMessage());

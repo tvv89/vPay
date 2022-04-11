@@ -355,6 +355,8 @@ public class AccountDAO {
      * Class for load object from DB
      */
     private static class AccountLoad implements LoadEntity<Account> {
+        private UserDAO userDAO = new UserDAO();
+        private CardDAO cardDAO = new CardDAO();
         /**
          * Load object from ResultSet
          * @param rs ResultSet
@@ -373,11 +375,11 @@ public class AccountDAO {
                 account.setCurrency(rs.getString(Fields.ACCOUNT__CURRENCY));
                 account.setBalance(rs.getDouble(Fields.ACCOUNT__BALANCE));
 
-                User user = UserDAO.findUserById(rs.getLong(Fields.ACCOUNT__USER_ID));
+                User user = userDAO.findUserById(rs.getLong(Fields.ACCOUNT__USER_ID));
                 account.setOwnerUser(user);
 
                 Card card = null;
-                if (rs.getLong(Fields.ACCOUNT__CARD)>0) card = CardDAO.findCardById(rs.getLong(Fields.ACCOUNT__CARD));
+                if (rs.getLong(Fields.ACCOUNT__CARD)>0) card = cardDAO.findCardById(rs.getLong(Fields.ACCOUNT__CARD));
                 account.setCard(card);
 
                 account.setStatus(rs.getString(Fields.ACCOUNT__STATUS));

@@ -19,13 +19,19 @@ import java.util.Map;
  */
 public class UserService {
 
+    private UserDAO userDAO;
+    private void init(){
+        userDAO = new UserDAO();
+    }
+
     /**
      * Create user function
      * @param userData Map with user fields values
      * @return successful operation
      * @throws AppException
      */
-    public static void createUser (Map<String,String> userData) throws AppException {
+    public void createUser (Map<String,String> userData) throws AppException {
+        init();
         StringBuilder errorMessage = new StringBuilder();
         ErrorString error = new ErrorMessageEN();
         LocalDate date;
@@ -64,7 +70,7 @@ public class UserService {
             user.setPhoto(userData.get("photofile"));
             user.setStatus(true);
 
-            UserDAO.insertUser(user);
+            userDAO.insertUser(user);
         }
         else throw new AppException(errorMessage.toString(), new IllegalArgumentException());
     }

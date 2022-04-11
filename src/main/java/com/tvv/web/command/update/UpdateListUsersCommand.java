@@ -26,6 +26,11 @@ import java.util.*;
 public class UpdateListUsersCommand extends Command {
 
     private static final Logger log = Logger.getLogger(UpdateListUsersCommand.class);
+
+    private UserDAO userDAO;
+    private void init(){
+        userDAO = new UserDAO();
+    }
     /**
      * Comparator for sorting by login
      */
@@ -84,6 +89,7 @@ public class UpdateListUsersCommand extends Command {
     @Override
     public void executePost(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
         log.trace("Start POST command " + this.getClass().getName());
+        init();
         JsonObject innerObject = new JsonObject();
         /**
          * Check user role
@@ -137,7 +143,7 @@ public class UpdateListUsersCommand extends Command {
         }
 
         try {
-            List<User> list = UserDAO.findAllUsers();
+            List<User> list = userDAO.findAllUsers();
             list.stream().forEach(l -> l.setPassword(""));
             switch (sorting) {
                 case 1:

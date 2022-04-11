@@ -26,21 +26,29 @@ public class StatusUsersCommand extends Command {
 
     private static final Logger log = Logger.getLogger(StatusUsersCommand.class);
 
+    private UserDAO userDAO;
+
+    private void init() {
+        userDAO = new UserDAO();
+    }
+
     /**
      * Execute GET function for Controller. This function doesn't have GET request, and redirect to error page
-     * @param request servlet request
+     *
+     * @param request  servlet request
      * @param response servlet response
      * @throws IOException
      * @throws ServletException
      */
     @Override
     public void executeGet(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
-        UtilCommand.bedGETRequest(request,response);
+        UtilCommand.bedGETRequest(request, response);
     }
 
     /**
      * Execute POST function for Controller. This function use JSON data from request, parse it, and send response for
      * single page application. Function can change status user
+     *
      * @param request
      * @param response
      * @throws IOException
@@ -48,18 +56,16 @@ public class StatusUsersCommand extends Command {
      */
     @Override
     public void executePost(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
-        log.trace("Start POST command "+ this.getClass().getSimpleName());
-        request.setCharacterEncoding("UTF-8");
-
+        log.trace("Start POST command " + this.getClass().getSimpleName());
+        init();
         /**
          * Check user role
          */
         HttpSession session = request.getSession();
         Role userRole = (Role) session.getAttribute("userRole");
         User currentUser = (User) session.getAttribute("currentUser");
-        if (userRole!=Role.ADMIN && userRole!=Role.USER)
-        {
-            response.sendRedirect(request.getContextPath()+ Path.COMMAND__START_PAGE);
+        if (userRole != Role.ADMIN && userRole != Role.USER) {
+            response.sendRedirect(request.getContextPath() + Path.COMMAND__START_PAGE);
             log.debug("User role is not correct");
             return;
         }
@@ -79,10 +85,9 @@ public class StatusUsersCommand extends Command {
         User userById = null;
 
         try {
-            userId = (Integer)jsonParameters.get("userId");
-            userById = UserDAO.findUserById(userId.longValue());
-        }
-        catch (Exception e) {
+            userId = (Integer) jsonParameters.get("userId");
+            userById = userDAO.findUserById(userId.longValue());
+        } catch (Exception e) {
             log.error(e.getMessage());
         }
 
@@ -90,28 +95,26 @@ public class StatusUsersCommand extends Command {
          * Check payment owner and select action from request
          */
         try {
-            if (userById != null && currentUser!=null) {
+            if (userById != null && currentUser != null) {
                 int newStatus = userById.isStatus() ? 0 : 1;
-                UserDAO.updateStatusUserById(Long.valueOf(userId), newStatus);
-                userById = UserDAO.findUserById(userId.longValue());
+                userDAO.updateStatusUserById(Long.valueOf(userId), newStatus);
+                userById = userDAO.findUserById(userId.longValue());
                 innerObject.add("status", new Gson().toJsonTree("OK"));
                 innerObject.add("user", new Gson().toJsonTree(userById));
             } else {
                 innerObject.add("status", new Gson().toJsonTree("ERROR"));
                 innerObject.add("message", new Gson().toJsonTree("Cannot change user status"));
             }
-        }
-        catch (AppException ex)
-        {
+        } catch (AppException ex) {
             innerObject = UtilCommand.errorMessageJSON(ex.getMessage());
         }
 
         /**
          * Send result response for single page
          */
-        UtilCommand.sendJSONData(response,innerObject);
+        UtilCommand.sendJSONData(response, innerObject);
 
-        log.trace("End POST command "+this.getClass().getSimpleName());
+        log.trace("End POST command " + this.getClass().getSimpleName());
 
     }
 }

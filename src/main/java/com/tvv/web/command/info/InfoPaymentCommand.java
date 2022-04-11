@@ -28,6 +28,10 @@ public class InfoPaymentCommand extends Command {
 
     private static final Logger log = Logger.getLogger(InfoPaymentCommand.class);
 
+    private PaymentDAO paymentDAO;
+    private void init() {
+        paymentDAO = new PaymentDAO();
+    }
     /**
      * Function for GET request. This command class don't use GET method, and redirect to block page
      * @param request servlet request
@@ -52,6 +56,7 @@ public class InfoPaymentCommand extends Command {
     @Override
     public void executePost(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
         log.trace("Start POST method "+this.getClass().getSimpleName());
+        init();
         JsonObject innerObject = new JsonObject();
         /**
          * Check user role
@@ -80,7 +85,7 @@ public class InfoPaymentCommand extends Command {
          * Find payment and send JSON data
          */
         try {
-            Payment paymentById = PaymentDAO.findPaymentById(paymentId.longValue());
+            Payment paymentById = paymentDAO.findPaymentById(paymentId.longValue());
             log.trace("Info for payment: " + paymentById);
             if (paymentById != null) {
                 innerObject.add("status", new Gson().toJsonTree("OK"));

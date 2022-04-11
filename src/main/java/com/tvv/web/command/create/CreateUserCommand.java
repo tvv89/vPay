@@ -31,6 +31,10 @@ public class CreateUserCommand extends Command {
 
 	private static final Logger log = Logger.getLogger(CreateUserCommand.class);
 
+	private UserService service;
+	private void init(){
+		service = new UserService();
+	}
 	/**
 	 * Execute POST function for Controller. This function use request data and send response to
 	 * page user list. Create user with photo file in new page
@@ -43,7 +47,7 @@ public class CreateUserCommand extends Command {
 	public void executePost(HttpServletRequest request,
 							HttpServletResponse response) throws IOException, ServletException {
 		log.debug("Start registration POST command "+ this.getClass().getSimpleName());
-		request.setCharacterEncoding("UTF-8");
+		init();
 		HttpSession session = request.getSession();
 		/**
 		 * Create stream for read loaded photo
@@ -65,17 +69,12 @@ public class CreateUserCommand extends Command {
 
 		Map<String, String> userData = readParameters(request);
 		userData.put("photofile", fileName);
-		LocalDate date = LocalDate.now();
-		try {
-			date = LocalDate.parse(userData.get("dateofbirth"));
-		} catch (Exception ex) {
-			log.debug("Bad parse date from dateOfBirth");
-		}
+
 		/**
 		 * Create user with parameter
 		 */
 		try {
-			UserService.createUser(userData);
+			service.createUser(userData);
 			response.sendRedirect(request.getContextPath()+ Path.COMMAND__START_PAGE);
 		} catch (AppException e) {
 			log.trace(e.getMessage());

@@ -42,8 +42,10 @@ public class CreatePaymentCommand extends Command {
 
     private PaymentService service;
     private AccountDAO accountDAO;
+    private UserDAO userDAO;
 
     private void init() {
+        userDAO = new UserDAO();
         accountDAO = new AccountDAO();
         service = new PaymentService(new AccountService(accountDAO),
                 accountDAO,
@@ -116,7 +118,7 @@ public class CreatePaymentCommand extends Command {
                  */
                 case "checkAccount":
                     String accountNumber = (String) jsonParameters.get("accountNumber");
-                    Map<String, String> user = UserDAO.findUserByAccountUID(accountNumber);
+                    Map<String, String> user = userDAO.findUserByAccountUID(accountNumber);
                     Account accountByUID = accountDAO.findAccountByUID(accountNumber);
                     log.trace("Info for user: " + user.get("firstName") + " " + user.get("lastName"));
                     if (!user.isEmpty()) {

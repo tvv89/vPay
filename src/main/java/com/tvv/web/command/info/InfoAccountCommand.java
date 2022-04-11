@@ -6,6 +6,7 @@ import com.tvv.db.dao.AccountDAO;
 import com.tvv.db.entity.Account;
 import com.tvv.db.entity.Role;
 import com.tvv.db.entity.User;
+import com.tvv.service.AccountService;
 import com.tvv.service.exception.AppException;
 import com.tvv.web.command.Command;
 import com.tvv.web.command.UtilCommand;
@@ -28,6 +29,10 @@ public class InfoAccountCommand extends Command {
 
     private static final Logger log = Logger.getLogger(InfoAccountCommand.class);
 
+    private AccountDAO accountDAO;
+    private void init(){
+        accountDAO = new AccountDAO();
+    }
     /**
      * Function for GET request. This command class don't use GET method, and redirect to list account page
      * @param request servlet request
@@ -89,7 +94,7 @@ public class InfoAccountCommand extends Command {
             /**
              * will add checking for owner
              */
-            Account accountById = AccountDAO.findAccountById(accountId.longValue());
+            Account accountById = accountDAO.findAccountById(accountId.longValue());
             log.trace("Info for user: " + accountById);
             accountById.getOwnerUser().setPassword("");
             if (accountById != null) {

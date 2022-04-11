@@ -27,6 +27,10 @@ public class UpdateAccountBalanceCommand extends Command {
 
     private static final Logger log = Logger.getLogger(UpdateAccountBalanceCommand.class);
 
+    private AccountDAO accountDAO;
+    private void init() {
+        accountDAO = new AccountDAO();
+    }
     /**
      * Execute GET function for Controller. This function doesn't have GET request, and redirect to error page
      * @param request servlet request
@@ -50,7 +54,7 @@ public class UpdateAccountBalanceCommand extends Command {
     @Override
     public void executePost(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
         log.trace("Start POST command "+ this.getClass().getSimpleName());
-        request.setCharacterEncoding("UTF-8");
+        init();
         JsonObject innerObject = new JsonObject();
         /**
          * Check user role
@@ -84,7 +88,7 @@ public class UpdateAccountBalanceCommand extends Command {
         try {
             accountId = (Integer)jsonParameters.get("accountId");
             accountCoin = Double.parseDouble(jsonParameters.get("coin").toString());
-            accountById = AccountDAO.findAccountById(accountId.longValue());
+            accountById = accountDAO.findAccountById(accountId.longValue());
         }
         catch (Exception e) {
             log.error("Bad input value");
@@ -97,8 +101,8 @@ public class UpdateAccountBalanceCommand extends Command {
             if (accountById != null && userRole == Role.USER && accountById.getOwnerUser().getId().equals(currentUser.getId())) {
                 if (accountById.getCard() != null) {
                     if (accountById.getCard().getStatus()) {
-                        AccountDAO.updateAccountBalance(accountById.getId(), accountById.getBalance() + accountCoin);
-                        accountById = AccountDAO.findAccountById(accountId.longValue());
+                        accountDAO.updateAccountBalance(accountById.getId(), accountById.getBalance() + accountCoin);
+                        accountById = accountDAO.findAccountById(accountId.longValue());
                         innerObject.add("status", new Gson().toJsonTree("OK"));
                         innerObject.add("account", new Gson().toJsonTree(accountById));
                     } else innerObject = UtilCommand.errorMessageJSON("Card is locked. Please select another card.");

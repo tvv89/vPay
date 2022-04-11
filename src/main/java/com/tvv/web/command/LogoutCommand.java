@@ -20,9 +20,12 @@ import org.apache.log4j.Logger;
  */
 public class LogoutCommand extends Command {
 
-
 	private static final Logger log = Logger.getLogger(LogoutCommand.class);
 
+	private UserDAO userDAO;
+	private void init(){
+		userDAO = new UserDAO();
+	}
 	/**
 	 * POST request function is same GET request function. Execute 'process'
 	 * @param request
@@ -67,7 +70,7 @@ public class LogoutCommand extends Command {
 			return;
 		}
 		try {
-			UserDAO.updateLocalUserById(currentUser.getId(), currentLanguage);
+			userDAO.updateLocalUserById(currentUser.getId(), currentLanguage);
 			log.debug("Save currentLanguage to user");
 		}
 		catch (AppException ex)

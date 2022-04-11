@@ -234,6 +234,7 @@ public class PaymentDAO {
      */
     private static class PaymentLoad implements LoadEntity<Payment> {
         private AccountDAO accountDAO = new AccountDAO();
+        private UserDAO userDAO = new UserDAO();
         /**
          * Load object from ResultSet
          * @param rs ResultSet
@@ -247,7 +248,7 @@ public class PaymentDAO {
                 payment.setId(rs.getLong(Fields.ENTITY__ID));
                 payment.setGuid(rs.getString(Fields.PAYMENT__GUID));
 
-                User user = UserDAO.findUserById(rs.getLong(Fields.PAYMENT__USER));
+                User user = userDAO.findUserById(rs.getLong(Fields.PAYMENT__USER));
                 payment.setUser(user);
                 Account sender = null;
                 try {

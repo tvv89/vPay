@@ -13,12 +13,20 @@ import java.util.Map;
  * Business logic for Cards
  */
 public class CardService {
+
+    private UserDAO userDAO;
+    private CardDAO cardDAO;
+    private void init(){
+        userDAO = new UserDAO();
+        cardDAO = new CardDAO();
+    }
     /**
      * Create card with checking field. Checking will be developed in the future
      * @param cardData Map - account data
      * @throws AppException
      */
-    public static void createCard(Map<String,String> cardData) throws AppException {
+    public void createCard(Map<String,String> cardData) throws AppException {
+        init();
         StringBuilder errorMessage = new StringBuilder();
         ErrorString error = new ErrorMessageEN();
         //check card number and expiration date
@@ -34,10 +42,10 @@ public class CardService {
             card.setExpDate(cardData.get("expMM")+"/"+cardData.get("expYY"));
             Long userId = Long.parseLong(cardData.get("ownerUser"));
 
-            card.setUser(UserDAO.findUserById(userId));
+            card.setUser(userDAO.findUserById(userId));
             card.setStatus(true);
 
-            CardDAO.insertCard(card);
+            cardDAO.insertCard(card);
         }
         else throw new AppException(errorMessage.toString(), new IllegalArgumentException());
     }

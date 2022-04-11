@@ -27,6 +27,10 @@ public class CreateCardCommand extends Command {
 
 	private static final Logger log = Logger.getLogger(CreateCardCommand.class);
 
+	private CardService service;
+	private void init() {
+		service = new CardService();
+	}
 	/**
 	 * Execute POST function for Controller. This function use JSON data from request, parse it, and send response to
 	 * page. Create card for current user and redirect to card list
@@ -39,9 +43,7 @@ public class CreateCardCommand extends Command {
 	public void executePost(HttpServletRequest request,
 							HttpServletResponse response) throws IOException, ServletException {
 		log.debug("Start create card POST command "+this.getClass().getSimpleName());
-
-		request.setCharacterEncoding("UTF-8");
-
+		init();
 		/**
 		 * Check user role
 		 */
@@ -66,7 +68,7 @@ public class CreateCardCommand extends Command {
 		 */
 		try {
 			if (userRole==Role.USER) {
-				CardService.createCard(cardData);
+				service.createCard(cardData);
 				response.sendRedirect(Path.COMMAND__LIST_CARDS);
 				log.debug("Card was created");
 			}

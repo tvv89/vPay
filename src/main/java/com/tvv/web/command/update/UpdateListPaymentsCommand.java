@@ -26,6 +26,11 @@ public class UpdateListPaymentsCommand extends Command {
 
     private static final Logger log = Logger.getLogger(UpdateListPaymentsCommand.class);
 
+    private PaymentDAO paymentDAO;
+
+    private void init() {
+        paymentDAO = new PaymentDAO();
+    }
     /**
      * Comparator for sorting by payment GUID
      */
@@ -101,6 +106,7 @@ public class UpdateListPaymentsCommand extends Command {
     @Override
     public void executePost(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
         log.trace("Start POST command");
+        init();
         /**
          * Check user role
          */
@@ -158,8 +164,8 @@ public class UpdateListPaymentsCommand extends Command {
          */
         List<Payment> list = new ArrayList<>();
         try {
-            if (userRole == Role.ADMIN) list = PaymentDAO.findAllPayments();
-            else if (userRole == Role.USER) list = PaymentDAO.findPaymentsByUser(currentUser.getId());
+            if (userRole == Role.ADMIN) list = paymentDAO.findAllPayments();
+            else if (userRole == Role.USER) list = paymentDAO.findPaymentsByUser(currentUser.getId());
             else list = null;
         }
         catch (AppException ex) {

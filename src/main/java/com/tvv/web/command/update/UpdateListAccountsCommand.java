@@ -30,6 +30,12 @@ public class UpdateListAccountsCommand extends Command {
 
     private static final Logger log = Logger.getLogger(UpdateListAccountsCommand.class);
 
+    private AccountDAO accountDAO;
+    private CardDAO cardDAO;
+    private void init() {
+        accountDAO = new AccountDAO();
+        cardDAO = new CardDAO();
+    }
     /**
      * Comparator for sorting by account name
      */
@@ -88,6 +94,7 @@ public class UpdateListAccountsCommand extends Command {
     @Override
     public void executePost(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
         log.trace("Start POST command "+ this.getClass().getName());
+        init();
         JsonObject innerObject = new JsonObject();
         /**
          * Check user role
@@ -142,10 +149,10 @@ public class UpdateListAccountsCommand extends Command {
         try {
             List<Account> list = new ArrayList<>();
             List<Card> cards = new ArrayList<>();
-            if (userRole == Role.ADMIN) list = AccountDAO.findAllAccount();
+            if (userRole == Role.ADMIN) list = accountDAO.findAllAccount();
             else if (userRole == Role.USER) {
-                list = AccountDAO.findAccountByUserId(currentUser.getId());
-                cards = CardDAO.findCardsByUser(currentUser.getId());
+                list = accountDAO.findAccountByUserId(currentUser.getId());
+                cards = cardDAO.findCardsByUser(currentUser.getId());
                 try {
                     cards.stream().forEach(c -> c.getUser().setPassword(""));
                 } catch (Exception e) {

@@ -11,8 +11,10 @@ import com.tvv.db.entity.User;
 import com.tvv.service.exception.AppException;
 import com.tvv.utils.UtilsGenerator;
 import com.tvv.web.command.UtilCommand;
+import com.tvv.web.command.status.StatusAccountsCommand;
 import com.tvv.web.webutil.ErrorMessageEN;
 import com.tvv.web.webutil.ErrorString;
+import org.apache.log4j.Logger;
 
 import javax.servlet.http.HttpServletRequest;
 import java.text.DecimalFormat;
@@ -25,6 +27,7 @@ import java.util.Random;
  * Business logic for Accounts
  */
 public class AccountService {
+    private static final Logger log = Logger.getLogger(AccountService.class);
     /**
      * Add money to accountTo balance and subtract money form accountFrom balance
      * @param accountFrom debit account object
@@ -35,9 +38,12 @@ public class AccountService {
      * @throws AppException
      */
     private final AccountDAO accountDAO;
+    private CardDAO cardDAO;
 
     public AccountService(AccountDAO accountDAO) {
         this.accountDAO = accountDAO;
+        this.cardDAO = new CardDAO();
+
     }
 
     public boolean depositAccount(Account accountFrom, Account accountTo, Double valueFrom, Double valueTo) throws AppException {
@@ -176,6 +182,56 @@ public class AccountService {
         }
         else {
             innerObject = UtilCommand.errorMessageJSON("Cannot change account status");
+        }
+        return innerObject;
+    }
+
+    /**
+     * Function sends JSON data with card information
+     *
+     * @param accountId Account id from request
+     * @return JsonObject with card info Name, Number, Date
+     * @throws AppException
+     */
+    public JsonObject processCardInfo(Integer accountId) throws AppException {
+        JsonObject innerObject = new JsonObject();
+        Account accountById = accountDAO.findAccountById(Long.valueOf(accountId));
+        log.trace("Info for account: " + accountById);
+        if (accountById.getCard() != null) {
+            Card cardById = cardDAO.findCardById(accountById.getCard().getId());
+            innerObject.add("status", new Gson().toJsonTree("OK"));
+            innerObject.add("cardname", new Gson().toJsonTree(cardById.getName()));
+            innerObject.add("cardnumber", new Gson().toJsonTree(cardById.getNumber()));
+            innerObject.add("expdate", new Gson().toJsonTree(cardById.getExpDate()));
+        } else {
+            innerObject.add("status", new Gson().toJsonTree("ERROR"));
+            innerObject.add("message", new Gson().toJsonTree("Account does not have card"));
+            log.error("Account does not have card");
+        }
+        return innerObject;
+    }
+
+    /**
+     * Function sends JSON data with card information
+     *
+     * @param accountId Account id from request
+     * @param cardId    Card id from request, card will be added to account
+     * @return JsonObject with card info Name, Number, Date
+     * @throws AppException
+     */
+    public JsonObject processCardSelect(Integer accountId, Integer cardId) throws AppException {
+        JsonObject innerObject = new JsonObject();
+        Account accountById = accountDAO.findAccountById(Long.valueOf(accountId));
+
+        log.trace("Info for account: " + accountById);
+        if (accountById != null) {
+            accountDAO.updateAccountCard(Long.valueOf(accountId), cardId);
+            innerObject.add("status", new Gson().toJsonTree("OK"));
+
+        } else {
+            innerObject.add("status", new Gson().toJsonTree("ERROR"));
+            innerObject.add("message", new Gson().toJsonTree("Account does not find"));
+            log.error("Account does not have card");
         }
         return innerObject;
     }

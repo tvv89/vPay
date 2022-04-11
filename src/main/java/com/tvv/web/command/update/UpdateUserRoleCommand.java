@@ -27,6 +27,10 @@ public class UpdateUserRoleCommand extends Command {
 
     private static final Logger log = Logger.getLogger(UpdateUserRoleCommand.class);
 
+    private UserDAO userDAO;
+    private void init(){
+        userDAO = new UserDAO();
+    }
     /**
      * Execute GET function for Controller. This function doesn't have GET request, and redirect to error page
      * @param request servlet request
@@ -50,6 +54,7 @@ public class UpdateUserRoleCommand extends Command {
     @Override
     public void executePost(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException, AppException {
         log.trace("Start POST command " + this.getClass().getName());
+        init();
         JsonObject innerObject = new JsonObject();
         /**
          * Check user role
@@ -83,7 +88,7 @@ public class UpdateUserRoleCommand extends Command {
 
         try {
             userId = (Integer)jsonParameters.get("userId");
-            userById = UserDAO.findUserById(userId.longValue());
+            userById = userDAO.findUserById(userId.longValue());
         }
         catch (AppException e) {
             innerObject = UtilCommand.errorMessageJSON(e.getMessage());
@@ -91,8 +96,8 @@ public class UpdateUserRoleCommand extends Command {
         try {
             if (userById != null) {
                 int newRole = (userById.getRole() == 1) ? 0 : 1;
-                UserDAO.updateRoleUserById(Long.valueOf(userId), newRole);
-                userById = UserDAO.findUserById(userId.longValue());
+                userDAO.updateRoleUserById(Long.valueOf(userId), newRole);
+                userById = userDAO.findUserById(userId.longValue());
                 userById.setPassword("");
                 innerObject.add("status", new Gson().toJsonTree("OK"));
                 innerObject.add("user", new Gson().toJsonTree(userById));
