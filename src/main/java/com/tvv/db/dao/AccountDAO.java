@@ -50,17 +50,23 @@ public class AccountDAO {
     private static final String SQL_DELETE_ACCOUNT =
             "delete from accounts WHERE id=?";
 
+    private DBManager dbManager;
+
+    public AccountDAO() {
+        this.dbManager = DBManager.getInstance();
+    }
+
     /**
      * Update item in DB. Will be developed in the future
      * @param account - account which will be updated
      * @return return updated account
      * @throws AppException
      */
-    public static Account updateAccount (Account account) throws AppException {
+    public Account updateAccount (Account account) throws AppException {
         PreparedStatement pstmt = null;
         Connection con = null;
         try {
-            con = DBManager.getInstance().getConnection();
+            con = dbManager.getConnection();
             pstmt = con.prepareStatement(SQL__UPDATE_GENERAL);
             pstmt.setString(1, account.getIban());
             pstmt.setString(2, account.getIpn());
@@ -71,10 +77,10 @@ public class AccountDAO {
             pstmt.close();
 
         } catch (SQLException ex) {
-            DBManager.getInstance().rollbackCloseConnection(con);
+            dbManager.rollbackCloseConnection(con);
             throw new AppException("Can't update account",ex);
         } finally {
-            DBManager.getInstance().commitCloseConnection(con);
+            dbManager.commitCloseConnection(con);
         }
         return account;
     }
@@ -85,11 +91,11 @@ public class AccountDAO {
      * @return
      * @throws AppException
      */
-    public static Account insertAccount (Account account) throws AppException {
+    public Account insertAccount (Account account) throws AppException {
         PreparedStatement pstmt = null;
         Connection con = null;
         try {
-            con = DBManager.getInstance().getConnection();
+            con = dbManager.getConnection();
             pstmt = con.prepareStatement(SQL__INSERT_ACCOUNT);
             pstmt.setString(1, account.getIban());
             pstmt.setString(2, account.getIpn());
@@ -108,10 +114,10 @@ public class AccountDAO {
             pstmt.close();
 
         } catch (SQLException ex) {
-            DBManager.getInstance().rollbackCloseConnection(con);
+            dbManager.rollbackCloseConnection(con);
             throw new AppException("Can't insert account",ex);
         } finally {
-            DBManager.getInstance().commitCloseConnection(con);
+            dbManager.commitCloseConnection(con);
         }
         return account;
     }
@@ -122,22 +128,22 @@ public class AccountDAO {
      * @return successful operation
      * @throws AppException
      */
-    public static boolean deleteAccount (Account account) throws AppException {
+    public boolean deleteAccount (Account account) throws AppException {
         PreparedStatement pstmt = null;
         Connection con = null;
         boolean result = false;
         try {
-            con = DBManager.getInstance().getConnection();
+            con = dbManager.getConnection();
             pstmt = con.prepareStatement(SQL_DELETE_ACCOUNT);
             pstmt.setLong(1, account.getId());
             pstmt.execute();
             pstmt.close();
             result = true;
         } catch (SQLException ex) {
-            DBManager.getInstance().rollbackCloseConnection(con);
+            dbManager.rollbackCloseConnection(con);
             throw new AppException("Can't delet account",ex);
         } finally {
-            DBManager.getInstance().commitCloseConnection(con);
+            dbManager.commitCloseConnection(con);
         }
         return result;
     }
@@ -147,13 +153,13 @@ public class AccountDAO {
      * @return List of Account
      * @throws AppException
      */
-    public static List<Account> findAllAccount() throws AppException {
+    public List<Account> findAllAccount() throws AppException {
         List<Account> accounts = new ArrayList<>();
         Statement stmt = null;
         ResultSet rs = null;
         Connection con = null;
         try {
-            con = DBManager.getInstance().getConnection();
+            con = dbManager.getConnection();
             AccountLoad mapper = new AccountLoad();
             con.createStatement();
             stmt = con.createStatement();
@@ -162,10 +168,10 @@ public class AccountDAO {
             rs.close();
             stmt.close();
         } catch (SQLException ex) {
-            DBManager.getInstance().rollbackCloseConnection(con);
+            dbManager.rollbackCloseConnection(con);
             throw new AppException("Can't find all accounts",ex);
         } finally {
-            DBManager.getInstance().commitCloseConnection(con);
+            dbManager.commitCloseConnection(con);
         }
         return accounts;
     }
@@ -176,13 +182,13 @@ public class AccountDAO {
      * @return object Account
      * @throws AppException
      */
-    public static Account findAccountById (Long id) throws AppException {
+    public Account findAccountById (Long id) throws AppException {
         Account account = new Account();
         PreparedStatement pstmt = null;
         ResultSet rs = null;
         Connection con = null;
         try {
-            con = DBManager.getInstance().getConnection();
+            con = dbManager.getConnection();
             AccountLoad mapper = new AccountLoad();
             pstmt = con.prepareStatement(SQL__FIND_ACCOUNT_BY_ID);
             pstmt.setLong(1, id);
@@ -192,10 +198,10 @@ public class AccountDAO {
             rs.close();
             pstmt.close();
         } catch (SQLException ex) {
-            DBManager.getInstance().rollbackCloseConnection(con);
+            dbManager.rollbackCloseConnection(con);
             throw new AppException("Can't find account by id",ex);
         } finally {
-            DBManager.getInstance().commitCloseConnection(con);
+            dbManager.commitCloseConnection(con);
         }
         return account;
     }
@@ -207,12 +213,12 @@ public class AccountDAO {
      * @return successful operation
      * @throws AppException
      */
-    public static boolean updateAccountBalance (Long id, Double newBalance) throws AppException {
+    public boolean updateAccountBalance (Long id, Double newBalance) throws AppException {
         boolean result = false;
         PreparedStatement pstmt = null;
         Connection con = null;
         try {
-            con = DBManager.getInstance().getConnection();
+            con = dbManager.getConnection();
             pstmt = con.prepareStatement(SQL__UPDATE_BALANCE);
             pstmt.setDouble(1, newBalance);
             pstmt.setLong(2, id);
@@ -220,10 +226,10 @@ public class AccountDAO {
             pstmt.close();
             result = true;
         } catch (SQLException ex) {
-            DBManager.getInstance().rollbackCloseConnection(con);
+            dbManager.rollbackCloseConnection(con);
             throw new AppException("Can't update account balance",ex);
         } finally {
-            DBManager.getInstance().commitCloseConnection(con);
+            dbManager.commitCloseConnection(con);
         }
         return result;
     }
@@ -235,12 +241,12 @@ public class AccountDAO {
      * @return successful operation
      * @throws AppException
      */
-    public static boolean updateAccountCard (Long id, Integer cardId) throws AppException {
+    public boolean updateAccountCard (Long id, Integer cardId) throws AppException {
         boolean result = false;
         PreparedStatement pstmt = null;
         Connection con = null;
         try {
-            con = DBManager.getInstance().getConnection();
+            con = dbManager.getConnection();
             pstmt = con.prepareStatement(SQL__UPDATE_CARD);
             pstmt.setDouble(1, cardId);
             pstmt.setLong(2, id);
@@ -248,10 +254,10 @@ public class AccountDAO {
             pstmt.close();
             result = true;
         } catch (SQLException ex) {
-            DBManager.getInstance().rollbackCloseConnection(con);
+            dbManager.rollbackCloseConnection(con);
             throw new AppException("Can't update account card",ex);
         } finally {
-            DBManager.getInstance().commitCloseConnection(con);
+            dbManager.commitCloseConnection(con);
         }
         return result;
     }
@@ -262,13 +268,13 @@ public class AccountDAO {
      * @return List of Accounts
      * @throws AppException
      */
-    public static List<Account> findAccountByUserId (Long id) throws AppException {
+    public List<Account> findAccountByUserId (Long id) throws AppException {
         List<Account> accounts = new ArrayList<>();
         PreparedStatement pstmt = null;
         ResultSet rs = null;
         Connection con = null;
         try {
-            con = DBManager.getInstance().getConnection();
+            con = dbManager.getConnection();
             AccountLoad mapper = new AccountLoad();
             pstmt = con.prepareStatement(SQL__FIND_ACCOUNT_BY_USER);
             pstmt.setLong(1, id);
@@ -278,10 +284,10 @@ public class AccountDAO {
             rs.close();
             pstmt.close();
         } catch (SQLException ex) {
-            DBManager.getInstance().rollbackCloseConnection(con);
+            dbManager.rollbackCloseConnection(con);
             throw new AppException("Can't find accounts for this user",ex);
         } finally {
-            DBManager.getInstance().commitCloseConnection(con);
+            dbManager.commitCloseConnection(con);
         }
         return accounts;
 
@@ -294,12 +300,12 @@ public class AccountDAO {
      * @return successful operation
      * @throws AppException
      */
-    public static boolean updateStatusAccountById(Long id, String status) throws AppException {
+    public boolean updateStatusAccountById(Long id, String status) throws AppException {
         boolean result = false;
         PreparedStatement pstmt = null;
         Connection con = null;
         try {
-            con = DBManager.getInstance().getConnection();
+            con = dbManager.getConnection();
             AccountDAO.AccountLoad mapper = new AccountLoad();
             pstmt = con.prepareStatement(SQL_UPDATE_STATUS_ACCOUNT);
             pstmt.setString(1, status);
@@ -307,10 +313,10 @@ public class AccountDAO {
             pstmt.execute();
             pstmt.close();
         } catch (SQLException ex) {
-            DBManager.getInstance().rollbackCloseConnection(con);
+            dbManager.rollbackCloseConnection(con);
             throw new AppException("Can't update account status",ex);
         } finally {
-            DBManager.getInstance().commitCloseConnection(con);
+            dbManager.commitCloseConnection(con);
         }
         return result;
     }
@@ -321,13 +327,13 @@ public class AccountDAO {
      * @return Account from DB
      * @throws AppException
      */
-    public static Account findAccountByUID(String accountNumber) throws AppException {
+    public Account findAccountByUID(String accountNumber) throws AppException {
         Account account = null;
         PreparedStatement pstmt = null;
         ResultSet rs = null;
         Connection con = null;
         try {
-            con = DBManager.getInstance().getConnection();
+            con = dbManager.getConnection();
             AccountLoad mapper = new AccountLoad();
             pstmt = con.prepareStatement(SQL__FIND_ACCOUNT_BY_UID);
             pstmt.setString(1, accountNumber);
@@ -337,10 +343,10 @@ public class AccountDAO {
             rs.close();
             pstmt.close();
         } catch (SQLException | AppException ex) {
-            DBManager.getInstance().rollbackCloseConnection(con);
+            dbManager.rollbackCloseConnection(con);
             throw new AppException("Can't find account by UID",ex);
         } finally {
-            DBManager.getInstance().commitCloseConnection(con);
+            dbManager.commitCloseConnection(con);
         }
         return account;
     }

@@ -1,15 +1,20 @@
 package com.tvv.service;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 import com.tvv.db.dao.AccountDAO;
 import com.tvv.db.dao.CardDAO;
 import com.tvv.db.entity.Account;
 import com.tvv.db.entity.Card;
+import com.tvv.db.entity.Role;
 import com.tvv.db.entity.User;
 import com.tvv.service.exception.AppException;
 import com.tvv.utils.UtilsGenerator;
+import com.tvv.web.command.UtilCommand;
 import com.tvv.web.webutil.ErrorMessageEN;
 import com.tvv.web.webutil.ErrorString;
 
+import javax.servlet.http.HttpServletRequest;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.util.Locale;
@@ -29,16 +34,22 @@ public class AccountService {
      * @return successful operation
      * @throws AppException
      */
-    public static boolean depositAccount(Account accountFrom, Account accountTo, Double valueFrom, Double valueTo) throws AppException {
+    private final AccountDAO accountDAO;
+
+    public AccountService(AccountDAO accountDAO) {
+        this.accountDAO = accountDAO;
+    }
+
+    public boolean depositAccount(Account accountFrom, Account accountTo, Double valueFrom, Double valueTo) throws AppException {
         if (accountTo!=null && accountFrom.getIban().equals(accountTo.getIban())) return true;
         Double balanceFrom = accountFrom.getBalance();
         DecimalFormat df = new DecimalFormat("#.##", new DecimalFormatSymbols(Locale.ENGLISH));
         Double newBalanceFrom = Double.valueOf(df.format(balanceFrom-valueFrom));
-        AccountDAO.updateAccountBalance(accountFrom.getId(), newBalanceFrom);
+        accountDAO.updateAccountBalance(accountFrom.getId(), newBalanceFrom);
         if (accountTo!=null) {
             Double balanceTo = accountTo.getBalance();
             Double newBalanceTo = Double.valueOf(df.format(balanceTo + valueTo));
-            AccountDAO.updateAccountBalance(accountTo.getId(), newBalanceTo);
+            accountDAO.updateAccountBalance(accountTo.getId(), newBalanceTo);
         }
         return true;
     }
@@ -48,10 +59,10 @@ public class AccountService {
      * @param account
      * @throws AppException
      */
-    public static void lockAccount(Account account) throws AppException {
+    public void lockAccount(Account account) throws AppException {
         if (account!=null) {
             account.setStatus("disable");
-            AccountDAO.updateStatusAccountById(account.getId(), account.getStatus());
+            accountDAO.updateStatusAccountById(account.getId(), account.getStatus());
         }
         else throw new AppException("Can not find account for locking", new NullPointerException());
     }
@@ -62,7 +73,7 @@ public class AccountService {
      * @param user account owner user
      * @throws AppException
      */
-    public static void createAccount(Map<String,String> accountData, User user) throws AppException {
+    public void createAccount(Map<String,String> accountData, User user) throws AppException {
         StringBuilder errorMessage = new StringBuilder();
         ErrorString error = new ErrorMessageEN();
 
@@ -79,8 +90,93 @@ public class AccountService {
             account.setOwnerUser(user);
             account.setStatus("Enabled");
 
-            AccountDAO.insertAccount(account);
+            accountDAO.insertAccount(account);
         }
         else throw new AppException(errorMessage.toString(), new IllegalArgumentException());
+    }
+
+    /**
+     * Function for delete account
+     * @param request controller servlet request
+     * @param jsonParameters parameters from JSON request, primary: use delete
+     * @return JsonObject object, which will be sent with response
+     * @throws AppException custom application exception
+     */
+    public JsonObject processDeleteAccount(HttpServletRequest request, Map<String, Object> jsonParameters) throws AppException {
+        JsonObject innerObject = new JsonObject();
+        Role userRole = (Role) request.getSession().getAttribute("userRole");
+        User currentUser = (User) request.getSession().getAttribute("currentUser");
+
+        Integer accountId = null;
+        Account accountById = null;
+        try {
+            accountId = (Integer) jsonParameters.get("accountId");
+            accountById = accountDAO.findAccountById(accountId.longValue());
+
+        } catch (Exception e) {
+            innerObject = UtilCommand.errorMessageJSON("Cannot change account status");
+            return innerObject;
+        }
+        if (accountById != null) {
+            if (userRole == Role.USER) {
+                accountDAO.deleteAccount(accountById);
+                innerObject.add("status", new Gson().toJsonTree("OK"));
+            } else {
+                innerObject = UtilCommand.errorMessageJSON("Cannot change account status");
+            }
+        } else {
+            innerObject = UtilCommand.errorMessageJSON("Cannot change account status");
+        }
+        return innerObject;
+    }
+
+    /**
+     * Function for change account status: Enabled, Idle, Disabled
+     * @param request controller servlet request
+     * @param jsonParameters parameters from JSON request, primary: use change
+     * @return JsonObject object, which will be sent with response
+     * @throws AppException custom application exception
+     */
+    public JsonObject processChangeStatus(HttpServletRequest request, Map<String, Object> jsonParameters) throws AppException {
+        JsonObject innerObject = new JsonObject();
+        Role userRole = (Role) request.getSession().getAttribute("userRole");
+        User currentUser = (User) request.getSession().getAttribute("currentUser");
+
+        Integer accountId = null;
+        Account accountById = null;
+
+        try {
+            accountId = (Integer) jsonParameters.get("accountId");
+            accountById = accountDAO.findAccountById(accountId.longValue());
+            if (userRole == Role.USER && accountById!=null) {
+                if (accountById.getOwnerUser().getId() != currentUser.getId()) {
+                    throw new AppException("Incorrect user account id", new IllegalArgumentException());
+                }
+            }
+        }
+        catch (Exception e) {
+            throw new AppException("Not found account by id", e);
+        }
+
+        if (accountById!=null) {
+            String accountStatus;
+            if (userRole == Role.ADMIN) {
+                if (accountById.getStatus().equals("Disabled") || accountById.getStatus().equals("Idle"))
+                    accountStatus = "Enabled";
+                else accountStatus = "Disabled";
+            } else {
+                if (accountById.getStatus().equals("Enabled")) accountStatus = "Idle";
+                else accountStatus = accountById.getStatus();
+            }
+            accountDAO.updateStatusAccountById(Long.valueOf(accountId),accountStatus);
+            accountById = accountDAO.findAccountById(accountId.longValue());
+            innerObject.add("status", new Gson().toJsonTree("OK"));
+            innerObject.add("userRole", new Gson().toJsonTree(userRole));
+            innerObject.add("account", new Gson().toJsonTree(accountById));
+        }
+        else {
+            innerObject = UtilCommand.errorMessageJSON("Cannot change account status");
+        }
+        return innerObject;
     }
 }

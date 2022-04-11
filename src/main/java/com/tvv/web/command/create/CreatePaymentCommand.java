@@ -3,6 +3,7 @@ package com.tvv.web.command.create;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.tvv.db.dao.AccountDAO;
+import com.tvv.db.dao.PaymentDAO;
 import com.tvv.db.dao.UserDAO;
 import com.tvv.db.entity.*;
 import com.tvv.service.AccountService;
@@ -39,6 +40,16 @@ public class CreatePaymentCommand extends Command {
 
     private static final Logger log = Logger.getLogger(CreatePaymentCommand.class);
 
+    private PaymentService service;
+    private AccountDAO accountDAO;
+
+    private void init() {
+        accountDAO = new AccountDAO();
+        service = new PaymentService(new AccountService(accountDAO),
+                accountDAO,
+                new PaymentDAO());
+
+    }
     /**
      * Execute POST function for Controller. This function use JSON data from request, parse it, and send response to
      * page. Create payment for current user and redirect to payment list
@@ -53,8 +64,7 @@ public class CreatePaymentCommand extends Command {
     public void executePost(HttpServletRequest request,
                             HttpServletResponse response) throws IOException, ServletException {
         log.debug("Start create account POST command " + this.getClass().getSimpleName());
-
-        request.setCharacterEncoding("UTF-8");
+        init();
 
         /**
          * Check user role
@@ -90,7 +100,7 @@ public class CreatePaymentCommand extends Command {
                 case "selectAccount":
                     Integer accountId = -1;
                     accountId = (Integer) jsonParameters.get("accountId");
-                    Account accountById = AccountDAO.findAccountById(accountId.longValue());
+                    Account accountById = accountDAO.findAccountById(accountId.longValue());
                     log.trace("Info for account: " + accountById);
                     if (accountById != null) {
                         innerObject.add("status", new Gson().toJsonTree("OK"));
@@ -105,10 +115,9 @@ public class CreatePaymentCommand extends Command {
                  * Check Name (and hide) of user for recipient account
                  */
                 case "checkAccount":
-                    String accountType = (String) jsonParameters.get("accountType");
                     String accountNumber = (String) jsonParameters.get("accountNumber");
                     Map<String, String> user = UserDAO.findUserByAccountUID(accountNumber);
-                    Account accountByUID = AccountDAO.findAccountByUID(accountNumber);
+                    Account accountByUID = accountDAO.findAccountByUID(accountNumber);
                     log.trace("Info for user: " + user.get("firstName") + " " + user.get("lastName"));
                     if (!user.isEmpty()) {
                         innerObject.add("status", new Gson().toJsonTree("OK"));
@@ -126,13 +135,13 @@ public class CreatePaymentCommand extends Command {
                  * Calculate payment
                  */
                 case "calculatePayment":
-                    innerObject = calculatePayment(jsonParameters);
+                    innerObject = service.calculatePayment(jsonParameters);
                     break;
                 /**
                  * Create payment
                  */
                 case "createPayment":
-                    innerObject = createPayment(jsonParameters, currentUser);
+                    innerObject = service.createPayment(jsonParameters, currentUser);
                     break;
             }
         } catch (AppException ex) {
@@ -171,7 +180,7 @@ public class CreatePaymentCommand extends Command {
         List<Account> list = null;
         if (userRole == Role.USER) {
             try {
-                list = AccountDAO.findAccountByUserId(currentUser.getId());
+                list = accountDAO.findAccountByUserId(currentUser.getId());
                 request.setAttribute("accountsPayment", list);
             } catch (AppException e) {
                 UtilCommand.bedGETRequest(request, response);
@@ -186,220 +195,5 @@ public class CreatePaymentCommand extends Command {
         log.trace("Forward to: " + Path.PAGE__CREATE_PAYMENT);
     }
 
-    /**
-     * Calculating sum for payment
-     * @param jsonParameters parameters from JSON request
-     * @return
-     */
-    private JsonObject calculatePayment(Map<String, Object> jsonParameters) {
-        JsonObject innerObject = new JsonObject();
-        /**
-         * Commission parameters
-         */
-        Double commissionPercent = SystemParameters.COMMISSION_PERCENT;
-        Double commissionValue = 0D;
-        Double totalPayment = 0D;
-        Double value;
-        String accountType = (String) jsonParameters.get("accountType");
-        String accountNumber = (String) jsonParameters.get("accountNumber");
-        String currencyFrom = (String) jsonParameters.get("currencyFrom");
-        String currencyTo = (String) jsonParameters.get("currencyTo");
-        if (FieldsChecker.checkBalanceDouble((String) jsonParameters.get("value")))
-        {
-            value = Double.valueOf((String) jsonParameters.get("value"));
-            if (value<1) return UtilCommand.errorMessageJSON("Sum must be more then 1 "+ currencyTo);
-        }
-        else return UtilCommand.errorMessageJSON("Incorrect sum value");
 
-        /**
-         * Check payment type: account or card (account payment doesn't have commission)
-         */
-        if ("Account".equals(accountType)) {
-            try {
-                Account account = AccountDAO.findAccountByUID(accountNumber);
-                /**
-                 * Use '.' for double value
-                 */
-                DecimalFormat df = new DecimalFormat("#.##", new DecimalFormatSymbols(Locale.ENGLISH));
-                if (account != null) {
-                    commissionPercent = 0D;
-                    commissionValue = 0D;
-                    totalPayment = Double.valueOf(df.format(
-                            (1 + commissionPercent) * PaymentService.currencyExchange(value, currencyTo, currencyFrom)));
-                    innerObject.add("status", new Gson().toJsonTree("OK"));
-                    innerObject.add("currency", new Gson().toJsonTree(currencyFrom));
-                    innerObject.add("commissionValue", new Gson().toJsonTree(commissionValue));
-                    innerObject.add("totalPayment", new Gson().toJsonTree(totalPayment));
-                } else {
-                    log.debug("Account not found");
-                    return UtilCommand.errorMessageJSON("Account not found");
-                }
-            } catch (AppException e) {
-                log.debug(e.getMessage());
-                return UtilCommand.errorMessageJSON(e.getMessage());
-            }
-        }
-        /**
-         * Check payment type: account or card (card payment has commission)
-         */
-        if ("Card".equals(accountType)) {
-            if (!FieldsChecker.checkCardNumber(accountNumber.replace(" ", "")))
-                return UtilCommand.errorMessageJSON("Bad card number");
-            DecimalFormat df = new DecimalFormat("#.##", new DecimalFormatSymbols(Locale.ENGLISH));
-            commissionValue = Double.valueOf(df.format(
-                    commissionPercent * PaymentService.currencyExchange(value, currencyTo, currencyFrom)));
-            totalPayment = Double.valueOf(df.format(
-                    (1 + commissionPercent) * PaymentService.currencyExchange(value, currencyTo, currencyFrom)));
-            innerObject.add("status", new Gson().toJsonTree("OK"));
-            innerObject.add("currency", new Gson().toJsonTree(currencyFrom));
-            innerObject.add("commissionValue", new Gson().toJsonTree(commissionValue));
-            innerObject.add("totalPayment", new Gson().toJsonTree(totalPayment));
-
-        }
-
-        return innerObject;
-
-    }
-
-    /**
-     * Function for create payment
-     * @param jsonParameters parameters from JSON request
-     * @param currentUser current user, who creates payment
-     * @return
-     */
-    private JsonObject createPayment(Map<String, Object> jsonParameters, User currentUser) {
-        JsonObject innerObject = new JsonObject();
-
-        /**
-         * Date time format and create time (now) for payment
-         */
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-        LocalDateTime ldt = LocalDateTime.now();
-        String datetime = ldt.format(formatter);
-
-        Double commissionPercent = SystemParameters.COMMISSION_PERCENT;
-
-        Double value;
-        String accountToType = (String) jsonParameters.get("accountType");
-        String accountToNumber = (String) jsonParameters.get("accountNumber");
-        Long accountFromId = ((Integer) jsonParameters.get("accountFromId")).longValue();
-        String currencyFrom = (String) jsonParameters.get("currencyFrom");
-        String currencyTo = (String) jsonParameters.get("currencyTo");
-        String statusPayment = (String) jsonParameters.get("status");
-
-        /**
-         * Check correct double value for money (format: #.##)
-         */
-        if (FieldsChecker.checkBalanceDouble((String) jsonParameters.get("value"))) {
-            value = Double.valueOf((String) jsonParameters.get("value"));
-            if (value < SystemParameters.MIN_PAYMENT_SUM)
-                return UtilCommand.errorMessageJSON("Sum must be more then " + SystemParameters.MIN_PAYMENT_SUM + " " + currencyTo);
-            if (value > SystemParameters.MAX_PAYMENT_SUM)
-                return UtilCommand.errorMessageJSON("Sum must be less then " + SystemParameters.MAX_PAYMENT_SUM + " " + currencyTo);
-        } else return UtilCommand.errorMessageJSON("Incorrect sum value");
-
-        /**
-         * Check payment type: account or card (account payment doesn't have commission)
-         */
-        if ("Account".equals(accountToType)) {
-            try {
-                Account accountTo = AccountDAO.findAccountByUID(accountToNumber);
-                DecimalFormat df = new DecimalFormat("#.##", new DecimalFormatSymbols(Locale.ENGLISH));
-                if (accountTo != null) {
-                    commissionPercent = 0D;
-                    Double totalPaymentFrom = Double.valueOf(df.format(
-                            (1 + commissionPercent) * PaymentService.currencyExchange(value, currencyTo, currencyFrom)));
-                    Account accountFrom = AccountDAO.findAccountById(accountFromId);
-                    if (!"Enabled".equals(accountFrom.getStatus()))
-                        return UtilCommand.errorMessageJSON("Your account is locked. You can't create payment.");
-
-                    Double accountFromBalance = accountFrom.getBalance();
-                    if (accountFromBalance < totalPaymentFrom)
-                        return UtilCommand.errorMessageJSON("Not enough funds in the account");
-                    Double totalPaymentTo = Double.valueOf(df.format(
-                            PaymentService.currencyExchange(value, currencyTo, accountTo.getCurrency())));
-                    /**
-                     * Create payment object from parameters
-                     */
-                    Payment payment = new Payment();
-                    payment.setId(1L);
-                    payment.setGuid(UtilsGenerator.getGUID());
-                    payment.setUser(currentUser);
-                    payment.setSenderId(accountFrom);
-                    payment.setRecipientType(accountToType);
-                    payment.setRecipientId(accountToNumber);
-                    payment.setTimeOfLog(datetime);
-                    payment.setCurrency(currencyFrom);
-                    payment.setCommission(0D);
-                    payment.setTotal(totalPaymentFrom);
-                    payment.setSum(value);
-                    payment.setCurrencySum(currencyTo);
-                    payment.setStatus(statusPayment);
-                    PaymentService.createPayment(payment);
-                    /**
-                     * Use service for transfer money
-                     */
-                    if ("Submitted".equals(statusPayment))
-                        AccountService.depositAccount(accountFrom, accountTo, totalPaymentFrom, totalPaymentTo);
-                    innerObject.add("status", new Gson().toJsonTree("OK"));
-
-                } else {
-                    return UtilCommand.errorMessageJSON("Account not found");
-                }
-
-            } catch (AppException e) {
-                return UtilCommand.errorMessageJSON(e.getMessage());
-            }
-        }
-        /**
-         * Check payment type: account or card (card payment has commission)
-         */
-        if ("Card".equals(accountToType)) {
-            try {
-                if (!FieldsChecker.checkCardNumber(accountToNumber.replace(" ", "")))
-                    return UtilCommand.errorMessageJSON("Bad card number");
-                DecimalFormat df = new DecimalFormat("#.##", new DecimalFormatSymbols(Locale.ENGLISH));
-                Double commissionPayment = Double.valueOf(df.format(
-                        commissionPercent * PaymentService.currencyExchange(value, currencyTo, currencyFrom)));
-                Double totalPaymentFrom = Double.valueOf(df.format(
-                        (1 + commissionPercent) * PaymentService.currencyExchange(value, currencyTo, currencyFrom)));
-                Account accountFrom = AccountDAO.findAccountById(accountFromId);
-                if (!"Enabled".equals(accountFrom.getStatus()))
-                    return UtilCommand.errorMessageJSON("Your account is locked. You can't create payment.");
-                Double accountFromBalance = accountFrom.getBalance();
-                if (accountFromBalance < totalPaymentFrom)
-                    return UtilCommand.errorMessageJSON("Not enough funds in the account");
-                /**
-                 * Create payment object from parameters
-                 */
-                Payment payment = new Payment();
-                payment.setId(1L);
-                payment.setGuid(UtilsGenerator.getGUID());
-                payment.setUser(currentUser);
-                payment.setSenderId(accountFrom);
-                payment.setRecipientType(accountToType);
-                payment.setRecipientId(CardService.formatCard(accountToNumber));
-                payment.setTimeOfLog(datetime);
-                payment.setCurrency(currencyFrom);
-                payment.setCommission(commissionPayment);
-                payment.setTotal(totalPaymentFrom);
-                payment.setSum(value);
-                payment.setCurrencySum(currencyTo);
-                payment.setStatus(statusPayment);
-                PaymentService.createPayment(payment);
-                /**
-                 * Use service for transfer money
-                 */
-                if ("Submitted".equals(statusPayment))
-                    AccountService.depositAccount(accountFrom, null, totalPaymentFrom, 0D);
-                innerObject.add("status", new Gson().toJsonTree("OK"));
-
-            } catch (AppException ex) {
-                return UtilCommand.errorMessageJSON(ex.getMessage());
-            }
-        }
-
-        return innerObject;
-
-    }
 }

@@ -51,14 +51,13 @@ public class UserDAO {
             "UPDATE users SET local=?"+
                     "	WHERE id=?";
 
-    /*
-    private final DBManager dbManager;
 
-    public UserDAO(DBManager dbManager) {
+    private DBManager dbManager;
 
-        this.dbManager = dbManager;
+    public UserDAO() {
+        this.dbManager = DBManager.getInstance();
     }
-    */
+
 
     /**
      * Insert user into DB
@@ -66,12 +65,12 @@ public class UserDAO {
      * @return result User
      * @throws AppException
      */
-    public static User insertUser (User user) throws AppException {
+    public User insertUser (User user) throws AppException {
         PreparedStatement pstmt = null;
         ResultSet rs = null;
         Connection con = null;
         try {
-            con = DBManager.getInstance().getConnection();
+            con = dbManager.getConnection();
             pstmt = con.prepareStatement(SQL__INSERT_USER);
             pstmt.setString(1, user.getLogin());
             pstmt.setString(2, user.getPassword());
@@ -89,11 +88,11 @@ public class UserDAO {
             pstmt.close();
 
         } catch (SQLException ex) {
-            DBManager.getInstance().rollbackCloseConnection(con);
+            dbManager.rollbackCloseConnection(con);
             ex.printStackTrace();
             throw new AppException("Not inserted user to DB",ex);
         } finally {
-            DBManager.getInstance().commitCloseConnection(con);
+            dbManager.commitCloseConnection(con);
         }
         return user;
     }
@@ -104,13 +103,13 @@ public class UserDAO {
      * @return object USer
      * @throws AppException
      */
-    public static User findUserById(Long id) throws AppException {
+    public User findUserById(Long id) throws AppException {
         User user = null;
         PreparedStatement pstmt = null;
         ResultSet rs = null;
         Connection con = null;
         try {
-            con = DBManager.getInstance().getConnection();
+            con = dbManager.getConnection();
             UserLoad mapper = new UserLoad();
             pstmt = con.prepareStatement(SQL__FIND_USER_BY_ID);
             pstmt.setLong(1, id);
@@ -120,11 +119,11 @@ public class UserDAO {
             rs.close();
             pstmt.close();
         } catch (SQLException ex) {
-            DBManager.getInstance().rollbackCloseConnection(con);
+            dbManager.rollbackCloseConnection(con);
             ex.printStackTrace();
             throw new AppException("Not found user by id in DB",ex);
         } finally {
-            DBManager.getInstance().commitCloseConnection(con);
+            dbManager.commitCloseConnection(con);
         }
         return user;
     }
@@ -135,13 +134,13 @@ public class UserDAO {
      * @return Map(String, String) with key id, lastname, firstname
      * @throws AppException
      */
-    public static Map<String,String> findUserByAccountUID(String accountUID) throws AppException {
+    public Map<String,String> findUserByAccountUID(String accountUID) throws AppException {
         Map<String,String> user = new HashMap<>();
         PreparedStatement pstmt = null;
         ResultSet rs = null;
         Connection con = null;
         try {
-            con = DBManager.getInstance().getConnection();
+            con = dbManager.getConnection();
             pstmt = con.prepareStatement(SQL__FIND_USER_BY_ACCOUNT_UID);
             pstmt.setString(1, accountUID);
             rs = pstmt.executeQuery();
@@ -153,11 +152,11 @@ public class UserDAO {
             rs.close();
             pstmt.close();
         } catch (SQLException ex) {
-            DBManager.getInstance().rollbackCloseConnection(con);
+            dbManager.rollbackCloseConnection(con);
             ex.printStackTrace();
             throw new AppException("Not found user by account UID in DB",ex);
         } finally {
-            DBManager.getInstance().commitCloseConnection(con);
+            dbManager.commitCloseConnection(con);
         }
         return user;
     }
@@ -167,14 +166,14 @@ public class UserDAO {
      * @return List of User
      * @throws AppException
      */
-    public static List<User> findAllUsers() throws AppException {
+    public List<User> findAllUsers() throws AppException {
         List<User> users = new ArrayList<>();
         User user = null;
         PreparedStatement pstmt = null;
         ResultSet rs = null;
         Connection con = null;
         try {
-            con = DBManager.getInstance().getConnection();
+            con = dbManager.getConnection();
             UserLoad mapper = new UserLoad();
             pstmt = con.prepareStatement(SQL__FIND_ALL_USERS);
             rs = pstmt.executeQuery();
@@ -185,11 +184,11 @@ public class UserDAO {
             rs.close();
             pstmt.close();
         } catch (SQLException ex) {
-            DBManager.getInstance().rollbackCloseConnection(con);
+            dbManager.rollbackCloseConnection(con);
             ex.printStackTrace();
             throw new AppException("Not found users in DB",ex);
         } finally {
-            DBManager.getInstance().commitCloseConnection(con);
+            dbManager.commitCloseConnection(con);
         }
         return users;
     }
@@ -206,7 +205,7 @@ public class UserDAO {
         ResultSet rs = null;
         Connection con = null;
         try {
-            con = DBManager.getInstance().getConnection();
+            con = dbManager.getConnection();
             UserLoad mapper = new UserLoad();
             pstmt = con.prepareStatement(SQL__FIND_USER_BY_LOGIN);
             pstmt.setString(1, login);
@@ -216,11 +215,11 @@ public class UserDAO {
             rs.close();
             pstmt.close();
         } catch (SQLException ex) {
-            DBManager.getInstance().rollbackCloseConnection(con);
+            dbManager.rollbackCloseConnection(con);
             ex.printStackTrace();
             throw new AppException("Not found user by login in DB",ex);
         } finally {
-            DBManager.getInstance().commitCloseConnection(con);
+            dbManager.commitCloseConnection(con);
         }
         return user;
     }
@@ -243,12 +242,12 @@ public class UserDAO {
      * @return successful operation
      * @throws AppException
      */
-    public static boolean updateStatusUserById(Long id, int status) throws AppException {
+    public boolean updateStatusUserById(Long id, int status) throws AppException {
         boolean result = false;
         PreparedStatement pstmt = null;
         Connection con = null;
         try {
-            con = DBManager.getInstance().getConnection();
+            con = dbManager.getConnection();
             UserLoad mapper = new UserLoad();
             pstmt = con.prepareStatement(SQL_UPDATE_STATUS_USER);
             pstmt.setLong(1, status);
@@ -256,11 +255,11 @@ public class UserDAO {
             pstmt.execute();
             pstmt.close();
         } catch (SQLException ex) {
-            DBManager.getInstance().rollbackCloseConnection(con);
+            dbManager.rollbackCloseConnection(con);
             ex.printStackTrace();
             throw new AppException("Not updated status user by id in DB",ex);
         } finally {
-            DBManager.getInstance().commitCloseConnection(con);
+            dbManager.commitCloseConnection(con);
         }
         return result;
     }
@@ -272,12 +271,12 @@ public class UserDAO {
      * @return successful operation
      * @throws AppException
      */
-    public static boolean updateRoleUserById(Long id, int role) throws AppException {
+    public boolean updateRoleUserById(Long id, int role) throws AppException {
         boolean result = false;
         PreparedStatement pstmt = null;
         Connection con = null;
         try {
-            con = DBManager.getInstance().getConnection();
+            con = dbManager.getConnection();
             UserLoad mapper = new UserLoad();
             pstmt = con.prepareStatement(SQL_UPDATE_ROLE_USER);
             pstmt.setLong(1, role);
@@ -285,11 +284,11 @@ public class UserDAO {
             pstmt.execute();
             pstmt.close();
         } catch (SQLException ex) {
-            DBManager.getInstance().rollbackCloseConnection(con);
+            dbManager.rollbackCloseConnection(con);
             ex.printStackTrace();
             throw new AppException("Not updated user role by id in DB",ex);
         } finally {
-            DBManager.getInstance().commitCloseConnection(con);
+            dbManager.commitCloseConnection(con);
         }
         return result;
     }
@@ -301,23 +300,23 @@ public class UserDAO {
      * @return successful operation
      * @throws AppException
      */
-    public static boolean updateLocalUserById(Long id, String local) throws AppException {
+    public boolean updateLocalUserById(Long id, String local) throws AppException {
         boolean result = false;
         PreparedStatement pstmt = null;
         Connection con = null;
         try {
-            con = DBManager.getInstance().getConnection();
+            con = dbManager.getConnection();
             pstmt = con.prepareStatement(SQL_UPDATE_LOCALE_USER);
             pstmt.setString(1, local);
             pstmt.setLong(2, id);
             pstmt.executeUpdate();
             pstmt.close();
         } catch (SQLException ex) {
-            DBManager.getInstance().rollbackCloseConnection(con);
+            dbManager.rollbackCloseConnection(con);
             ex.printStackTrace();
             throw new AppException("Not updated user locale by id in DB",ex);
         } finally {
-            DBManager.getInstance().commitCloseConnection(con);
+            dbManager.commitCloseConnection(con);
         }
         return result;
     }

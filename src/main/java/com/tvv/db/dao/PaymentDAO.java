@@ -38,18 +38,23 @@ public class PaymentDAO {
             "UPDATE payments SET archive=1"+
                     "	WHERE id=?";
 
+    private DBManager dbManager;
+
+    public PaymentDAO() {
+        this.dbManager = DBManager.getInstance();
+    }
     /**
      * Find all payments
      * @return List of Payment
      * @throws AppException
      */
-    public static List<Payment> findAllPayments() throws AppException {
+    public List<Payment> findAllPayments() throws AppException {
         List<Payment> payments = new ArrayList<>();
         Statement stmt = null;
         ResultSet rs = null;
         Connection con = null;
         try {
-            con = DBManager.getInstance().getConnection();
+            con = dbManager.getConnection();
             PaymentLoad mapper = new PaymentLoad();
             con.createStatement();
             stmt = con.createStatement();
@@ -58,11 +63,11 @@ public class PaymentDAO {
             rs.close();
             stmt.close();
         } catch (SQLException ex) {
-            DBManager.getInstance().rollbackCloseConnection(con);
+            dbManager.rollbackCloseConnection(con);
             ex.printStackTrace();
             throw new AppException("Payments not found in DB",ex);
         } finally {
-            DBManager.getInstance().commitCloseConnection(con);
+            dbManager.commitCloseConnection(con);
         }
         return payments;
     }
@@ -73,13 +78,13 @@ public class PaymentDAO {
      * @return object Payment
      * @throws AppException
      */
-    public static Payment findPaymentById (Long id) throws AppException {
+    public Payment findPaymentById (Long id) throws AppException {
         Payment payment = new Payment();
         PreparedStatement pstmt = null;
         ResultSet rs = null;
         Connection con = null;
         try {
-            con = DBManager.getInstance().getConnection();
+            con = dbManager.getConnection();
             PaymentLoad mapper = new PaymentLoad();
             pstmt = con.prepareStatement(SQL__FIND_PAYMENT_BY_ID);
             pstmt.setLong(1, id);
@@ -89,11 +94,11 @@ public class PaymentDAO {
             rs.close();
             pstmt.close();
         } catch (SQLException ex) {
-            DBManager.getInstance().rollbackCloseConnection(con);
+            dbManager.rollbackCloseConnection(con);
             ex.printStackTrace();
             throw new AppException("Payment not found by ID",ex);
         } finally {
-            DBManager.getInstance().commitCloseConnection(con);
+            dbManager.commitCloseConnection(con);
         }
         return payment;
     }
@@ -104,13 +109,13 @@ public class PaymentDAO {
      * @return List of payment
      * @throws AppException
      */
-    public static List<Payment> findPaymentsByUser (Long id) throws AppException {
+    public List<Payment> findPaymentsByUser (Long id) throws AppException {
         List<Payment> payments = new ArrayList<>();
         PreparedStatement pstmt = null;
         ResultSet rs = null;
         Connection con = null;
         try {
-            con = DBManager.getInstance().getConnection();
+            con = dbManager.getConnection();
             PaymentLoad mapper = new PaymentLoad();
             pstmt = con.prepareStatement(SQL__FIND_PAYMENT_BY_USER_ID);
             pstmt.setLong(1, id);
@@ -119,11 +124,11 @@ public class PaymentDAO {
             rs.close();
             pstmt.close();
         } catch (SQLException ex) {
-            DBManager.getInstance().rollbackCloseConnection(con);
+            dbManager.rollbackCloseConnection(con);
             ex.printStackTrace();
             throw new AppException("Payment not found by User",ex);
         } finally {
-            DBManager.getInstance().commitCloseConnection(con);
+            dbManager.commitCloseConnection(con);
         }
         return payments;
     }
@@ -135,13 +140,13 @@ public class PaymentDAO {
      * @return successful oparetion
      * @throws AppException
      */
-    public static boolean updatePaymentStatus(Long id, String status) throws AppException {
+    public boolean updatePaymentStatus(Long id, String status) throws AppException {
         boolean result = false;
         PreparedStatement pstmt = null;
         ResultSet rs = null;
         Connection con = null;
         try {
-            con = DBManager.getInstance().getConnection();
+            con = dbManager.getConnection();
             pstmt = con.prepareStatement(SQL__UPDATE_STATUS_PAYMENT);
             pstmt.setString(1, status);
             pstmt.setLong(2, id);
@@ -149,11 +154,11 @@ public class PaymentDAO {
             pstmt.close();
             result = true;
         } catch (SQLException ex) {
-            DBManager.getInstance().rollbackCloseConnection(con);
+            dbManager.rollbackCloseConnection(con);
             ex.printStackTrace();
             throw new AppException("Can not update status payment",ex);
         } finally {
-            DBManager.getInstance().commitCloseConnection(con);
+            dbManager.commitCloseConnection(con);
         }
         return result;
     }
@@ -164,12 +169,12 @@ public class PaymentDAO {
      * @return successful operation
      * @throws AppException
      */
-    public static boolean insertPayment (Payment payment) throws AppException {
+    public boolean insertPayment (Payment payment) throws AppException {
         PreparedStatement pstmt = null;
         Connection con = null;
         boolean result = false;
         try {
-            con = DBManager.getInstance().getConnection();
+            con = dbManager.getConnection();
             pstmt = con.prepareStatement(SQL__INSERT_PAYMENT);
             pstmt.setString(1, payment.getGuid());
             pstmt.setLong(2, payment.getUser().getId());
@@ -187,11 +192,11 @@ public class PaymentDAO {
             pstmt.close();
             result = true;
         } catch (SQLException ex) {
-            DBManager.getInstance().rollbackCloseConnection(con);
+            dbManager.rollbackCloseConnection(con);
             ex.printStackTrace();
             throw new AppException("Can not insert payment in DB",ex);
         } finally {
-            DBManager.getInstance().commitCloseConnection(con);
+            dbManager.commitCloseConnection(con);
         }
         return result;
     }
@@ -202,12 +207,12 @@ public class PaymentDAO {
      * @return successful oparetion
      * @throws AppException
      */
-    public static boolean deletePaymentById(Long id) throws AppException {
+    public boolean deletePaymentById(Long id) throws AppException {
         boolean result = false;
         PreparedStatement pstmt = null;
         Connection con = null;
         try {
-            con = DBManager.getInstance().getConnection();
+            con = dbManager.getConnection();
             PaymentDAO.PaymentLoad mapper = new PaymentLoad();
             pstmt = con.prepareStatement(SQL_SET_ARCHIVE);
             pstmt.setLong(1, id);
@@ -215,11 +220,11 @@ public class PaymentDAO {
             pstmt.close();
             result = true;
         } catch (SQLException ex) {
-            DBManager.getInstance().rollbackCloseConnection(con);
+            dbManager.rollbackCloseConnection(con);
             ex.printStackTrace();
             throw new AppException("Payment wasn't deleted",ex);
         } finally {
-            DBManager.getInstance().commitCloseConnection(con);
+            dbManager.commitCloseConnection(con);
         }
         return result;
     }
@@ -228,7 +233,7 @@ public class PaymentDAO {
      * Class for load object from DB
      */
     private static class PaymentLoad implements LoadEntity<Payment> {
-
+        private AccountDAO accountDAO = new AccountDAO();
         /**
          * Load object from ResultSet
          * @param rs ResultSet
@@ -246,7 +251,7 @@ public class PaymentDAO {
                 payment.setUser(user);
                 Account sender = null;
                 try {
-                    sender = AccountDAO.findAccountById(rs.getLong(Fields.PAYMENT__SENDER_ID));
+                    sender = accountDAO.findAccountById(rs.getLong(Fields.PAYMENT__SENDER_ID));
                 }
                 catch (AppException ex) {
                     System.out.println("Bad parse account");
