@@ -27,6 +27,10 @@ public class StatusCardsCommand extends Command {
 
     private static final Logger log = Logger.getLogger(StatusCardsCommand.class);
 
+    private CardDAO cardDAO;
+    private void init(){
+        cardDAO = new CardDAO();
+    }
     /**
      * Execute GET function for Controller. This function doesn't have GET request, and redirect to error page
      * @param request servlet request
@@ -50,7 +54,7 @@ public class StatusCardsCommand extends Command {
     @Override
     public void executePost(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
         log.trace("Start POST command");
-        request.setCharacterEncoding("UTF-8");
+        init();
         JsonObject innerObject = new JsonObject();
         /**
          * Check user role
@@ -79,7 +83,7 @@ public class StatusCardsCommand extends Command {
 
         try {
             cardId = (Integer)jsonParameters.get("cardId");
-            cardIdById = CardDAO.findCardById(cardId.longValue());
+            cardIdById = cardDAO.findCardById(cardId.longValue());
             log.debug("Find card: "+ cardIdById.toString());
         }
         catch (Exception e) {
@@ -92,8 +96,8 @@ public class StatusCardsCommand extends Command {
         try {
             if (cardIdById != null && cardIdById.getUser().getId().equals(currentUser.getId())) {
                 int newStatus = cardIdById.getStatus() ? 0 : 1;
-                CardDAO.updateStatusCardById(Long.valueOf(cardId), newStatus);
-                cardIdById = CardDAO.findCardById(cardId.longValue());
+                cardDAO.updateStatusCardById(Long.valueOf(cardId), newStatus);
+                cardIdById = cardDAO.findCardById(cardId.longValue());
                 innerObject.add("status", new Gson().toJsonTree("OK"));
                 cardIdById.getUser().setPassword("");
                 innerObject.add("card", new Gson().toJsonTree(cardIdById));

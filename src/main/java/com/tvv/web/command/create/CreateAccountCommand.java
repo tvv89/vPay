@@ -1,5 +1,6 @@
 package com.tvv.web.command.create;
 
+import com.tvv.db.dao.AccountDAO;
 import com.tvv.db.entity.Role;
 import com.tvv.db.entity.User;
 import com.tvv.service.AccountService;
@@ -27,6 +28,10 @@ public class CreateAccountCommand extends Command {
 
 	private static final Logger log = Logger.getLogger(CreateAccountCommand.class);
 
+	private AccountService service;
+	private void init(){
+		service = new AccountService(new AccountDAO());
+	}
 	/**
 	 * Execute POST function for Controller. This function use JSON data from request, parse it, and send response to
 	 * page. Create account for current user and redirect to users list
@@ -40,7 +45,7 @@ public class CreateAccountCommand extends Command {
 							HttpServletResponse response) throws IOException, ServletException {
 		log.debug("Start create account POST command "+this.getClass().getSimpleName());
 
-		request.setCharacterEncoding("UTF-8");
+		init();
 		/**
 		 * Check user role
 		 */
@@ -65,7 +70,7 @@ public class CreateAccountCommand extends Command {
 		 */
 		try {
 			if (userRole==Role.USER) {
-				AccountService.createAccount(accountData, currentUser);
+				service.createAccount(accountData, currentUser);
 				response.sendRedirect(Path.COMMAND__LIST_ACCOUNTS);
 				log.debug("Account is created for: " + currentUser);
 			}

@@ -29,6 +29,10 @@ public class UpdateListCardsCommand extends Command {
 
     private static final Logger log = Logger.getLogger(UpdateListCardsCommand.class);
 
+    private CardDAO cardDAO;
+    private void init(){
+        cardDAO = new CardDAO();
+    }
     /**
      * Comparator for sorting by card name
      */
@@ -87,10 +91,10 @@ public class UpdateListCardsCommand extends Command {
     @Override
     public void executePost(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
         log.trace("Start POST command "+ this.getClass().getName());
+        init();
         /**
          * Check user role
          */
-        request.setCharacterEncoding("UTF-8");
         HttpSession session = request.getSession();
         Role userRole = (Role) session.getAttribute("userRole");
         User currentUser = (User) session.getAttribute("currentUser");
@@ -135,8 +139,8 @@ public class UpdateListCardsCommand extends Command {
          */
         List<Card> list = new ArrayList<>();
         try {
-            if (userRole == Role.ADMIN) list = CardDAO.findAllCards();
-            else if (userRole == Role.USER) list = CardDAO.findCardsByUser(currentUser.getId());
+            if (userRole == Role.ADMIN) list = cardDAO.findAllCards();
+            else if (userRole == Role.USER) list = cardDAO.findCardsByUser(currentUser.getId());
             else list = null;
             log.debug("Create list of cards");
         }
