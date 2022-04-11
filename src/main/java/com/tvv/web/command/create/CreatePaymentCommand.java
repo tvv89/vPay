@@ -169,6 +169,7 @@ public class CreatePaymentCommand extends Command {
     @Override
     public void executeGet(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
         log.trace("Start load command with method" + request.getMethod());
+        init();
         /**
          * Check user role
          */

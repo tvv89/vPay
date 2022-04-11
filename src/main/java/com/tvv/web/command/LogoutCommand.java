@@ -59,6 +59,7 @@ public class LogoutCommand extends Command {
 	 */
 	void process (HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
 		log.trace("Command starts "+ request.getMethod());
+		init();
 		HttpSession session = request.getSession();
 		Role userRole = (Role) session.getAttribute("userRole");
 		User currentUser = (User) session.getAttribute("currentUser");

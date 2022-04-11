@@ -62,6 +62,7 @@ public class StatusPaymentsCommand extends Command {
     public void executePost(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
         log.trace("Start POST command");
         init();
+        JsonObject innerObject = new JsonObject();
         /**
          * Check user role
          */
@@ -78,7 +79,6 @@ public class StatusPaymentsCommand extends Command {
         /**
          * Start JSON parsing request
          */
-        JsonObject innerObject = new JsonObject();
         Map<String, Object> jsonParameters = null;
         try {
             jsonParameters = UtilCommand.parseRequestJSON(request);
@@ -109,7 +109,9 @@ public class StatusPaymentsCommand extends Command {
                  */
                 case "status":
                     try {
-                        innerObject = service.changeStatusPayment(paymentById);
+                        if (userRole==Role.ADMIN) innerObject =
+                                UtilCommand.errorMessageJSON("Current user doesn't have rules for this action");
+                        else innerObject = service.changeStatusPayment(paymentById);
                     } catch (AppException e) {
                         innerObject = UtilCommand.errorMessageJSON(e.getMessage());
                         log.error(e.getMessage());
