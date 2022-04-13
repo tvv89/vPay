@@ -4,10 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.tvv.db.dao.AccountDAO;
 import com.tvv.db.dao.CardDAO;
-import com.tvv.db.entity.Account;
-import com.tvv.db.entity.Card;
-import com.tvv.db.entity.Role;
-import com.tvv.db.entity.User;
+import com.tvv.db.entity.*;
 import com.tvv.service.exception.AppException;
 import com.tvv.utils.UtilsGenerator;
 import com.tvv.web.command.UtilCommand;
@@ -28,6 +25,13 @@ import java.util.Random;
  */
 public class AccountService {
     private static final Logger log = Logger.getLogger(AccountService.class);
+
+    private final AccountDAO accountDAO;
+
+    public AccountService(AccountDAO accountDAO) {
+        this.accountDAO = accountDAO;
+
+    }
     /**
      * Add money to accountTo balance and subtract money form accountFrom balance
      * @param accountFrom debit account object
@@ -37,27 +41,20 @@ public class AccountService {
      * @return successful operation
      * @throws AppException
      */
-    private final AccountDAO accountDAO;
-    private CardDAO cardDAO;
-
-    public AccountService(AccountDAO accountDAO) {
-        this.accountDAO = accountDAO;
-        this.cardDAO = new CardDAO();
-
-    }
-
     public boolean depositAccount(Account accountFrom, Account accountTo, Double valueFrom, Double valueTo) throws AppException {
+        boolean result = false;
         if (accountTo!=null && accountFrom.getIban().equals(accountTo.getIban())) return true;
         Double balanceFrom = accountFrom.getBalance();
         DecimalFormat df = new DecimalFormat("#.##", new DecimalFormatSymbols(Locale.ENGLISH));
         Double newBalanceFrom = Double.valueOf(df.format(balanceFrom-valueFrom));
         accountDAO.updateAccountBalance(accountFrom.getId(), newBalanceFrom);
+        result = true;
         if (accountTo!=null) {
             Double balanceTo = accountTo.getBalance();
             Double newBalanceTo = Double.valueOf(df.format(balanceTo + valueTo));
             accountDAO.updateAccountBalance(accountTo.getId(), newBalanceTo);
         }
-        return true;
+        return result;
     }
 
     /**
@@ -81,8 +78,8 @@ public class AccountService {
      */
     public void createAccount(Map<String,String> accountData, User user) throws AppException {
         StringBuilder errorMessage = new StringBuilder();
-        ErrorString error = new ErrorMessageEN();
-
+        if(accountData.get("name").length()>25)
+            errorMessage.append("Name must be less then 25 symbols");
         if (errorMessage.length()==0) {
 
             Account account = new Account();
@@ -195,6 +192,7 @@ public class AccountService {
      */
     public JsonObject processCardInfo(Integer accountId) throws AppException {
         JsonObject innerObject = new JsonObject();
+        CardDAO cardDAO = new CardDAO();
         Account accountById = accountDAO.findAccountById(Long.valueOf(accountId));
         log.trace("Info for account: " + accountById);
         if (accountById.getCard() != null) {
@@ -204,8 +202,7 @@ public class AccountService {
             innerObject.add("cardnumber", new Gson().toJsonTree(cardById.getNumber()));
             innerObject.add("expdate", new Gson().toJsonTree(cardById.getExpDate()));
         } else {
-            innerObject.add("status", new Gson().toJsonTree("ERROR"));
-            innerObject.add("message", new Gson().toJsonTree("Account does not have card"));
+            innerObject = UtilCommand.errorMessageJSON("Account does not have card");
             log.error("Account does not have card");
         }
         return innerObject;
@@ -222,15 +219,12 @@ public class AccountService {
     public JsonObject processCardSelect(Integer accountId, Integer cardId) throws AppException {
         JsonObject innerObject = new JsonObject();
         Account accountById = accountDAO.findAccountById(Long.valueOf(accountId));
-
         log.trace("Info for account: " + accountById);
         if (accountById != null) {
             accountDAO.updateAccountCard(Long.valueOf(accountId), cardId);
             innerObject.add("status", new Gson().toJsonTree("OK"));
-
         } else {
-            innerObject.add("status", new Gson().toJsonTree("ERROR"));
-            innerObject.add("message", new Gson().toJsonTree("Account does not find"));
+            innerObject = UtilCommand.errorMessageJSON("Account does not find");
             log.error("Account does not have card");
         }
         return innerObject;
