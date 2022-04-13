@@ -29,8 +29,13 @@ public class InfoPaymentCommand extends Command {
     private static final Logger log = Logger.getLogger(InfoPaymentCommand.class);
 
     private PaymentDAO paymentDAO;
-    private void init() {
-        paymentDAO = new PaymentDAO();
+
+    public InfoPaymentCommand() {
+        this.paymentDAO = new PaymentDAO();
+    }
+
+    public void init(PaymentDAO paymentDAO) {
+        this.paymentDAO = paymentDAO;
     }
     /**
      * Function for GET request. This command class don't use GET method, and redirect to block page
@@ -56,7 +61,6 @@ public class InfoPaymentCommand extends Command {
     @Override
     public void executePost(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
         log.trace("Start POST method "+this.getClass().getSimpleName());
-        init();
         JsonObject innerObject = new JsonObject();
         /**
          * Check user role
