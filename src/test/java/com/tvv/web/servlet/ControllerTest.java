@@ -64,11 +64,10 @@ class ControllerTest {
         when(request.getParameter("password")).thenReturn("admin");
 
         when(request.getContextPath()).thenReturn("");
-        //when(session.getAttribute("errorHeader")).thenReturn("404");
-        //when(session.getAttribute("errorMessage")).thenReturn("Bad password");
 
         new Controller().doPost(request,response);
 
         verify(response,times(1)).sendRedirect("/error.page.jsp");
     }
+
 }

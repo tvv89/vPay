@@ -31,15 +31,26 @@ public class CreatePaymentCommand extends Command {
     private static final Logger log = Logger.getLogger(CreatePaymentCommand.class);
 
     private PaymentService service;
+    private AccountService aService;
     private AccountDAO accountDAO;
+    private PaymentDAO paymentDAO;
     private UserDAO userDAO;
 
-    private void init() {
+    public CreatePaymentCommand(){
         userDAO = new UserDAO();
         accountDAO = new AccountDAO();
-        service = new PaymentService(new AccountService(accountDAO),
+        paymentDAO = new PaymentDAO();
+        aService = new AccountService(accountDAO);
+        service = new PaymentService(aService,
                 accountDAO,
-                new PaymentDAO());
+                paymentDAO);
+    }
+    public void setUp(AccountDAO aDAO, PaymentDAO pDAO, UserDAO uDAO) {
+        this.accountDAO = aDAO;
+        this.paymentDAO = pDAO;
+        this.userDAO = uDAO;
+        aService = new AccountService(accountDAO);
+        service = new PaymentService(this.aService, accountDAO, paymentDAO);
 
     }
     /**
@@ -56,7 +67,6 @@ public class CreatePaymentCommand extends Command {
     public void executePost(HttpServletRequest request,
                             HttpServletResponse response) throws IOException, ServletException {
         log.debug("Start create account POST command " + this.getClass().getSimpleName());
-        init();
 
         /**
          * Check user role
@@ -159,7 +169,6 @@ public class CreatePaymentCommand extends Command {
     @Override
     public void executeGet(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
         log.trace("Start load command with method" + request.getMethod());
-        init();
         /**
          * Check user role
          */

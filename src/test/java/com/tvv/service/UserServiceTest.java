@@ -44,7 +44,6 @@ class UserServiceTest {
 
     }
 
-
     @Test
     void testCreateUserBadPassword() {
         Map<String,String> data = new HashMap<>();

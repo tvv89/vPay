@@ -9,6 +9,7 @@ import java.io.IOException;
  */
 @WebFilter("/*")
 public class CharacterEncodingFilter implements Filter {
+
     public void init(FilterConfig config) throws ServletException {
     }
 
