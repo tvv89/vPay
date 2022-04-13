@@ -14,11 +14,17 @@ import java.util.Map;
  */
 public class CardService {
 
-    private UserDAO userDAO;
-    private CardDAO cardDAO;
-    private void init(){
+    public UserDAO userDAO;
+    public CardDAO cardDAO;
+
+    public CardService() {
         userDAO = new UserDAO();
         cardDAO = new CardDAO();
+    }
+
+    public void setDAO(UserDAO userDAO, CardDAO cardDAO){
+        this.userDAO = userDAO;
+        this.cardDAO = cardDAO;
     }
     /**
      * Create card with checking field. Checking will be developed in the future
@@ -26,10 +32,7 @@ public class CardService {
      * @throws AppException
      */
     public void createCard(Map<String,String> cardData) throws AppException {
-        init();
         StringBuilder errorMessage = new StringBuilder();
-        ErrorString error = new ErrorMessageEN();
-        //check card number and expiration date
         String cardCheck = cardData.get("cardnumber");
         cardCheck = cardCheck.replace(" ", "");
         if (!FieldsChecker.checkCardNumber(cardCheck)) errorMessage.append("Bad card number");
