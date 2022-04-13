@@ -6,8 +6,6 @@ import com.tvv.service.CardService;
 import com.tvv.service.exception.AppException;
 import com.tvv.web.command.Command;
 import com.tvv.web.command.UtilCommand;
-import com.tvv.web.webutil.ErrorMessageEN;
-import com.tvv.web.webutil.ErrorString;
 import com.tvv.web.webutil.Path;
 import org.apache.log4j.Logger;
 

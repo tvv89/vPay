@@ -7,17 +7,11 @@ import com.tvv.db.dao.PaymentDAO;
 import com.tvv.db.dao.UserDAO;
 import com.tvv.db.entity.*;
 import com.tvv.service.AccountService;
-import com.tvv.service.CardService;
 import com.tvv.service.PaymentService;
 import com.tvv.service.UserService;
 import com.tvv.service.exception.AppException;
-import com.tvv.utils.FieldsChecker;
-import com.tvv.utils.SystemParameters;
-import com.tvv.utils.UtilsGenerator;
 import com.tvv.web.command.Command;
 import com.tvv.web.command.UtilCommand;
-import com.tvv.web.webutil.ErrorMessageEN;
-import com.tvv.web.webutil.ErrorString;
 import com.tvv.web.webutil.Path;
 import org.apache.log4j.Logger;
 
@@ -27,10 +21,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
-import java.text.DecimalFormat;
-import java.text.DecimalFormatSymbols;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 /**

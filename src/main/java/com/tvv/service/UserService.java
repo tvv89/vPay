@@ -5,14 +5,13 @@ import com.tvv.db.entity.User;
 import com.tvv.service.exception.AppException;
 import com.tvv.utils.FieldsChecker;
 import com.tvv.utils.StringHash;
-import com.tvv.web.webutil.ErrorMessageEN;
-import com.tvv.web.webutil.ErrorString;
+import com.tvv.utils.SystemParameters;
 
-import javax.servlet.http.Part;
-import java.io.File;
+import java.io.IOException;
 import java.time.LocalDate;
 import java.util.Locale;
 import java.util.Map;
+import java.util.ResourceBundle;
 
 /**
  * Business logic for User
@@ -20,8 +19,13 @@ import java.util.Map;
 public class UserService {
 
     private UserDAO userDAO;
-    private void init(){
+
+    public UserService() {
         userDAO = new UserDAO();
+    }
+
+    public void setUp(UserDAO userDAO){
+        this.userDAO = userDAO;
     }
 
     /**
@@ -30,10 +34,10 @@ public class UserService {
      * @return successful operation
      * @throws AppException
      */
-    public void createUser (Map<String,String> userData) throws AppException {
-        init();
+    public void createUser (Map<String,String> userData, String local) throws AppException, IOException {
         StringBuilder errorMessage = new StringBuilder();
-        ErrorString error = new ErrorMessageEN();
+        ResourceBundle error = SystemParameters.getLocale(local);
+
         LocalDate date;
         try {
             date = LocalDate.parse(userData.get("dateofbirth"));
@@ -45,12 +49,18 @@ public class UserService {
         /**
          * Check field for creating user
          */
-        if (!FieldsChecker.checkAge18YearsOld(date)) errorMessage.append(error.no18YearsOld()).append("<br/>");
-        if (!FieldsChecker.checkNameField(userData.get("firstname"))) errorMessage.append(error.badFirstName()).append("<br/>");
-        if (!FieldsChecker.checkNameField(userData.get("lastname"))) errorMessage.append(error.badLastName()).append("<br/>");
-        if (!FieldsChecker.checkEMailAddress(userData.get("email"))) errorMessage.append(error.badEmail()).append("<br/>");
-        if (!FieldsChecker.checkPasswordField(userData.get("password"))) errorMessage.append(error.badPassword()).append("<br/>");
-        if (!userData.get("password").equals(userData.get("confirmpassword"))) errorMessage.append(error.bedConfirmPassword());
+        if (!FieldsChecker.checkAge18YearsOld(date))
+            errorMessage.append(error.getString("error.user.create.no18_years_old")).append("<br/>");
+        if (!FieldsChecker.checkNameField(userData.get("firstname")))
+            errorMessage.append(error.getString("error.user.create.first_name")).append("<br/>");
+        if (!FieldsChecker.checkNameField(userData.get("lastname")))
+            errorMessage.append(error.getString("error.user.create.last_name")).append("<br/>");
+        if (!FieldsChecker.checkEMailAddress(userData.get("email")))
+            errorMessage.append(error.getString("error.user.create.email")).append("<br/>");
+        if (!FieldsChecker.checkPasswordField(userData.get("password")))
+            errorMessage.append(error.getString("error.user.create.password")).append("<br/>");
+        if (!userData.get("password").equals(userData.get("confirmpassword")))
+            errorMessage.append(error.getString("error.user.create.confirm_password"));
         /**
          * if all fields are OK - create user
          */
@@ -83,8 +93,12 @@ public class UserService {
      */
     public static String hideUserName(String firstName, String lastName) {
         StringBuilder result = new StringBuilder();
-        String fn = firstName.toUpperCase(Locale.ROOT);
-        String ln = lastName.toUpperCase(Locale.ROOT);
+        String fn;
+        String ln;
+        if (firstName==null) fn = "";
+        else fn = firstName.toUpperCase(Locale.ROOT);
+        if (lastName==null) ln = "";
+        else ln = lastName.toUpperCase(Locale.ROOT);
         for (int i = 0; i < fn.toCharArray().length; i++) {
             if (i< fn.toCharArray().length/2) result.append(fn.toCharArray()[i]);
             else result.append("*");

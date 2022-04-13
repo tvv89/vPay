@@ -49,6 +49,8 @@ public class CreateUserCommand extends Command {
 		log.debug("Start registration POST command "+ this.getClass().getSimpleName());
 		init();
 		HttpSession session = request.getSession();
+		String currentLanguage = (String) session.getAttribute("currentLanguage");
+		if (currentLanguage==null) currentLanguage = "";
 		/**
 		 * Create stream for read loaded photo
 		 */
@@ -74,7 +76,7 @@ public class CreateUserCommand extends Command {
 		 * Create user with parameter
 		 */
 		try {
-			service.createUser(userData);
+			service.createUser(userData, currentLanguage);
 			response.sendRedirect(request.getContextPath()+ Path.COMMAND__START_PAGE);
 		} catch (AppException e) {
 			log.trace(e.getMessage());

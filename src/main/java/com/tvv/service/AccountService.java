@@ -8,9 +8,6 @@ import com.tvv.db.entity.*;
 import com.tvv.service.exception.AppException;
 import com.tvv.utils.UtilsGenerator;
 import com.tvv.web.command.UtilCommand;
-import com.tvv.web.command.status.StatusAccountsCommand;
-import com.tvv.web.webutil.ErrorMessageEN;
-import com.tvv.web.webutil.ErrorString;
 import org.apache.log4j.Logger;
 
 import javax.servlet.http.HttpServletRequest;
@@ -18,7 +15,6 @@ import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Random;
 
 /**
  * Business logic for Accounts
