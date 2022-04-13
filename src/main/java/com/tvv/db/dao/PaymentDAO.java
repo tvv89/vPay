@@ -191,7 +191,7 @@ public class PaymentDAO {
             pstmt.execute();
             pstmt.close();
             result = true;
-        } catch (SQLException ex) {
+        } catch (Exception ex) {
             dbManager.rollbackCloseConnection(con);
             ex.printStackTrace();
             throw new AppException("Can not insert payment in DB",ex);

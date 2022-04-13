@@ -12,7 +12,6 @@ import com.tvv.utils.FieldsChecker;
 import com.tvv.utils.SystemParameters;
 import com.tvv.utils.UtilsGenerator;
 import com.tvv.web.command.UtilCommand;
-import com.tvv.web.command.create.CreatePaymentCommand;
 import org.apache.log4j.Logger;
 
 import java.text.DecimalFormat;
@@ -104,7 +103,10 @@ public class PaymentService {
      * @return successful operation
      * @throws AppException
      */
-    public boolean createPayment(Payment payment) throws AppException {
+    public boolean insertPaymentToDB(Payment payment) throws AppException {
+        if (payment==null)
+            throw new AppException("Please, check payment value, payment can't be null",
+                    new IllegalArgumentException());
         return paymentDAO.insertPayment(payment);
     }
 
@@ -116,6 +118,7 @@ public class PaymentService {
      */
     public JsonObject changeStatusPayment(Payment payment) throws AppException {
         JsonObject innerObject = new JsonObject();
+        if (payment == null) return UtilCommand.errorMessageJSON("Payment can not be submitted.");
         if ("Ready".equals(payment.getStatus())) {
             Account accountFrom = accountDAO.findAccountById(payment.getSenderId().getId());
             Double totalPaymentFrom = payment.getTotal();
@@ -317,7 +320,7 @@ public class PaymentService {
                     payment.setSum(value);
                     payment.setCurrencySum(currencyTo);
                     payment.setStatus(statusPayment);
-                    createPayment(payment);
+                    insertPaymentToDB(payment);
                     /**
                      * Use service for transfer money
                      */
@@ -368,7 +371,7 @@ public class PaymentService {
                 payment.setSum(value);
                 payment.setCurrencySum(currencyTo);
                 payment.setStatus(statusPayment);
-                createPayment(payment);
+                insertPaymentToDB(payment);
                 /**
                  * Use service for transfer money
                  */
