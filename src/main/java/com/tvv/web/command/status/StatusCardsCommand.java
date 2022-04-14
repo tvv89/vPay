@@ -28,8 +28,13 @@ public class StatusCardsCommand extends Command {
     private static final Logger log = Logger.getLogger(StatusCardsCommand.class);
 
     private CardDAO cardDAO;
-    private void init(){
-        cardDAO = new CardDAO();
+
+    public StatusCardsCommand() {
+        this.cardDAO = new CardDAO();
+    }
+
+    public void setUp(CardDAO cardDAO){
+        this.cardDAO = cardDAO;
     }
     /**
      * Execute GET function for Controller. This function doesn't have GET request, and redirect to error page
@@ -54,7 +59,6 @@ public class StatusCardsCommand extends Command {
     @Override
     public void executePost(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
         log.trace("Start POST command");
-        init();
         JsonObject innerObject = new JsonObject();
         /**
          * Check user role
