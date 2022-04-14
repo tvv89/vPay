@@ -34,25 +34,31 @@ public class StatusAccountsCommand extends Command {
     /**
      * init service
      */
-    private void init(){
+    public StatusAccountsCommand() {
         service = new AccountService(new AccountDAO());
+    }
+
+    public void setUp(AccountService aService) {
+        service = aService;
     }
 
     /**
      * Execute GET function for Controller. This function doesn't have GET request, and redirect to error page
-     * @param request servlet request
+     *
+     * @param request  servlet request
      * @param response servlet response
      * @throws IOException
      * @throws ServletException
      */
     @Override
     public void executeGet(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
-        UtilCommand.bedGETRequest(request,response);
+        UtilCommand.bedGETRequest(request, response);
     }
 
     /**
      * Execute POST function for Controller. This function use JSON data from request, parse it, and send response for
      * single page application. change account status for user and admin
+     *
      * @param request
      * @param response
      * @throws IOException
@@ -60,9 +66,7 @@ public class StatusAccountsCommand extends Command {
      */
     @Override
     public void executePost(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
-        log.trace("Start POST command "+this.getClass().getSimpleName());
-        request.setCharacterEncoding("UTF-8");
-        init();
+        log.trace("Start POST command " + this.getClass().getSimpleName());
         /**
          * Check user role
          */
@@ -70,9 +74,8 @@ public class StatusAccountsCommand extends Command {
         Role userRole = (Role) session.getAttribute("userRole");
         User currentUser = (User) session.getAttribute("currentUser");
 
-        if (userRole!=Role.ADMIN && userRole!=Role.USER)
-        {
-            response.sendRedirect(request.getContextPath()+ Path.COMMAND__START_PAGE);
+        if (userRole != Role.ADMIN && userRole != Role.USER) {
+            response.sendRedirect(request.getContextPath() + Path.COMMAND__START_PAGE);
             return;
         }
 
@@ -94,26 +97,24 @@ public class StatusAccountsCommand extends Command {
         try {
             if (jsonParameters.get("action").equals("change")) {
                 innerObject = service.processChangeStatus(request, jsonParameters);
-                log.debug("Action is <change>, response: "+ innerObject);
+                log.debug("Action is <change>, response: " + innerObject);
             }
             if (jsonParameters.get("action").equals("delete") && userRole == Role.USER) {
                 innerObject = service.processDeleteAccount(request, jsonParameters);
-                log.debug("Action is <delete>, response: "+ innerObject);
+                log.debug("Action is <delete>, response: " + innerObject);
             }
-        }
-        catch (AppException ex) {
+        } catch (AppException ex) {
             innerObject = UtilCommand.errorMessageJSON(ex.getMessage());
             log.error(ex.getMessage());
         }
         /**
          * Send result response for single page
          */
-        UtilCommand.sendJSONData(response,innerObject);
+        UtilCommand.sendJSONData(response, innerObject);
 
-        log.trace("End POST command "+this.getClass().getSimpleName());
+        log.trace("End POST command " + this.getClass().getSimpleName());
 
     }
-
 
 
 }
