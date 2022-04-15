@@ -10,6 +10,7 @@ import com.tvv.db.entity.User;
 import com.tvv.service.PaymentService;
 import com.tvv.service.exception.AppException;
 import com.tvv.web.command.UtilCommand;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import javax.servlet.ServletException;
@@ -22,22 +23,31 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 class StatusUsersCommandTest {
+    private HttpServletResponse response;
+    private HttpServletRequest request;
+    private HttpSession session;
+    private PrintWriter out;
+    private User currentUser;
 
-    @Test
-    void testExecutePostCorrect() throws IOException, AppException, ServletException {
-        HttpServletResponse response = mock(HttpServletResponse.class);
-        PrintWriter out = mock(PrintWriter.class);
+    @BeforeEach
+    private void init() throws IOException {
+        response = mock(HttpServletResponse.class);
+        out = mock(PrintWriter.class);
         when(response.getWriter()).thenReturn(out);
 
-        HttpSession session = mock(HttpSession.class);
+        session = mock(HttpSession.class);
         when(session.getAttribute("userRole")).thenReturn(Role.USER);
-        User currentUser = mock(User.class);
+        currentUser = mock(User.class);
         when(currentUser.getId()).thenReturn(2L);
 
         when(session.getAttribute("currentUser")).thenReturn(currentUser);
 
-        HttpServletRequest request = mock(HttpServletRequest.class);
+        request = mock(HttpServletRequest.class);
         when(request.getSession()).thenReturn(session);
+    }
+
+    @Test
+    void testExecutePostCorrect() throws IOException, AppException, ServletException {
 
         String inputString = "{\"action\":\"status\", \"userId\":1}";
         Reader readerString = new StringReader(inputString);
@@ -69,19 +79,6 @@ class StatusUsersCommandTest {
 
     @Test
     void testExecutePostNoFoundUser() throws IOException, AppException, ServletException {
-        HttpServletResponse response = mock(HttpServletResponse.class);
-        PrintWriter out = mock(PrintWriter.class);
-        when(response.getWriter()).thenReturn(out);
-
-        HttpSession session = mock(HttpSession.class);
-        when(session.getAttribute("userRole")).thenReturn(Role.USER);
-        User currentUser = mock(User.class);
-        when(currentUser.getId()).thenReturn(2L);
-
-        when(session.getAttribute("currentUser")).thenReturn(currentUser);
-
-        HttpServletRequest request = mock(HttpServletRequest.class);
-        when(request.getSession()).thenReturn(session);
 
         String inputString = "{\"action\":\"status\", \"userId\":5}";
         Reader readerString = new StringReader(inputString);
@@ -105,19 +102,6 @@ class StatusUsersCommandTest {
 
     @Test
     void testExecutePostException() throws IOException, AppException, ServletException {
-        HttpServletResponse response = mock(HttpServletResponse.class);
-        PrintWriter out = mock(PrintWriter.class);
-        when(response.getWriter()).thenReturn(out);
-
-        HttpSession session = mock(HttpSession.class);
-        when(session.getAttribute("userRole")).thenReturn(Role.USER);
-        User currentUser = mock(User.class);
-        when(currentUser.getId()).thenReturn(2L);
-
-        when(session.getAttribute("currentUser")).thenReturn(currentUser);
-
-        HttpServletRequest request = mock(HttpServletRequest.class);
-        when(request.getSession()).thenReturn(session);
 
         String inputString = "{\"action\":\"status\", \"userId\":5}";
         Reader readerString = new StringReader(inputString);
