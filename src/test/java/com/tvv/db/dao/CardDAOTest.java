@@ -285,4 +285,5 @@ class CardDAOTest {
         assertTrue(cardDAO.updateStatusCardById(1L,1));
         verify(pstmt,times(1)).close();
     }
+
 }
