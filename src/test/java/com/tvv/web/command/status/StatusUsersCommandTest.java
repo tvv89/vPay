@@ -24,7 +24,7 @@ import static org.mockito.Mockito.*;
 class StatusUsersCommandTest {
 
     @Test
-    void testExecutePost() throws IOException, AppException, ServletException {
+    void testExecutePostCorrect() throws IOException, AppException, ServletException {
         HttpServletResponse response = mock(HttpServletResponse.class);
         PrintWriter out = mock(PrintWriter.class);
         when(response.getWriter()).thenReturn(out);
@@ -68,7 +68,7 @@ class StatusUsersCommandTest {
     }
 
     @Test
-    void testExecutePostNoFindUser() throws IOException, AppException, ServletException {
+    void testExecutePostNoFoundUser() throws IOException, AppException, ServletException {
         HttpServletResponse response = mock(HttpServletResponse.class);
         PrintWriter out = mock(PrintWriter.class);
         when(response.getWriter()).thenReturn(out);
@@ -87,14 +87,13 @@ class StatusUsersCommandTest {
         Reader readerString = new StringReader(inputString);
         when(request.getReader()).thenReturn(new BufferedReader(readerString));
 
-        JsonObject assertJSON = new JsonObject();
+        JsonObject assertJSON = UtilCommand.errorMessageJSON("Cannot change user status");
 
         UserDAO userDAO = mock(UserDAO.class);
         User userById1 = null;
         when(userDAO.findUserById(5L)).thenReturn(userById1);
         when(userDAO.updateStatusUserById(5L,0)).thenReturn(true);
 
-        assertJSON = UtilCommand.errorMessageJSON("Cannot change user status");
         StatusUsersCommand status = new StatusUsersCommand();
 
         status.setUp(userDAO);
