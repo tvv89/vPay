@@ -111,6 +111,48 @@ class StatusPaymentsCommandTest {
     }
 
     @Test
+    void testExecutePostStatusException() throws IOException, AppException, ServletException {
+        HttpServletResponse response = mock(HttpServletResponse.class);
+        PrintWriter out = mock(PrintWriter.class);
+        when(response.getWriter()).thenReturn(out);
+
+        HttpSession session = mock(HttpSession.class);
+        when(session.getAttribute("userRole")).thenReturn(Role.USER);
+        User currentUser = mock(User.class);
+        when(currentUser.getId()).thenReturn(2L);
+
+        when(session.getAttribute("currentUser")).thenReturn(currentUser);
+
+        HttpServletRequest request = mock(HttpServletRequest.class);
+        when(request.getSession()).thenReturn(session);
+
+        String inputString = "{\"action\":\"status\", \"paymentId\":1}";
+        Reader readerString = new StringReader(inputString);
+        when(request.getReader()).thenReturn(new BufferedReader(readerString));
+
+        JsonObject assertJSON = UtilCommand.errorMessageJSON("Error message");
+
+        PaymentDAO paymentDAO = mock(PaymentDAO.class);
+        Payment payment = new Payment();
+        payment.setId(1L);
+        User user = new User();
+        user.setId(2L);
+        payment.setUser(user);
+        when(paymentDAO.findPaymentById(1L)).thenReturn(payment);
+        PaymentService service = mock(PaymentService.class);
+        when(service.changeStatusPayment(payment))
+                .thenThrow(new AppException("Error message", new IllegalArgumentException()));
+
+        StatusPaymentsCommand status = new StatusPaymentsCommand();
+
+        status.setUp(paymentDAO,service);
+        status.executePost(request,response);
+
+        String sendData = new Gson().toJson(assertJSON);
+        verify(out).print(sendData);
+    }
+
+    @Test
     void testExecutePostDelete() throws IOException, AppException, ServletException {
         HttpServletResponse response = mock(HttpServletResponse.class);
         PrintWriter out = mock(PrintWriter.class);

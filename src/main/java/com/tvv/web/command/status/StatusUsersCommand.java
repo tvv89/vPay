@@ -28,8 +28,11 @@ public class StatusUsersCommand extends Command {
 
     private UserDAO userDAO;
 
-    private void init() {
+    public StatusUsersCommand() {
         userDAO = new UserDAO();
+    }
+    public void setUp(UserDAO userDAO){
+        this.userDAO = userDAO;
     }
 
     /**
@@ -57,7 +60,6 @@ public class StatusUsersCommand extends Command {
     @Override
     public void executePost(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
         log.trace("Start POST command " + this.getClass().getSimpleName());
-        init();
         /**
          * Check user role
          */
