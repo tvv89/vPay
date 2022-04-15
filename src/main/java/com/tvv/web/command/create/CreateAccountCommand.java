@@ -27,8 +27,12 @@ public class CreateAccountCommand extends Command {
 	private static final Logger log = Logger.getLogger(CreateAccountCommand.class);
 
 	private AccountService service;
-	private void init(){
+
+	public CreateAccountCommand() {
 		service = new AccountService(new AccountDAO());
+	}
+	public void setUp(AccountService service){
+		this.service = service;
 	}
 	/**
 	 * Execute POST function for Controller. This function use JSON data from request, parse it, and send response to
@@ -41,9 +45,7 @@ public class CreateAccountCommand extends Command {
 	@Override
 	public void executePost(HttpServletRequest request,
 							HttpServletResponse response) throws IOException, ServletException {
-		log.debug("Start create account POST command "+this.getClass().getSimpleName());
-
-		init();
+		log.debug("Start create account POST command " + this.getClass().getSimpleName());
 		/**
 		 * Check user role
 		 */

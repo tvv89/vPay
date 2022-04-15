@@ -30,8 +30,11 @@ public class InfoAccountCommand extends Command {
     private static final Logger log = Logger.getLogger(InfoAccountCommand.class);
 
     private AccountDAO accountDAO;
-    private void init(){
+    public InfoAccountCommand(){
         accountDAO = new AccountDAO();
+    }
+    public void setUp(AccountDAO accountDAO){
+        this.accountDAO = accountDAO;
     }
     /**
      * Function for GET request. This command class don't use GET method, and redirect to list account page

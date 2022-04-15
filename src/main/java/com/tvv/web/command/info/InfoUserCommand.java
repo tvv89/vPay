@@ -27,9 +27,11 @@ public class InfoUserCommand extends Command {
     private static final Logger log = Logger.getLogger(InfoUserCommand.class);
 
     private UserDAO userDAO;
-
-    private void init() {
+    public InfoUserCommand(){
         userDAO = new UserDAO();
+    }
+    public void setUp(UserDAO userDAO) {
+        this.userDAO = userDAO;
     }
 
     /**
@@ -48,7 +50,6 @@ public class InfoUserCommand extends Command {
     @Override
     public void executePost(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
         log.trace("Start POST method " + this.getClass().getSimpleName());
-        init();
         JsonObject innerObject = new JsonObject();
         /**
          * Check user role

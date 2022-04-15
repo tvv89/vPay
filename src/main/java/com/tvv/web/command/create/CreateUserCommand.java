@@ -32,8 +32,11 @@ public class CreateUserCommand extends Command {
 	private static final Logger log = Logger.getLogger(CreateUserCommand.class);
 
 	private UserService service;
-	private void init(){
+	public CreateUserCommand(){
 		service = new UserService();
+	}
+	public void setUp(UserService service){
+		this.service = service;
 	}
 	/**
 	 * Execute POST function for Controller. This function use request data and send response to
@@ -47,7 +50,6 @@ public class CreateUserCommand extends Command {
 	public void executePost(HttpServletRequest request,
 							HttpServletResponse response) throws IOException, ServletException {
 		log.debug("Start registration POST command "+ this.getClass().getSimpleName());
-		init();
 		HttpSession session = request.getSession();
 		String currentLanguage = (String) session.getAttribute("currentLanguage");
 		if (currentLanguage==null) currentLanguage = "";

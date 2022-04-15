@@ -26,8 +26,11 @@ public class CreateCardCommand extends Command {
 	private static final Logger log = Logger.getLogger(CreateCardCommand.class);
 
 	private CardService service;
-	private void init() {
+	public CreateCardCommand() {
 		service = new CardService();
+	}
+	public void setUp(CardService service) {
+		this.service = service;
 	}
 	/**
 	 * Execute POST function for Controller. This function use JSON data from request, parse it, and send response to
@@ -41,7 +44,6 @@ public class CreateCardCommand extends Command {
 	public void executePost(HttpServletRequest request,
 							HttpServletResponse response) throws IOException, ServletException {
 		log.debug("Start create card POST command "+this.getClass().getSimpleName());
-		init();
 		/**
 		 * Check user role
 		 */

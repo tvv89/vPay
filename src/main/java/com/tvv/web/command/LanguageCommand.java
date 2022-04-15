@@ -22,7 +22,6 @@ import java.util.Map;
  */
 public class LanguageCommand extends Command {
 
-
 	private static final Logger log = Logger.getLogger(LanguageCommand.class);
 
 	/**
@@ -58,11 +57,8 @@ public class LanguageCommand extends Command {
 	 */
 	void process (HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
 		log.debug("Command starts "+ request.getMethod());
-		log.debug("URI =====>" +request.getRequestURI());
-		log.debug("URL =====>" +request.getRequestURL());
 
 		HttpSession session = request.getSession();
-
 		Map<String, Object> jsonParameters = null;
 		try {
 			jsonParameters = UtilCommand.parseRequestJSON(request);

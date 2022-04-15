@@ -33,12 +33,14 @@ public class InfoCardCommand extends Command {
      * service for account command
      */
     private AccountService service;
-
+    public InfoCardCommand(){
+        service = new AccountService(new AccountDAO());
+    }
     /**
      * init service
      */
-    private void init(){
-        service = new AccountService(new AccountDAO());
+    public void setUp(AccountService service){
+        this.service = service;
     }
 
     /**
@@ -66,7 +68,6 @@ public class InfoCardCommand extends Command {
     @Override
     public void executePost(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
         log.trace("Start POST method " + this.getClass().getSimpleName());
-        init();
         JsonObject innerObject = new JsonObject();
         /**
          * Check user role
