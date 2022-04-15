@@ -34,9 +34,16 @@ public class CardDAO {
             "values (default,?,?,?,?,?)";
 
     private DBManager dbManager;
+    private UserDAO userDAO;
 
     public CardDAO() {
         this.dbManager = DBManager.getInstance();
+        this.userDAO = new UserDAO();
+    }
+
+    public void setUp(DBManager dbm, UserDAO userDAO) {
+        this.dbManager = dbm;
+        this.userDAO = userDAO;
     }
     /**
      * Insert card to DB
@@ -80,7 +87,7 @@ public class CardDAO {
         Connection con = null;
         try {
             con = dbManager.getConnection();
-            CardLoad mapper = new CardLoad();
+            CardLoad mapper = new CardLoad(userDAO);
             con.createStatement();
             stmt = con.createStatement();
             rs = stmt.executeQuery(SQL__FIND_ALL_CARDS);
@@ -110,7 +117,7 @@ public class CardDAO {
         Connection con = null;
         try {
             con = dbManager.getConnection();
-            CardLoad mapper = new CardLoad();
+            CardLoad mapper = new CardLoad(userDAO);
             pstmt = con.prepareStatement(SQL__FIND_CARD_BY_ID);
             pstmt.setLong(1, id);
             rs = pstmt.executeQuery();
@@ -162,7 +169,7 @@ public class CardDAO {
         Connection con = null;
         try {
             con = dbManager.getConnection();
-            CardLoad mapper = new CardLoad();
+            CardLoad mapper = new CardLoad(userDAO);
             pstmt = con.prepareStatement(sqlRequest);
             pstmt.setLong(1, userId);
             rs = pstmt.executeQuery();
@@ -197,6 +204,7 @@ public class CardDAO {
             pstmt.setLong(2, id);
             pstmt.execute();
             pstmt.close();
+            result = true;
         } catch (SQLException ex) {
             dbManager.rollbackCloseConnection(con);
             ex.printStackTrace();
@@ -211,7 +219,15 @@ public class CardDAO {
      * Class for load object from DB
      */
     private static class CardLoad implements LoadEntity<Card> {
-        private UserDAO userDAO = new UserDAO();
+        private UserDAO userDAO;
+
+        public CardLoad() {
+            this.userDAO = new UserDAO();
+        }
+
+        public CardLoad(UserDAO userDAO) {
+            this.userDAO = userDAO;
+        }
 
         /**
          * Load object from ResultSet
