@@ -24,7 +24,13 @@ public class LoginCommand extends Command {
 
 	private static final Logger log = Logger.getLogger(LoginCommand.class);
 	public static final String USER_LOGIN = "User login";
-
+	private UserDAO userDAO;
+	public LoginCommand() {
+		userDAO = new UserDAO();
+	}
+	public void setUp(UserDAO userDAO) {
+		this.userDAO = userDAO;
+	}
 	/**
 	 * Function for POST request. Check user  login and password, redirect to different page for USER and ADMIN
 	 * @param request
@@ -65,7 +71,7 @@ public class LoginCommand extends Command {
 		 */
 		User currentUser = null;
 		try {
-			currentUser = new UserDAO().findUserByLogin(login);
+			currentUser = userDAO.findUserByLogin(login);
 		} catch (AppException e) {
 			errorMessage = "Login/password cannot be empty";
 			session.setAttribute("errorHeader", USER_LOGIN);
