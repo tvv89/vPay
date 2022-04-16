@@ -28,28 +28,33 @@ public class UpdateUserRoleCommand extends Command {
     private static final Logger log = Logger.getLogger(UpdateUserRoleCommand.class);
 
     private UserDAO userDAO;
-    public UpdateUserRoleCommand(){
+
+    public UpdateUserRoleCommand() {
         userDAO = new UserDAO();
     }
-    public void setUp(UserDAO userDAO){
+
+    public void setUp(UserDAO userDAO) {
         this.userDAO = userDAO;
     }
+
     /**
      * Execute GET function for Controller. This function doesn't have GET request, and redirect to error page
-     * @param request servlet request
+     *
+     * @param request  servlet request
      * @param response servlet response
      * @throws IOException
      * @throws ServletException
      */
     @Override
     public void executeGet(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
-        UtilCommand.bedGETRequest(request,response);
+        UtilCommand.bedGETRequest(request, response);
     }
 
     /**
      * Execute POST function for Controller. This function use JSON data from request, parse it, and send response for
      * single page application. Function is enabled for ADMIN and change role of user
-     * @param request servlet request
+     *
+     * @param request  servlet request
      * @param response servlet response
      * @throws IOException
      * @throws ServletException
@@ -61,7 +66,6 @@ public class UpdateUserRoleCommand extends Command {
         /**
          * Check user role
          */
-        request.setCharacterEncoding("UTF-8");
         HttpSession session = request.getSession();
         Role userRole = (Role) session.getAttribute("userRole");
         User currentUser = (User) session.getAttribute("currentUser");
@@ -89,10 +93,9 @@ public class UpdateUserRoleCommand extends Command {
         User userById = null;
 
         try {
-            userId = (Integer)jsonParameters.get("userId");
+            userId = (Integer) jsonParameters.get("userId");
             userById = userDAO.findUserById(userId.longValue());
-        }
-        catch (AppException e) {
+        } catch (AppException e) {
             innerObject = UtilCommand.errorMessageJSON(e.getMessage());
         }
         try {
@@ -106,8 +109,7 @@ public class UpdateUserRoleCommand extends Command {
             } else {
                 innerObject = UtilCommand.errorMessageJSON("Cannot change user status");
             }
-        }
-        catch (AppException ex) {
+        } catch (AppException ex) {
             innerObject = UtilCommand.errorMessageJSON(ex.getMessage());
         }
         /**

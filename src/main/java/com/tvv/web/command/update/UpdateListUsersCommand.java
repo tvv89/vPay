@@ -28,12 +28,15 @@ public class UpdateListUsersCommand extends Command {
     private static final Logger log = Logger.getLogger(UpdateListUsersCommand.class);
 
     private UserDAO userDAO;
-    public UpdateListUsersCommand(){
+
+    public UpdateListUsersCommand() {
         userDAO = new UserDAO();
     }
-    public void setUp(UserDAO userDAO){
+
+    public void setUp(UserDAO userDAO) {
         this.userDAO = userDAO;
     }
+
     /**
      * Comparator for sorting by login
      */
@@ -44,6 +47,7 @@ public class UpdateListUsersCommand extends Command {
             return u1.getLogin().compareTo(u2.getLogin());
         }
     }
+
     /**
      * Comparator for sorting by first name
      */
@@ -54,6 +58,7 @@ public class UpdateListUsersCommand extends Command {
             return u1.getFirstName().compareTo(u2.getFirstName());
         }
     }
+
     /**
      * Comparator for sorting by last name
      */
@@ -71,20 +76,22 @@ public class UpdateListUsersCommand extends Command {
 
     /**
      * Execute GET function for Controller. This function doesn't have GET request, and redirect to error page
-     * @param request servlet request
+     *
+     * @param request  servlet request
      * @param response servlet response
      * @throws IOException
      * @throws ServletException
      */
     @Override
     public void executeGet(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
-        UtilCommand.bedGETRequest(request,response);
+        UtilCommand.bedGETRequest(request, response);
     }
 
     /**
      * Execute POST function for Controller. This function use JSON data from request, parse it, and send response for
      * single page application. Function is enabled ADMIN and show list of users
-     * @param request servlet request
+     *
+     * @param request  servlet request
      * @param response servlet response
      * @throws IOException
      * @throws ServletException
@@ -96,7 +103,6 @@ public class UpdateListUsersCommand extends Command {
         /**
          * Check user role
          */
-        request.setCharacterEncoding("UTF-8");
         HttpSession session = request.getSession();
         Role userRole = (Role) session.getAttribute("userRole");
         User currentUser = (User) session.getAttribute("currentUser");

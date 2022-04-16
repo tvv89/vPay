@@ -102,7 +102,6 @@ public class UpdateListAccountsCommand extends Command {
         /**
          * Check user role
          */
-        request.setCharacterEncoding("UTF-8");
         HttpSession session = request.getSession();
         Role userRole = (Role) session.getAttribute("userRole");
         User currentUser = (User) session.getAttribute("currentUser");

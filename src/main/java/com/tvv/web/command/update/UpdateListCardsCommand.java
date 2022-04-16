@@ -30,12 +30,15 @@ public class UpdateListCardsCommand extends Command {
     private static final Logger log = Logger.getLogger(UpdateListCardsCommand.class);
 
     private CardDAO cardDAO;
+
     public UpdateListCardsCommand() {
         cardDAO = new CardDAO();
     }
-    public void setUp(CardDAO cardDAO){
+
+    public void setUp(CardDAO cardDAO) {
         this.cardDAO = cardDAO;
     }
+
     /**
      * Comparator for sorting by card name
      */
@@ -46,6 +49,7 @@ public class UpdateListCardsCommand extends Command {
             return u1.getName().compareTo(u2.getName());
         }
     }
+
     /**
      * Comparator for sorting by card number
      */
@@ -56,6 +60,7 @@ public class UpdateListCardsCommand extends Command {
             return u1.getNumber().compareTo(u2.getNumber());
         }
     }
+
     /**
      * Comparator for sorting by card owner login
      */
@@ -73,19 +78,21 @@ public class UpdateListCardsCommand extends Command {
 
     /**
      * Execute GET function for Controller. This function doesn't have GET request, and redirect to error page
-     * @param request servlet request
+     *
+     * @param request  servlet request
      * @param response servlet response
      * @throws IOException
      * @throws ServletException
      */
     @Override
     public void executeGet(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
-        UtilCommand.bedGETRequest(request,response);
+        UtilCommand.bedGETRequest(request, response);
     }
 
     /**
      * Execute POST function for Controller. This function use JSON data from request, parse it, and send response for
      * single page application. Function has different ways for USER and ADMIN
+     *
      * @param request
      * @param response
      * @throws IOException
@@ -93,16 +100,15 @@ public class UpdateListCardsCommand extends Command {
      */
     @Override
     public void executePost(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
-        log.trace("Start POST command "+ this.getClass().getName());
+        log.trace("Start POST command " + this.getClass().getName());
         /**
          * Check user role
          */
         HttpSession session = request.getSession();
         Role userRole = (Role) session.getAttribute("userRole");
         User currentUser = (User) session.getAttribute("currentUser");
-        if (userRole!=Role.ADMIN && userRole!=Role.USER)
-        {
-            response.sendRedirect(request.getContextPath()+ Path.COMMAND__START_PAGE);
+        if (userRole != Role.ADMIN && userRole != Role.USER) {
+            response.sendRedirect(request.getContextPath() + Path.COMMAND__START_PAGE);
             log.debug("User role is not correct");
             return;
         }
@@ -126,11 +132,10 @@ public class UpdateListCardsCommand extends Command {
         Integer sorting = null;
 
         try {
-            currentPage = (Integer)(jsonParameters.get("currentPage"));
-            itemPerPage = (Integer)(jsonParameters.get("items"));
-            sorting = (Integer)(jsonParameters.get("sorting"));
-        }
-        catch (Exception e) {
+            currentPage = (Integer) (jsonParameters.get("currentPage"));
+            itemPerPage = (Integer) (jsonParameters.get("items"));
+            sorting = (Integer) (jsonParameters.get("sorting"));
+        } catch (Exception e) {
             currentPage = 1;
             itemPerPage = 5;
             sorting = 1;
@@ -145,9 +150,8 @@ public class UpdateListCardsCommand extends Command {
             else if (userRole == Role.USER) list = cardDAO.findCardsByUser(currentUser.getId());
             else list = null;
             log.debug("Create list of cards");
-        }
-        catch (AppException ex) {
-            UtilCommand.sendJSONData(response,UtilCommand.errorMessageJSON(ex.getMessage()));
+        } catch (AppException ex) {
+            UtilCommand.sendJSONData(response, UtilCommand.errorMessageJSON(ex.getMessage()));
             log.error(ex.getMessage());
             return;
         }
@@ -155,8 +159,8 @@ public class UpdateListCardsCommand extends Command {
          * Sorting
          *
          */
-        log.debug("Sorting parameter: "+ sorting);
-        switch (sorting){
+        log.debug("Sorting parameter: " + sorting);
+        switch (sorting) {
             case 1:
                 Collections.sort(list, compareByName);
                 break;
@@ -173,17 +177,17 @@ public class UpdateListCardsCommand extends Command {
         /**
          * Create response with JSON files
          */
-        if (itemPerPage==null) itemPerPage = 5;
-        if (itemPerPage>0) {
-            if (currentPage==null) currentPage=1;
+        if (itemPerPage == null) itemPerPage = 5;
+        if (itemPerPage > 0) {
+            if (currentPage == null) currentPage = 1;
             pages = PaginationList.getPages(list, itemPerPage);
             listX = PaginationList.getListPage(list, currentPage, itemPerPage);
             innerObject.add("status", new Gson().toJsonTree("OK"));
             innerObject.add("page", new Gson().toJsonTree(currentPage));
             innerObject.add("pages", new Gson().toJsonTree(pages));
             innerObject.add("list", new Gson().toJsonTree(listX));
-            log.debug("Create data for sending "+ itemPerPage +" item per page, " + currentPage+" is curren page");
-        } else if (itemPerPage==-1) {
+            log.debug("Create data for sending " + itemPerPage + " item per page, " + currentPage + " is curren page");
+        } else if (itemPerPage == -1) {
             innerObject.add("status", new Gson().toJsonTree("OK"));
             innerObject.add("page", new Gson().toJsonTree(1));
             innerObject.add("pages", new Gson().toJsonTree(1));
@@ -197,8 +201,8 @@ public class UpdateListCardsCommand extends Command {
         /**
          * Send result response for single page
          */
-        UtilCommand.sendJSONData(response,innerObject);
-        log.trace("End POST command "+ this.getClass().getName());
+        UtilCommand.sendJSONData(response, innerObject);
+        log.trace("End POST command " + this.getClass().getName());
 
     }
 }

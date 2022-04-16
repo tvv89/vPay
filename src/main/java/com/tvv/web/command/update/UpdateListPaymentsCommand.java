@@ -27,12 +27,15 @@ public class UpdateListPaymentsCommand extends Command {
     private static final Logger log = Logger.getLogger(UpdateListPaymentsCommand.class);
 
     private PaymentDAO paymentDAO;
+
     public UpdateListPaymentsCommand() {
         paymentDAO = new PaymentDAO();
     }
+
     public void setUp(PaymentDAO paymentDAO) {
         this.paymentDAO = paymentDAO;
     }
+
     /**
      * Comparator for sorting by payment GUID
      */
@@ -52,7 +55,7 @@ public class UpdateListPaymentsCommand extends Command {
         @Override
         public int compare(Payment p1, Payment p2) {
             int result = p1.getCurrency().compareTo(p2.getCurrency());
-            if (result==0) return p1.getTotal().compareTo(p2.getTotal());
+            if (result == 0) return p1.getTotal().compareTo(p2.getTotal());
             return result;
         }
     }
@@ -87,19 +90,21 @@ public class UpdateListPaymentsCommand extends Command {
 
     /**
      * Execute GET function for Controller. This function doesn't have GET request, and redirect to error page
-     * @param request servlet request
+     *
+     * @param request  servlet request
      * @param response servlet response
      * @throws IOException
      * @throws ServletException
      */
     @Override
     public void executeGet(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
-        UtilCommand.bedGETRequest(request,response);
+        UtilCommand.bedGETRequest(request, response);
     }
 
     /**
      * Execute POST function for Controller. This function use JSON data from request, parse it, and send response for
      * single page Payment. Function has different ways for USER and ADMIN
+     *
      * @param request
      * @param response
      * @throws IOException
@@ -111,13 +116,11 @@ public class UpdateListPaymentsCommand extends Command {
         /**
          * Check user role
          */
-        request.setCharacterEncoding("UTF-8");
         HttpSession session = request.getSession();
         Role userRole = (Role) session.getAttribute("userRole");
         User currentUser = (User) session.getAttribute("currentUser");
-        if (userRole!=Role.ADMIN && userRole!=Role.USER)
-        {
-            response.sendRedirect(request.getContextPath()+ Path.COMMAND__START_PAGE);
+        if (userRole != Role.ADMIN && userRole != Role.USER) {
+            response.sendRedirect(request.getContextPath() + Path.COMMAND__START_PAGE);
             log.debug("User role is not correct");
             return;
         }
@@ -142,21 +145,18 @@ public class UpdateListPaymentsCommand extends Command {
         Integer sorting = null;
 
         try {
-            currentPage = (Integer)(jsonParameters.get("currentPage"));
-        }
-        catch (Exception e) {
-            currentPage =1;
+            currentPage = (Integer) (jsonParameters.get("currentPage"));
+        } catch (Exception e) {
+            currentPage = 1;
         }
         try {
-            itemPerPage = (Integer)(jsonParameters.get("items"));
-        }
-        catch (Exception e) {
+            itemPerPage = (Integer) (jsonParameters.get("items"));
+        } catch (Exception e) {
             itemPerPage = 5;
         }
         try {
-            sorting = (Integer)(jsonParameters.get("sorting"));
-        }
-        catch (Exception e) {
+            sorting = (Integer) (jsonParameters.get("sorting"));
+        } catch (Exception e) {
             sorting = 1;
         }
 
@@ -168,15 +168,14 @@ public class UpdateListPaymentsCommand extends Command {
             if (userRole == Role.ADMIN) list = paymentDAO.findAllPayments();
             else if (userRole == Role.USER) list = paymentDAO.findPaymentsByUser(currentUser.getId());
             else list = null;
-        }
-        catch (AppException ex) {
+        } catch (AppException ex) {
             log.error(ex.getMessage());
         }
 
         /**
          * Sorting
          */
-        switch (sorting){
+        switch (sorting) {
             case 1:
                 Collections.sort(list, compareByGuid);
                 break;
@@ -195,15 +194,15 @@ public class UpdateListPaymentsCommand extends Command {
          * Create response with JSON files
          */
         int pages;
-        if (itemPerPage>0) {
+        if (itemPerPage > 0) {
             pages = PaginationList.getPages(list, itemPerPage);
             List<Payment> listX = PaginationList.getListPage(list, currentPage, itemPerPage);
             innerObject.add("status", new Gson().toJsonTree("OK"));
             innerObject.add("page", new Gson().toJsonTree(currentPage));
             innerObject.add("pages", new Gson().toJsonTree(pages));
             innerObject.add("list", new Gson().toJsonTree(listX));
-            log.debug("Create data for sending "+ itemPerPage +" item per page, " + currentPage+" is curren page");
-        } else if (itemPerPage==-1) {
+            log.debug("Create data for sending " + itemPerPage + " item per page, " + currentPage + " is curren page");
+        } else if (itemPerPage == -1) {
             innerObject.add("status", new Gson().toJsonTree("OK"));
             innerObject.add("page", new Gson().toJsonTree(1));
             innerObject.add("pages", new Gson().toJsonTree(1));
@@ -217,8 +216,8 @@ public class UpdateListPaymentsCommand extends Command {
         /**
          * Send result response for single page
          */
-        UtilCommand.sendJSONData(response,innerObject);
-        log.trace("End POST command "+ this.getClass().getName());
+        UtilCommand.sendJSONData(response, innerObject);
+        log.trace("End POST command " + this.getClass().getName());
 
     }
 }
