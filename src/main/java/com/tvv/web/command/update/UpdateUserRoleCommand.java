@@ -28,8 +28,11 @@ public class UpdateUserRoleCommand extends Command {
     private static final Logger log = Logger.getLogger(UpdateUserRoleCommand.class);
 
     private UserDAO userDAO;
-    private void init(){
+    public UpdateUserRoleCommand(){
         userDAO = new UserDAO();
+    }
+    public void setUp(UserDAO userDAO){
+        this.userDAO = userDAO;
     }
     /**
      * Execute GET function for Controller. This function doesn't have GET request, and redirect to error page
@@ -54,7 +57,6 @@ public class UpdateUserRoleCommand extends Command {
     @Override
     public void executePost(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException, AppException {
         log.trace("Start POST command " + this.getClass().getName());
-        init();
         JsonObject innerObject = new JsonObject();
         /**
          * Check user role

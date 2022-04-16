@@ -28,8 +28,11 @@ public class UpdateAccountBalanceCommand extends Command {
     private static final Logger log = Logger.getLogger(UpdateAccountBalanceCommand.class);
 
     private AccountDAO accountDAO;
-    private void init() {
+    public UpdateAccountBalanceCommand() {
         accountDAO = new AccountDAO();
+    }
+    public void setUp(AccountDAO accountDAO) {
+        this.accountDAO = accountDAO;
     }
     /**
      * Execute GET function for Controller. This function doesn't have GET request, and redirect to error page
@@ -54,7 +57,6 @@ public class UpdateAccountBalanceCommand extends Command {
     @Override
     public void executePost(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
         log.trace("Start POST command "+ this.getClass().getSimpleName());
-        init();
         JsonObject innerObject = new JsonObject();
         /**
          * Check user role

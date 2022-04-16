@@ -30,8 +30,11 @@ public class UpdateListCardsCommand extends Command {
     private static final Logger log = Logger.getLogger(UpdateListCardsCommand.class);
 
     private CardDAO cardDAO;
-    private void init(){
+    public UpdateListCardsCommand() {
         cardDAO = new CardDAO();
+    }
+    public void setUp(CardDAO cardDAO){
+        this.cardDAO = cardDAO;
     }
     /**
      * Comparator for sorting by card name
@@ -91,7 +94,6 @@ public class UpdateListCardsCommand extends Command {
     @Override
     public void executePost(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
         log.trace("Start POST command "+ this.getClass().getName());
-        init();
         /**
          * Check user role
          */

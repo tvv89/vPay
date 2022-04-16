@@ -27,9 +27,11 @@ public class UpdateListPaymentsCommand extends Command {
     private static final Logger log = Logger.getLogger(UpdateListPaymentsCommand.class);
 
     private PaymentDAO paymentDAO;
-
-    private void init() {
+    public UpdateListPaymentsCommand() {
         paymentDAO = new PaymentDAO();
+    }
+    public void setUp(PaymentDAO paymentDAO) {
+        this.paymentDAO = paymentDAO;
     }
     /**
      * Comparator for sorting by payment GUID
@@ -106,7 +108,6 @@ public class UpdateListPaymentsCommand extends Command {
     @Override
     public void executePost(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
         log.trace("Start POST command");
-        init();
         /**
          * Check user role
          */

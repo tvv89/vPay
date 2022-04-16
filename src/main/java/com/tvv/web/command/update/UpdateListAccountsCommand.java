@@ -32,9 +32,13 @@ public class UpdateListAccountsCommand extends Command {
 
     private AccountDAO accountDAO;
     private CardDAO cardDAO;
-    private void init() {
+    public UpdateListAccountsCommand(){
         accountDAO = new AccountDAO();
         cardDAO = new CardDAO();
+    }
+    public void setUp(AccountDAO accountDAO, CardDAO cardDAO) {
+        this.accountDAO = accountDAO;
+        this.cardDAO = cardDAO;
     }
     /**
      * Comparator for sorting by account name
@@ -94,7 +98,6 @@ public class UpdateListAccountsCommand extends Command {
     @Override
     public void executePost(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
         log.trace("Start POST command "+ this.getClass().getName());
-        init();
         JsonObject innerObject = new JsonObject();
         /**
          * Check user role
