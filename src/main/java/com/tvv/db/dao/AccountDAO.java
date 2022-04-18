@@ -141,7 +141,7 @@ public class AccountDAO {
             result = true;
         } catch (SQLException ex) {
             dbManager.rollbackCloseConnection(con);
-            throw new AppException("Can't delet account",ex);
+            throw new AppException("Can't delete account",ex);
         } finally {
             dbManager.commitCloseConnection(con);
         }

@@ -75,7 +75,7 @@ public class AccountService {
     public void createAccount(Map<String,String> accountData, User user) throws AppException {
         StringBuilder errorMessage = new StringBuilder();
         if(accountData.get("name").length()>25)
-            errorMessage.append("Name must be less then 25 symbols");
+            errorMessage.append("Name must be less than 25 symbols");
         if (errorMessage.length()==0) {
 
             Account account = new Account();
@@ -113,7 +113,7 @@ public class AccountService {
             accountById = accountDAO.findAccountById(accountId.longValue());
 
         } catch (Exception e) {
-            innerObject = UtilCommand.errorMessageJSON("Cannot change account status");
+            innerObject = UtilCommand.errorMessageJSON("Cannot delete account status");
             return innerObject;
         }
         if (accountById != null) {
@@ -121,10 +121,10 @@ public class AccountService {
                 accountDAO.deleteAccount(accountById);
                 innerObject.add("status", new Gson().toJsonTree("OK"));
             } else {
-                innerObject = UtilCommand.errorMessageJSON("Cannot change account status");
+                innerObject = UtilCommand.errorMessageJSON("Cannot delete account status");
             }
         } else {
-            innerObject = UtilCommand.errorMessageJSON("Cannot change account status");
+            innerObject = UtilCommand.errorMessageJSON("Cannot delete account status");
         }
         return innerObject;
     }

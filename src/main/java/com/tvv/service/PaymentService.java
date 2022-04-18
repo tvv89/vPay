@@ -45,15 +45,15 @@ public class PaymentService {
         /**
          * Euro with coefficient to USD
          */
-        EUR (1.15),
+        EUR(1.15),
         /**
          * Dollar with coefficient to USD
          */
-        USD (1),
+        USD(1),
         /**
          * Gryvnya with coefficient to USD
          */
-        UAH (0.033);
+        UAH(0.033);
 
         private final double rate;
 
@@ -66,6 +66,7 @@ public class PaymentService {
 
         /**
          * Get coefficient by enum value
+         *
          * @return double value of coefficient
          */
         public double getRate() {
@@ -76,6 +77,7 @@ public class PaymentService {
 
     /**
      * Get coefficient of enum by name
+     *
      * @param name
      * @return
      */
@@ -85,26 +87,28 @@ public class PaymentService {
 
     /**
      * Currency exchange
-     * @param value value of currency from
+     *
+     * @param value        value of currency from
      * @param currencyFrom currency from (string name of enum)
-     * @param currencyTo currency to (string name of enum)
+     * @param currencyTo   currency to (string name of enum)
      * @return result value of currency to
      */
-    public static double currencyExchange (Double value, String currencyFrom, String currencyTo) {
-        double res = value*(getRateByName(currencyFrom)/getRateByName(currencyTo));
-        DecimalFormat df = new DecimalFormat("#.##",new DecimalFormatSymbols(Locale.ENGLISH));
+    public static double currencyExchange(Double value, String currencyFrom, String currencyTo) {
+        double res = value * (getRateByName(currencyFrom) / getRateByName(currencyTo));
+        DecimalFormat df = new DecimalFormat("#.##", new DecimalFormatSymbols(Locale.ENGLISH));
         res = Double.valueOf(df.format(res));
         return res;
     }
 
     /**
      * Create payment function
+     *
      * @param payment object Payment
      * @return successful operation
      * @throws AppException
      */
     public boolean insertPaymentToDB(Payment payment) throws AppException {
-        if (payment==null)
+        if (payment == null)
             throw new AppException("Please, check payment value, payment can't be null",
                     new IllegalArgumentException());
         return paymentDAO.insertPayment(payment);
@@ -112,6 +116,7 @@ public class PaymentService {
 
     /**
      * Change status payment and deposit account/s
+     *
      * @param payment current payment
      * @return JSON result request with status of payment
      * @throws AppException
@@ -129,7 +134,7 @@ public class PaymentService {
                 Double totalPaymentTo = currencyExchange(payment.getSum(), payment.getCurrencySum(), accountTo.getCurrency());
                 aService.depositAccount(accountFrom, accountTo, totalPaymentFrom, totalPaymentTo);
                 payment.setStatus("Submitted");
-                paymentDAO.updatePaymentStatus(payment.getId(),"Submitted");
+                paymentDAO.updatePaymentStatus(payment.getId(), "Submitted");
                 innerObject.add("status", new Gson().toJsonTree("OK"));
                 innerObject.add("id", new Gson().toJsonTree(payment.getId()));
                 innerObject.add("statusPayment", new Gson().toJsonTree(payment.getStatus()));
@@ -139,15 +144,14 @@ public class PaymentService {
             if ("Card".equals(payment.getRecipientType())) {
                 aService.depositAccount(accountFrom, null, totalPaymentFrom, 0D);
                 payment.setStatus("Submitted");
-                paymentDAO.updatePaymentStatus(payment.getId(),"Submitted");
+                paymentDAO.updatePaymentStatus(payment.getId(), "Submitted");
                 innerObject.add("status", new Gson().toJsonTree("OK"));
                 innerObject.add("id", new Gson().toJsonTree(payment.getId()));
                 innerObject.add("statusPayment", new Gson().toJsonTree(payment.getStatus()));
 
                 return innerObject;
             }
-        }
-        else {
+        } else {
             return UtilCommand.errorMessageJSON("Payment had been submitted before");
         }
         return UtilCommand.errorMessageJSON("Payment can not be submitted.");
@@ -155,6 +159,7 @@ public class PaymentService {
 
     /**
      * Function for "delete" payment, go to archive
+     *
      * @param payment current payment
      * @return JSON result request with status operation (OK or Error)
      * @throws AppException
@@ -165,7 +170,7 @@ public class PaymentService {
         if (paymentDAO.deletePaymentById(payment.getId()))
             innerObject.add("status", new Gson().toJsonTree("OK"));
         else
-            innerObject= UtilCommand.errorMessageJSON("Payment can not be deleted.");
+            innerObject = UtilCommand.errorMessageJSON("Payment can not be deleted.");
 
         return innerObject;
 
@@ -173,6 +178,7 @@ public class PaymentService {
 
     /**
      * Calculating sum for payment
+     *
      * @param jsonParameters parameters from JSON request
      * @return
      */
@@ -189,12 +195,13 @@ public class PaymentService {
         String accountNumber = (String) jsonParameters.get("accountNumber");
         String currencyFrom = (String) jsonParameters.get("currencyFrom");
         String currencyTo = (String) jsonParameters.get("currencyTo");
-        if (FieldsChecker.checkBalanceDouble((String) jsonParameters.get("value")))
-        {
+        if (FieldsChecker.checkBalanceDouble((String) jsonParameters.get("value"))) {
             value = Double.valueOf((String) jsonParameters.get("value"));
-            if (value<1) return UtilCommand.errorMessageJSON("Sum must be more then 1 "+ currencyTo);
-        }
-        else return UtilCommand.errorMessageJSON("Incorrect sum value");
+            if (value < SystemParameters.MIN_PAYMENT_SUM || value > SystemParameters.MAX_PAYMENT_SUM)
+                return UtilCommand.errorMessageJSON("Sum must be more than " +
+                        SystemParameters.MIN_PAYMENT_SUM +" and less than " +
+                        SystemParameters.MAX_PAYMENT_SUM +" " +currencyTo);
+        } else return UtilCommand.errorMessageJSON("Incorrect sum value");
 
         /**
          * Check payment type: account or card (account payment doesn't have commission)
@@ -248,8 +255,9 @@ public class PaymentService {
 
     /**
      * Function for create payment
+     *
      * @param jsonParameters parameters from JSON request
-     * @param currentUser current user, who creates payment
+     * @param currentUser    current user, who creates payment
      * @return
      */
     public JsonObject createPayment(Map<String, Object> jsonParameters, User currentUser) {
@@ -277,10 +285,10 @@ public class PaymentService {
          */
         if (FieldsChecker.checkBalanceDouble((String) jsonParameters.get("value"))) {
             value = Double.valueOf((String) jsonParameters.get("value"));
-            if (value < SystemParameters.MIN_PAYMENT_SUM)
-                return UtilCommand.errorMessageJSON("Sum must be more then " + SystemParameters.MIN_PAYMENT_SUM + " " + currencyTo);
-            if (value > SystemParameters.MAX_PAYMENT_SUM)
-                return UtilCommand.errorMessageJSON("Sum must be less then " + SystemParameters.MAX_PAYMENT_SUM + " " + currencyTo);
+            if (value < SystemParameters.MIN_PAYMENT_SUM || value > SystemParameters.MAX_PAYMENT_SUM)
+                return UtilCommand.errorMessageJSON("Sum must be more than " +
+                        SystemParameters.MIN_PAYMENT_SUM +" and less than " +
+                        SystemParameters.MAX_PAYMENT_SUM +" " +currencyTo);
         } else return UtilCommand.errorMessageJSON("Incorrect sum value");
 
         /**

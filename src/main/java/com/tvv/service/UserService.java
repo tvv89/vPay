@@ -6,6 +6,7 @@ import com.tvv.service.exception.AppException;
 import com.tvv.utils.FieldsChecker;
 import com.tvv.utils.StringHash;
 import com.tvv.utils.SystemParameters;
+import org.apache.log4j.Logger;
 
 import java.io.IOException;
 import java.time.LocalDate;
@@ -17,15 +18,36 @@ import java.util.ResourceBundle;
  * Business logic for User
  */
 public class UserService {
-
+    private static final Logger log = Logger.getLogger(UserService.class);
     private UserDAO userDAO;
+    private String locale;
+    private ResourceBundle message;
 
     public UserService() {
         userDAO = new UserDAO();
+        locale = "";
+        try {
+            message = SystemParameters.getLocale(locale);
+        } catch (IOException e) {
+            log.error("Locale error");
+        }
     }
 
     public void setUp(UserDAO userDAO){
         this.userDAO = userDAO;
+        locale = "";
+        try {
+            message = SystemParameters.getLocale(locale);
+        } catch (IOException e) {
+            log.error("Locale error");
+        }
+    }
+    public void setUpLocale(String locale){
+        try {
+            message = SystemParameters.getLocale(locale);
+        } catch (IOException e) {
+            log.error("Locale error");
+        }
     }
 
     /**
@@ -37,7 +59,6 @@ public class UserService {
     public void createUser (Map<String,String> userData, String local) throws AppException, IOException {
         StringBuilder errorMessage = new StringBuilder();
         ResourceBundle error = SystemParameters.getLocale(local);
-
         LocalDate date;
         try {
             date = LocalDate.parse(userData.get("dateofbirth"));
