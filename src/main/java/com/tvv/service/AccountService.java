@@ -6,15 +6,18 @@ import com.tvv.db.dao.AccountDAO;
 import com.tvv.db.dao.CardDAO;
 import com.tvv.db.entity.*;
 import com.tvv.service.exception.AppException;
+import com.tvv.utils.SystemParameters;
 import com.tvv.utils.UtilsGenerator;
 import com.tvv.web.command.UtilCommand;
 import org.apache.log4j.Logger;
 
 import javax.servlet.http.HttpServletRequest;
+import java.io.IOException;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.util.Locale;
 import java.util.Map;
+import java.util.ResourceBundle;
 
 /**
  * Business logic for Accounts
@@ -24,28 +27,47 @@ public class AccountService {
 
     private final AccountDAO accountDAO;
 
+    private String locale;
+    private ResourceBundle message;
+
     public AccountService(AccountDAO accountDAO) {
         this.accountDAO = accountDAO;
-
+        this.locale = "";
+        try {
+            this.message = SystemParameters.getLocale(locale);
+        } catch (IOException e) {
+            log.error("Locale error");
+        }
     }
+
+    public void setUpLocale(String locale) {
+        this.locale = locale;
+        try {
+            this.message = SystemParameters.getLocale(locale);
+        } catch (IOException e) {
+            log.error("Locale error");
+        }
+    }
+
     /**
      * Add money to accountTo balance and subtract money form accountFrom balance
+     *
      * @param accountFrom debit account object
-     * @param accountTo deposit account object
-     * @param valueFrom subtract value from accountFrom
-     * @param valueTo add value to accountTo
+     * @param accountTo   deposit account object
+     * @param valueFrom   subtract value from accountFrom
+     * @param valueTo     add value to accountTo
      * @return successful operation
      * @throws AppException
      */
     public boolean depositAccount(Account accountFrom, Account accountTo, Double valueFrom, Double valueTo) throws AppException {
         boolean result = false;
-        if (accountTo!=null && accountFrom.getIban().equals(accountTo.getIban())) return true;
+        if (accountTo != null && accountFrom.getIban().equals(accountTo.getIban())) return true;
         Double balanceFrom = accountFrom.getBalance();
         DecimalFormat df = new DecimalFormat("#.##", new DecimalFormatSymbols(Locale.ENGLISH));
-        Double newBalanceFrom = Double.valueOf(df.format(balanceFrom-valueFrom));
+        Double newBalanceFrom = Double.valueOf(df.format(balanceFrom - valueFrom));
         accountDAO.updateAccountBalance(accountFrom.getId(), newBalanceFrom);
         result = true;
-        if (accountTo!=null) {
+        if (accountTo != null) {
             Double balanceTo = accountTo.getBalance();
             Double newBalanceTo = Double.valueOf(df.format(balanceTo + valueTo));
             accountDAO.updateAccountBalance(accountTo.getId(), newBalanceTo);
@@ -55,28 +77,29 @@ public class AccountService {
 
     /**
      * Will be used in the future. Lock account
+     *
      * @param account
      * @throws AppException
      */
     public void lockAccount(Account account) throws AppException {
-        if (account!=null) {
+        if (account != null) {
             account.setStatus("disable");
             accountDAO.updateStatusAccountById(account.getId(), account.getStatus());
-        }
-        else throw new AppException("Can not find account for locking", new NullPointerException());
+        } else throw new AppException(message.getString("exception.service.account.lock"), new NullPointerException());
     }
 
     /**
      * Create account with checking field. Checking will be developed in the future
+     *
      * @param accountData Map - account data
-     * @param user account owner user
+     * @param user        account owner user
      * @throws AppException
      */
-    public void createAccount(Map<String,String> accountData, User user) throws AppException {
+    public void createAccount(Map<String, String> accountData, User user) throws AppException {
         StringBuilder errorMessage = new StringBuilder();
-        if(accountData.get("name").length()>25)
-            errorMessage.append("Name must be less than 25 symbols");
-        if (errorMessage.length()==0) {
+        if (accountData.get("name").length() > 25)
+            errorMessage.append(message.getString("exception.service.account.create.name"));
+        if (errorMessage.length() == 0) {
 
             Account account = new Account();
             account.setId(1L);
@@ -90,13 +113,13 @@ public class AccountService {
             account.setStatus("Enabled");
 
             accountDAO.insertAccount(account);
-        }
-        else throw new AppException(errorMessage.toString(), new IllegalArgumentException());
+        } else throw new AppException(errorMessage.toString(), new IllegalArgumentException());
     }
 
     /**
      * Function for delete account
-     * @param request controller servlet request
+     *
+     * @param request        controller servlet request
      * @param jsonParameters parameters from JSON request, primary: use delete
      * @return JsonObject object, which will be sent with response
      * @throws AppException custom application exception
@@ -113,25 +136,23 @@ public class AccountService {
             accountById = accountDAO.findAccountById(accountId.longValue());
 
         } catch (Exception e) {
-            innerObject = UtilCommand.errorMessageJSON("Cannot delete account status");
+            innerObject = UtilCommand.errorMessageJSON(message.getString("exception.service.account.delete"));
             return innerObject;
         }
-        if (accountById != null) {
-            if (userRole == Role.USER) {
-                accountDAO.deleteAccount(accountById);
-                innerObject.add("status", new Gson().toJsonTree("OK"));
-            } else {
-                innerObject = UtilCommand.errorMessageJSON("Cannot delete account status");
-            }
+        if (accountById != null && userRole == Role.USER) {
+
+            accountDAO.deleteAccount(accountById);
+            innerObject.add("status", new Gson().toJsonTree("OK"));
         } else {
-            innerObject = UtilCommand.errorMessageJSON("Cannot delete account status");
+            innerObject = UtilCommand.errorMessageJSON(message.getString("exception.service.account.delete"));
         }
         return innerObject;
     }
 
     /**
      * Function for change account status: Enabled, Idle, Disabled
-     * @param request controller servlet request
+     *
+     * @param request        controller servlet request
      * @param jsonParameters parameters from JSON request, primary: use change
      * @return JsonObject object, which will be sent with response
      * @throws AppException custom application exception
@@ -147,17 +168,17 @@ public class AccountService {
         try {
             accountId = (Integer) jsonParameters.get("accountId");
             accountById = accountDAO.findAccountById(accountId.longValue());
-            if (userRole == Role.USER && accountById!=null) {
+            if (userRole == Role.USER && accountById != null) {
                 if (accountById.getOwnerUser().getId() != currentUser.getId()) {
-                    throw new AppException("Incorrect user account id", new IllegalArgumentException());
+                    throw new AppException(message.getString("exception.service.account.change.incorrect_user"),
+                            new IllegalArgumentException());
                 }
             }
-        }
-        catch (Exception e) {
-            throw new AppException("Not found account by id", e);
+        } catch (Exception e) {
+            throw new AppException(message.getString("exception.service.account.change.not_found"), e);
         }
 
-        if (accountById!=null) {
+        if (accountById != null) {
             String accountStatus;
             if (userRole == Role.ADMIN) {
                 if (accountById.getStatus().equals("Disabled") || accountById.getStatus().equals("Idle"))
@@ -167,14 +188,13 @@ public class AccountService {
                 if (accountById.getStatus().equals("Enabled")) accountStatus = "Idle";
                 else accountStatus = accountById.getStatus();
             }
-            accountDAO.updateStatusAccountById(Long.valueOf(accountId),accountStatus);
+            accountDAO.updateStatusAccountById(Long.valueOf(accountId), accountStatus);
             accountById = accountDAO.findAccountById(accountId.longValue());
             innerObject.add("status", new Gson().toJsonTree("OK"));
             innerObject.add("userRole", new Gson().toJsonTree(userRole));
             innerObject.add("account", new Gson().toJsonTree(accountById));
-        }
-        else {
-            innerObject = UtilCommand.errorMessageJSON("Cannot change account status");
+        } else {
+            innerObject = UtilCommand.errorMessageJSON(message.getString("exception.service.account.change.not_change"));
         }
         return innerObject;
     }
@@ -198,7 +218,7 @@ public class AccountService {
             innerObject.add("cardnumber", new Gson().toJsonTree(cardById.getNumber()));
             innerObject.add("expdate", new Gson().toJsonTree(cardById.getExpDate()));
         } else {
-            innerObject = UtilCommand.errorMessageJSON("Account does not have card");
+            innerObject = UtilCommand.errorMessageJSON(message.getString("exception.service.account.change.no_card"));
             log.error("Account does not have card");
         }
         return innerObject;
@@ -220,7 +240,7 @@ public class AccountService {
             accountDAO.updateAccountCard(Long.valueOf(accountId), cardId);
             innerObject.add("status", new Gson().toJsonTree("OK"));
         } else {
-            innerObject = UtilCommand.errorMessageJSON("Account does not find");
+            innerObject = UtilCommand.errorMessageJSON(message.getString("exception.service.account.change.not_found"));
             log.error("Account does not have card");
         }
         return innerObject;

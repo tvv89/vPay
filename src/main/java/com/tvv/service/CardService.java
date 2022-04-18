@@ -5,16 +5,23 @@ import com.tvv.db.dao.UserDAO;
 import com.tvv.db.entity.Card;
 import com.tvv.service.exception.AppException;
 import com.tvv.utils.FieldsChecker;
+import com.tvv.utils.SystemParameters;
+import org.apache.log4j.Logger;
 
+import java.io.IOException;
 import java.util.Map;
+import java.util.ResourceBundle;
 
 /**
  * Business logic for Cards
  */
 public class CardService {
-
+    private static final Logger log = Logger.getLogger(CardService.class);
     public UserDAO userDAO;
     public CardDAO cardDAO;
+    private String locale;
+    private ResourceBundle message;
+
 
     public CardService() {
         userDAO = new UserDAO();
@@ -25,6 +32,15 @@ public class CardService {
         this.userDAO = userDAO;
         this.cardDAO = cardDAO;
     }
+
+    public void setUpLocale(String locale){
+        this.locale = locale;
+        try {
+            message = SystemParameters.getLocale(locale);
+        } catch (IOException e) {
+            log.error("Locale error");
+        }
+    }
     /**
      * Create card with checking field. Checking will be developed in the future
      * @param cardData Map - account data
@@ -34,7 +50,8 @@ public class CardService {
         StringBuilder errorMessage = new StringBuilder();
         String cardCheck = cardData.get("cardnumber");
         cardCheck = cardCheck.replace(" ", "");
-        if (!FieldsChecker.checkCardNumber(cardCheck)) errorMessage.append("Bad card number");
+        if (!FieldsChecker.checkCardNumber(cardCheck))
+            errorMessage.append(message.getString("exception.service.card.bad_card"));
 
         if (errorMessage.length()==0) {
             Card card = new Card();
