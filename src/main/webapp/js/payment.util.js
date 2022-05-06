@@ -1,12 +1,13 @@
-var itemsPerPage=5;
-var currentPGPage=1;
-var sortBy=4;
+var itemsPerPage = 5;
+var currentPGPage = 1;
+var sortBy = 4;
 window.addEventListener('DOMContentLoaded', (event) => {
-        callPOSTRequest(1,0);
+    callPOSTRequest(1, 0);
 });
+
 function callPOSTRequest(option, parameter) {
     var items = parseInt($('#itemsPerPage').val());
-    switch (option){
+    switch (option) {
         case 1:
             break;
         case 2:
@@ -22,12 +23,14 @@ function callPOSTRequest(option, parameter) {
         headers: {
             'Content-Type': 'application/json; charset=utf-8'
         },
-        body: JSON.stringify({currentPage: currentPGPage,
+        body: JSON.stringify({
+            currentPage: currentPGPage,
             items: itemsPerPage,
-            sorting: sortBy})
-    }) .then(response => response.json())
-        .then(data =>  {
-            if (data.status =='OK') {
+            sorting: sortBy
+        })
+    }).then(response => response.json())
+        .then(data => {
+            if (data.status == 'OK') {
                 createPagination(data.page, data.pages);
                 createTable(data.list);
             } else callErrorAlert(data.message);
@@ -42,10 +45,10 @@ function createTable(tx) {
     table.innerHTML = "";
     for (var i = 0; i < tx.length; i++) {
         var statusP;
-            if (tx[i].status=='Ready') statusP = `<span class="uk-label uk-label-warning" 
+        if (tx[i].status == 'Ready') statusP = `<span class="uk-label uk-label-warning" 
                                             onclick="changeStatusButton(${tx[i].id})">
                                             ${javascript_payment_status_ready}</span>`;
-            else statusP = `<span class="uk-label uk-label-success" 
+        else statusP = `<span class="uk-label uk-label-success" 
                                             onclick="">
                                             ${javascript_payment_status_submitted}</span>`;
         var row = `<tr id="tr_${tx[i].id}">
@@ -74,10 +77,11 @@ function changePaymentStatus(id) {
         method: 'POST',
         body: JSON.stringify({
             action: 'status',
-            paymentId: id})
-    }) .then(response => response.json())
-        .then(data =>  {
-            if (data.status =='OK') {
+            paymentId: id
+        })
+    }).then(response => response.json())
+        .then(data => {
+            if (data.status == 'OK') {
                 if ($('#td_status_' + data.id).length) {
                     if (data.statusPayment == 'Submitted') {
                         statusP = `<span class="uk-label uk-label-success" 
@@ -101,12 +105,14 @@ function deletePayment(id) {
                 'Content-Type': 'application/json; charset=utf-8'
             },
             method: 'POST',
-            body: JSON.stringify({action: 'delete',
-                paymentId: id})
-        }) .then(response => response.json())
-            .then(data =>  {
-                if (data.status =='OK') {
-                    callPOSTRequest(1,0);
+            body: JSON.stringify({
+                action: 'delete',
+                paymentId: id
+            })
+        }).then(response => response.json())
+            .then(data => {
+                if (data.status == 'OK') {
+                    callPOSTRequest(1, 0);
                     UIkit.notification({
                         message: javascript_payment_delete_message,
                         status: 'success',
@@ -136,14 +142,25 @@ function pdfPayment(id) {
             action: 'pdf',
             paymentId: id
         })
-    }).then(response => {return response.arrayBuffer()})
+    }).then(response => {
+        return response.arrayBuffer()
+    })
         .then(data => {
-        const blob = new Blob([data], { type: 'application/pdf' })
-        const link = document.createElement('a');
-        link.href = window.URL.createObjectURL(blob)
-        link.download = 'payment.pdf';
-        link.click()
-    });
+            if (data.status == 'ERROR') {
+                callPOSTRequest(1, 0);
+                UIkit.notification({
+                    message: "Payment must be submitted",
+                    status: 'warning',
+                    timeout: 2000
+                })
+            } else {
+                const blob = new Blob([data], {type: 'application/pdf'})
+                const link = document.createElement('a');
+                link.href = window.URL.createObjectURL(blob)
+                link.download = 'payment.pdf';
+                link.click()
+            }
+        });
     console.log('Payment in PDF')
 }
 
@@ -156,12 +173,12 @@ function changeStatusButton(e) {
     });
 };
 
-function changeSort(){
+function changeSort() {
     sortBy = parseInt($('#sortPaymentsOption').val());
-    currentPGPage=1;
-    callPOSTRequest(1,0);
+    currentPGPage = 1;
+    callPOSTRequest(1, 0);
 }
 
-function callErrorAlert(message){
+function callErrorAlert(message) {
     UIkit.modal.alert(message);
 }

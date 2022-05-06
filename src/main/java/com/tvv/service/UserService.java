@@ -1,6 +1,7 @@
 package com.tvv.service;
 
 import com.tvv.db.dao.UserDAO;
+import com.tvv.db.dao.UserDAOImpl;
 import com.tvv.db.entity.User;
 import com.tvv.service.exception.AppException;
 import com.tvv.utils.FieldsChecker;
@@ -24,7 +25,7 @@ public class UserService {
     private ResourceBundle message;
 
     public UserService() {
-        userDAO = new UserDAO();
+        userDAO = new UserDAOImpl();
         locale = "";
         try {
             message = SystemParameters.getLocale(locale);

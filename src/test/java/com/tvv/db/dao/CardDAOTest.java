@@ -5,7 +5,6 @@ import com.tvv.db.entity.Card;
 import com.tvv.db.entity.User;
 import com.tvv.service.exception.AppException;
 import org.junit.jupiter.api.Test;
-import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 
 import java.sql.*;
@@ -32,8 +31,8 @@ class CardDAOTest {
         when(instance.getConnection())
                 .thenReturn(con);
 
-        UserDAO uDAO = mock(UserDAO.class);
-        CardDAO cardDAO = new CardDAO();
+        UserDAOImpl uDAO = mock(UserDAOImpl.class);
+        CardDAOImpl cardDAO = new CardDAOImpl();
         cardDAO.setUp(instance, uDAO);
 
         Card insertCard = new Card();
@@ -89,7 +88,7 @@ class CardDAOTest {
         user1.setId(1L);
         User user2 = new User();
         user2.setId(2L);
-        UserDAO uDAO = mock(UserDAO.class);
+        UserDAOImpl uDAO = mock(UserDAOImpl.class);
         when(uDAO.findUserById(1L)).thenReturn(user1);
         when(uDAO.findUserById(2L)).thenReturn(user2);
 
@@ -124,7 +123,7 @@ class CardDAOTest {
             assertList.add(card);
         }
 
-        CardDAO cardDAO = new CardDAO();
+        CardDAOImpl cardDAO = new CardDAOImpl();
         cardDAO.setUp(instance, uDAO);
         List<Card> cards = cardDAO.findAllCards();
 
@@ -152,7 +151,7 @@ class CardDAOTest {
                 .thenReturn(true);
         User user1 = new User();
         user1.setId(1L);
-        UserDAO uDAO = mock(UserDAO.class);
+        UserDAOImpl uDAO = mock(UserDAOImpl.class);
         when(uDAO.findUserById(1L)).thenReturn(user1);
 
         PreparedStatement pstmt = Mockito.mock(PreparedStatement.class);
@@ -176,7 +175,7 @@ class CardDAOTest {
         assertCard.setUser(user2);
         assertCard.setStatus(true);
 
-        CardDAO cardDAO = new CardDAO();
+        CardDAOImpl cardDAO = new CardDAOImpl();
         cardDAO.setUp(instance, uDAO);
         Card card = cardDAO.findCardById(1L);
 
@@ -220,7 +219,7 @@ class CardDAOTest {
         user1.setId(1L);
         User user2 = new User();
         user2.setId(2L);
-        UserDAO uDAO = mock(UserDAO.class);
+        UserDAOImpl uDAO = mock(UserDAOImpl.class);
         when(uDAO.findUserById(1L)).thenReturn(user1);
         when(uDAO.findUserById(2L)).thenReturn(user2);
 
@@ -256,7 +255,7 @@ class CardDAOTest {
             assertList.add(card);
         }
 
-        CardDAO cardDAO = new CardDAO();
+        CardDAOImpl cardDAO = new CardDAOImpl();
         cardDAO.setUp(instance, uDAO);
         List<Card> cards = cardDAO.findCardsByUser(1L);
 
@@ -278,8 +277,8 @@ class CardDAOTest {
         when(instance.getConnection())
                 .thenReturn(con);
 
-        UserDAO uDAO = mock(UserDAO.class);
-        CardDAO cardDAO = new CardDAO();
+        UserDAOImpl uDAO = mock(UserDAOImpl.class);
+        CardDAOImpl cardDAO = new CardDAOImpl();
         cardDAO.setUp(instance, uDAO);
 
         assertTrue(cardDAO.updateStatusCardById(1L,1));

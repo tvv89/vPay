@@ -1,6 +1,6 @@
 package com.tvv.service;
 
-import com.tvv.db.dao.UserDAO;
+import com.tvv.db.dao.UserDAOImpl;
 import com.tvv.service.exception.AppException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -17,12 +17,12 @@ import static org.mockito.Mockito.*;
 class UserServiceTest {
 
     private UserService service;
-    private UserDAO userDAO;
+    private UserDAOImpl userDAO;
 
     @BeforeEach
     private void setUp(){
         service = new UserService();
-        userDAO = mock(UserDAO.class);
+        userDAO = mock(UserDAOImpl.class);
         service.setUp(userDAO);
     }
 

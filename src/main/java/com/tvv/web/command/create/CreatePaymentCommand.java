@@ -2,9 +2,7 @@ package com.tvv.web.command.create;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
-import com.tvv.db.dao.AccountDAO;
-import com.tvv.db.dao.PaymentDAO;
-import com.tvv.db.dao.UserDAO;
+import com.tvv.db.dao.*;
 import com.tvv.db.entity.*;
 import com.tvv.service.AccountService;
 import com.tvv.service.PaymentService;
@@ -37,9 +35,9 @@ public class CreatePaymentCommand extends Command {
     private UserDAO userDAO;
 
     public CreatePaymentCommand(){
-        userDAO = new UserDAO();
-        accountDAO = new AccountDAO();
-        paymentDAO = new PaymentDAO();
+        userDAO = new UserDAOImpl();
+        accountDAO = new AccountDAOImpl();
+        paymentDAO = new PaymentDAOImpl();
         aService = new AccountService(accountDAO);
         service = new PaymentService(aService,
                 accountDAO,

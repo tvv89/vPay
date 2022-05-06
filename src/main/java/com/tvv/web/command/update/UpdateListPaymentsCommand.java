@@ -3,6 +3,7 @@ package com.tvv.web.command.update;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.tvv.db.dao.PaymentDAO;
+import com.tvv.db.dao.PaymentDAOImpl;
 import com.tvv.db.entity.*;
 import com.tvv.service.exception.AppException;
 import com.tvv.utils.PaginationList;
@@ -29,7 +30,7 @@ public class UpdateListPaymentsCommand extends Command {
     private PaymentDAO paymentDAO;
 
     public UpdateListPaymentsCommand() {
-        paymentDAO = new PaymentDAO();
+        paymentDAO = new PaymentDAOImpl();
     }
 
     public void setUp(PaymentDAO paymentDAO) {

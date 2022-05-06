@@ -2,12 +2,9 @@ package com.tvv.web.command.status;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
-import com.tvv.db.dao.PaymentDAO;
-import com.tvv.db.dao.UserDAO;
-import com.tvv.db.entity.Payment;
+import com.tvv.db.dao.UserDAOImpl;
 import com.tvv.db.entity.Role;
 import com.tvv.db.entity.User;
-import com.tvv.service.PaymentService;
 import com.tvv.service.exception.AppException;
 import com.tvv.web.command.UtilCommand;
 import org.junit.jupiter.api.BeforeEach;
@@ -19,7 +16,6 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.*;
 
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 class StatusUsersCommandTest {
@@ -55,7 +51,7 @@ class StatusUsersCommandTest {
 
         JsonObject assertJSON = new JsonObject();
 
-        UserDAO userDAO = mock(UserDAO.class);
+        UserDAOImpl userDAO = mock(UserDAOImpl.class);
         User userById1 = new User();
         userById1.setId(1L);
         userById1.setStatus(true);
@@ -86,7 +82,7 @@ class StatusUsersCommandTest {
 
         JsonObject assertJSON = UtilCommand.errorMessageJSON("Cannot change user status");
 
-        UserDAO userDAO = mock(UserDAO.class);
+        UserDAOImpl userDAO = mock(UserDAOImpl.class);
         User userById1 = null;
         when(userDAO.findUserById(5L)).thenReturn(userById1);
         when(userDAO.updateStatusUserById(5L,0)).thenReturn(true);
@@ -109,7 +105,7 @@ class StatusUsersCommandTest {
 
         JsonObject assertJSON = UtilCommand.errorMessageJSON("Exception message");
 
-        UserDAO userDAO = mock(UserDAO.class);
+        UserDAOImpl userDAO = mock(UserDAOImpl.class);
         User userById1 = new User();
         userById1.setStatus(true);
         when(userDAO.findUserById(5L)).thenReturn(userById1);

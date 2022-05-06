@@ -1,6 +1,7 @@
 package com.tvv.web.command;
 
 import com.tvv.db.dao.UserDAO;
+import com.tvv.db.dao.UserDAOImpl;
 import com.tvv.db.entity.Role;
 import com.tvv.db.entity.User;
 import com.tvv.service.exception.AppException;
@@ -26,7 +27,7 @@ public class LoginCommand extends Command {
 	public static final String USER_LOGIN = "User login";
 	private UserDAO userDAO;
 	public LoginCommand() {
-		userDAO = new UserDAO();
+		userDAO = new UserDAOImpl();
 	}
 	public void setUp(UserDAO userDAO) {
 		this.userDAO = userDAO;

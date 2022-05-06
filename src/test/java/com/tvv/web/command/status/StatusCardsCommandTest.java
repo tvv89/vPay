@@ -2,7 +2,7 @@ package com.tvv.web.command.status;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
-import com.tvv.db.dao.CardDAO;
+import com.tvv.db.dao.CardDAOImpl;
 import com.tvv.db.entity.Card;
 import com.tvv.db.entity.Role;
 import com.tvv.db.entity.User;
@@ -17,7 +17,6 @@ import javax.servlet.http.HttpSession;
 
 import java.io.*;
 
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 class StatusCardsCommandTest {
@@ -40,7 +39,7 @@ class StatusCardsCommandTest {
         Reader readerString = new StringReader(inputString);
         when(request.getReader()).thenReturn(new BufferedReader(readerString));
 
-        CardDAO cardDAO = mock(CardDAO.class);
+        CardDAOImpl cardDAO = mock(CardDAOImpl.class);
         Card cardById = mock(Card.class);
         User user = mock(User.class);
         when(user.getId()).thenReturn(1L);
@@ -84,7 +83,7 @@ class StatusCardsCommandTest {
         Reader readerString = new StringReader(inputString);
         when(request.getReader()).thenReturn(new BufferedReader(readerString));
 
-        CardDAO cardDAO = mock(CardDAO.class);
+        CardDAOImpl cardDAO = mock(CardDAOImpl.class);
         Card cardById = mock(Card.class);
         User user = mock(User.class);
         when(user.getId()).thenReturn(1L);

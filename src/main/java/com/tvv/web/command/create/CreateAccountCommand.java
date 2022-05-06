@@ -1,6 +1,6 @@
 package com.tvv.web.command.create;
 
-import com.tvv.db.dao.AccountDAO;
+import com.tvv.db.dao.AccountDAOImpl;
 import com.tvv.db.entity.Role;
 import com.tvv.db.entity.User;
 import com.tvv.service.AccountService;
@@ -29,7 +29,7 @@ public class CreateAccountCommand extends Command {
 	private AccountService service;
 
 	public CreateAccountCommand() {
-		service = new AccountService(new AccountDAO());
+		service = new AccountService(new AccountDAOImpl());
 	}
 	public void setUp(AccountService service){
 		this.service = service;

@@ -3,7 +3,9 @@ package com.tvv.web.command.update;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.tvv.db.dao.AccountDAO;
+import com.tvv.db.dao.AccountDAOImpl;
 import com.tvv.db.dao.CardDAO;
+import com.tvv.db.dao.CardDAOImpl;
 import com.tvv.db.entity.Account;
 import com.tvv.db.entity.Card;
 import com.tvv.db.entity.Role;
@@ -33,8 +35,8 @@ public class UpdateListAccountsCommand extends Command {
     private AccountDAO accountDAO;
     private CardDAO cardDAO;
     public UpdateListAccountsCommand(){
-        accountDAO = new AccountDAO();
-        cardDAO = new CardDAO();
+        accountDAO = new AccountDAOImpl();
+        cardDAO = new CardDAOImpl();
     }
     public void setUp(AccountDAO accountDAO, CardDAO cardDAO) {
         this.accountDAO = accountDAO;

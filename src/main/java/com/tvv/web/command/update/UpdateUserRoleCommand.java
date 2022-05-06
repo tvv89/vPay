@@ -3,8 +3,8 @@ package com.tvv.web.command.update;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
-import com.mysql.cj.util.Util;
 import com.tvv.db.dao.UserDAO;
+import com.tvv.db.dao.UserDAOImpl;
 import com.tvv.db.entity.Role;
 import com.tvv.db.entity.User;
 import com.tvv.service.exception.AppException;
@@ -30,7 +30,7 @@ public class UpdateUserRoleCommand extends Command {
     private UserDAO userDAO;
 
     public UpdateUserRoleCommand() {
-        userDAO = new UserDAO();
+        userDAO = new UserDAOImpl();
     }
 
     public void setUp(UserDAO userDAO) {

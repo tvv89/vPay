@@ -2,12 +2,10 @@ package com.tvv.web.command.status;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
-import com.tvv.db.dao.AccountDAO;
-import com.tvv.db.dao.PaymentDAO;
+import com.tvv.db.dao.PaymentDAOImpl;
 import com.tvv.db.entity.Payment;
 import com.tvv.db.entity.Role;
 import com.tvv.db.entity.User;
-import com.tvv.service.AccountService;
 import com.tvv.service.PaymentService;
 import com.tvv.service.exception.AppException;
 import com.tvv.web.command.UtilCommand;
@@ -18,10 +16,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.*;
-import java.util.HashMap;
-import java.util.Map;
 
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 class StatusPaymentsCommandTest {
@@ -48,7 +43,7 @@ class StatusPaymentsCommandTest {
 
         JsonObject assertJSON = new JsonObject();
 
-        PaymentDAO paymentDAO = mock(PaymentDAO.class);
+        PaymentDAOImpl paymentDAO = mock(PaymentDAOImpl.class);
         Payment payment = new Payment();
         payment.setId(1L);
         User user = new User();
@@ -90,7 +85,7 @@ class StatusPaymentsCommandTest {
 
         JsonObject assertJSON = new JsonObject();
         assertJSON = UtilCommand.errorMessageJSON("Current user doesn't have rules for this action");
-        PaymentDAO paymentDAO = mock(PaymentDAO.class);
+        PaymentDAOImpl paymentDAO = mock(PaymentDAOImpl.class);
         Payment payment = new Payment();
         payment.setId(1L);
         User user = new User();
@@ -132,7 +127,7 @@ class StatusPaymentsCommandTest {
 
         JsonObject assertJSON = UtilCommand.errorMessageJSON("Error message");
 
-        PaymentDAO paymentDAO = mock(PaymentDAO.class);
+        PaymentDAOImpl paymentDAO = mock(PaymentDAOImpl.class);
         Payment payment = new Payment();
         payment.setId(1L);
         User user = new User();
@@ -175,7 +170,7 @@ class StatusPaymentsCommandTest {
         JsonObject assertJSON = new JsonObject();
         assertJSON.add("status", new Gson().toJsonTree("OK"));
 
-        PaymentDAO paymentDAO = mock(PaymentDAO.class);
+        PaymentDAOImpl paymentDAO = mock(PaymentDAOImpl.class);
         Payment payment = new Payment();
         payment.setId(1L);
         User user = new User();
@@ -217,7 +212,7 @@ class StatusPaymentsCommandTest {
 
         JsonObject assertJSON = UtilCommand.errorMessageJSON("Error message");
 
-        PaymentDAO paymentDAO = mock(PaymentDAO.class);
+        PaymentDAOImpl paymentDAO = mock(PaymentDAOImpl.class);
         Payment payment = new Payment();
         payment.setId(1L);
         User user = new User();

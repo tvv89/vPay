@@ -1,12 +1,7 @@
 package com.tvv.web.command.load;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonObject;
-import com.tvv.db.dao.PaymentDAO;
-import com.tvv.db.entity.Payment;
 import com.tvv.db.entity.Role;
 import com.tvv.db.entity.User;
-import com.tvv.web.command.info.InfoPaymentCommand;
 import org.junit.jupiter.api.Test;
 
 import javax.servlet.RequestDispatcher;
@@ -16,7 +11,6 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.*;
 
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 class LoadListCardsCommandTest {

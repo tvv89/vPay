@@ -4,6 +4,7 @@ package com.tvv.web.command.status;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.tvv.db.dao.CardDAO;
+import com.tvv.db.dao.CardDAOImpl;
 import com.tvv.db.entity.Card;
 import com.tvv.db.entity.Role;
 import com.tvv.db.entity.User;
@@ -30,7 +31,7 @@ public class StatusCardsCommand extends Command {
     private CardDAO cardDAO;
 
     public StatusCardsCommand() {
-        this.cardDAO = new CardDAO();
+        this.cardDAO = new CardDAOImpl();
     }
 
     public void setUp(CardDAO cardDAO){

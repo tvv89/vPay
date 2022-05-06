@@ -2,17 +2,14 @@ package com.tvv.web.command.create;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
-import com.tvv.db.dao.AccountDAO;
-import com.tvv.db.dao.PaymentDAO;
-import com.tvv.db.dao.UserDAO;
+import com.tvv.db.dao.AccountDAOImpl;
+import com.tvv.db.dao.PaymentDAOImpl;
+import com.tvv.db.dao.UserDAOImpl;
 import com.tvv.db.entity.Account;
 import com.tvv.db.entity.Role;
 import com.tvv.db.entity.User;
-import com.tvv.service.UserService;
 import com.tvv.service.exception.AppException;
-import com.tvv.web.command.UtilCommand;
 import org.junit.jupiter.api.Test;
-import org.mockito.MockedStatic;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -23,7 +20,6 @@ import java.io.*;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 class CreatePaymentCommandTest {
@@ -51,10 +47,10 @@ class CreatePaymentCommandTest {
         userMap.put("lastName","Тимчук");
         userMap.put("id", "41");
 
-        UserDAO userDAO = mock(UserDAO.class);
+        UserDAOImpl userDAO = mock(UserDAOImpl.class);
         when(userDAO.findUserByAccountUID("ouzgJ73o1e6UYd4WpZB2wtEMj")).thenReturn(userMap);
 
-        AccountDAO accountDAO = mock(AccountDAO.class);
+        AccountDAOImpl accountDAO = mock(AccountDAOImpl.class);
         Account accountByUID = mock(Account.class);
         when(accountDAO.findAccountByUID("ouzgJ73o1e6UYd4WpZB2wtEMj"))
                 .thenReturn(accountByUID);
@@ -66,7 +62,7 @@ class CreatePaymentCommandTest {
         assertJSON.add("currency", new Gson().toJsonTree("USD"));
 
         CreatePaymentCommand command = new CreatePaymentCommand();
-        command.setUp(accountDAO,new PaymentDAO(),userDAO);
+        command.setUp(accountDAO,new PaymentDAOImpl(),userDAO);
         command.executePost(request,response);
 
         String sendData = new Gson().toJson(assertJSON);
@@ -94,10 +90,10 @@ class CreatePaymentCommandTest {
 
         Map<String, String> userMap = new HashMap<>();
 
-        UserDAO userDAO = mock(UserDAO.class);
+        UserDAOImpl userDAO = mock(UserDAOImpl.class);
         when(userDAO.findUserByAccountUID("ouzgJ73o1e6UYd4WpZB2wtEMj")).thenReturn(userMap);
 
-        AccountDAO accountDAO = mock(AccountDAO.class);
+        AccountDAOImpl accountDAO = mock(AccountDAOImpl.class);
         Account accountByUID = mock(Account.class);
         when(accountDAO.findAccountByUID("ouzgJ73o1e6UYd4WpZB2wtEMj"))
                 .thenReturn(accountByUID);
@@ -109,7 +105,7 @@ class CreatePaymentCommandTest {
         assertJSON.add("currency", new Gson().toJsonTree("USD"));
 
         CreatePaymentCommand command = new CreatePaymentCommand();
-        command.setUp(accountDAO,new PaymentDAO(),userDAO);
+        command.setUp(accountDAO,new PaymentDAOImpl(),userDAO);
         command.executePost(request,response);
 
         String sendData = new Gson().toJson(assertJSON);

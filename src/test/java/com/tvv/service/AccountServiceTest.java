@@ -2,28 +2,26 @@ package com.tvv.service;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
-import com.tvv.db.DBManager;
-import com.tvv.db.dao.AccountDAO;
-import com.tvv.db.dao.CardDAO;
+import com.tvv.db.dao.AccountDAOImpl;
 import com.tvv.db.entity.Account;
 import com.tvv.db.entity.Card;
 import com.tvv.db.entity.Role;
 import com.tvv.db.entity.User;
 import com.tvv.service.exception.AppException;
+import com.tvv.utils.SystemParameters;
 import com.tvv.web.command.UtilCommand;
 import static org.junit.jupiter.api.Assertions.*;
 
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
-import java.sql.Connection;
-import java.sql.SQLException;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.ResourceBundle;
 
 import static org.mockito.Mockito.*;
 
@@ -31,11 +29,11 @@ class AccountServiceTest {
     private AccountService service;
     private Account accountFrom;
     private Account accountTo;
-    private AccountDAO accountDAO;
+    private AccountDAOImpl accountDAO;
 
     @BeforeEach
     private void setUp() {
-        accountDAO = mock(AccountDAO.class);
+        accountDAO = mock(AccountDAOImpl.class);
         service = new AccountService(accountDAO);
 
         accountFrom = new Account();
@@ -159,8 +157,10 @@ class AccountServiceTest {
     }
 
     @Test
-    void testProcessDeleteNullAccount() throws AppException {
-        JsonObject assertJSON = UtilCommand.errorMessageJSON("Cannot change account status");;
+    void testProcessDeleteNullAccount() throws AppException, IOException {
+        ResourceBundle message;
+        message = SystemParameters.getLocale("en");
+        JsonObject assertJSON = UtilCommand.errorMessageJSON(message.getString("exception.service.account.delete"));
 
         Map<String, Object> data = new HashMap<>();
         data.put("accountId", 1);
@@ -180,8 +180,10 @@ class AccountServiceTest {
     }
 
     @Test
-    void testProcessDeleteAccountFromAdmin() throws AppException {
-        JsonObject assertJSON = UtilCommand.errorMessageJSON("Cannot change account status");;
+    void testProcessDeleteAccountFromAdmin() throws AppException, IOException {
+        ResourceBundle message;
+        message = SystemParameters.getLocale("en");
+        JsonObject assertJSON = UtilCommand.errorMessageJSON(message.getString("exception.service.account.delete"));
 
         Map<String, Object> data = new HashMap<>();
         data.put("accountId", 1);
@@ -276,10 +278,12 @@ class AccountServiceTest {
     }
 
     @Test
-    void testProcessCardSelectAccountNull() throws AppException {
+    void testProcessCardSelectAccountNull() throws AppException, IOException {
+        ResourceBundle message;
+        message = SystemParameters.getLocale("en");
         JsonObject assertJSON = new JsonObject();
         assertJSON.add("status", new Gson().toJsonTree("ERROR"));
-        assertJSON.add("message", new Gson().toJsonTree("Account does not find"));
+        assertJSON.add("message", new Gson().toJsonTree(message.getString("exception.service.account.change.not_found")));
 
         when(accountDAO.findAccountById(1L)).thenReturn(null);
         JsonObject resultJSON = service.processCardSelect(1,Mockito.any());

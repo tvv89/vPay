@@ -3,7 +3,8 @@ package com.tvv.service;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.tvv.db.dao.AccountDAO;
-import com.tvv.db.dao.CardDAO;
+import com.tvv.db.dao.AccountDAOImpl;
+import com.tvv.db.dao.CardDAOImpl;
 import com.tvv.db.entity.*;
 import com.tvv.service.exception.AppException;
 import com.tvv.utils.SystemParameters;
@@ -66,12 +67,13 @@ public class AccountService {
         DecimalFormat df = new DecimalFormat("#.##", new DecimalFormatSymbols(Locale.ENGLISH));
         Double newBalanceFrom = Double.valueOf(df.format(balanceFrom - valueFrom));
         accountDAO.updateAccountBalance(accountFrom.getId(), newBalanceFrom);
-        result = true;
         if (accountTo != null) {
             Double balanceTo = accountTo.getBalance();
             Double newBalanceTo = Double.valueOf(df.format(balanceTo + valueTo));
-            accountDAO.updateAccountBalance(accountTo.getId(), newBalanceTo);
+            result = accountDAO.updateAccountsBalance(accountFrom.getId(),accountTo.getId(),newBalanceFrom,newBalanceTo);
         }
+        else result = accountDAO.updateAccountBalance(accountFrom.getId(), newBalanceFrom);
+
         return result;
     }
 
@@ -208,7 +210,7 @@ public class AccountService {
      */
     public JsonObject processCardInfo(Integer accountId) throws AppException {
         JsonObject innerObject = new JsonObject();
-        CardDAO cardDAO = new CardDAO();
+        CardDAOImpl cardDAO = new CardDAOImpl();
         Account accountById = accountDAO.findAccountById(Long.valueOf(accountId));
         log.trace("Info for account: " + accountById);
         if (accountById.getCard() != null) {

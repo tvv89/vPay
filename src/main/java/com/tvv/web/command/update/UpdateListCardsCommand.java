@@ -2,8 +2,8 @@ package com.tvv.web.command.update;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
-import com.mysql.cj.util.Util;
 import com.tvv.db.dao.CardDAO;
+import com.tvv.db.dao.CardDAOImpl;
 import com.tvv.db.entity.Card;
 import com.tvv.db.entity.Role;
 import com.tvv.db.entity.User;
@@ -32,7 +32,7 @@ public class UpdateListCardsCommand extends Command {
     private CardDAO cardDAO;
 
     public UpdateListCardsCommand() {
-        cardDAO = new CardDAO();
+        cardDAO = new CardDAOImpl();
     }
 
     public void setUp(CardDAO cardDAO) {

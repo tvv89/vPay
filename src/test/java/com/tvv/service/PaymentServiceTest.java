@@ -2,8 +2,8 @@ package com.tvv.service;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
-import com.tvv.db.dao.AccountDAO;
-import com.tvv.db.dao.PaymentDAO;
+import com.tvv.db.dao.AccountDAOImpl;
+import com.tvv.db.dao.PaymentDAOImpl;
 import com.tvv.db.entity.Account;
 import com.tvv.db.entity.Payment;
 import com.tvv.db.entity.User;
@@ -23,14 +23,14 @@ class PaymentServiceTest {
 
     private PaymentService service;
     private AccountService accountService;
-    private AccountDAO accountDAO;
-    private PaymentDAO paymentDAO;
+    private AccountDAOImpl accountDAO;
+    private PaymentDAOImpl paymentDAO;
 
     @BeforeEach
     private void setUp(){
         accountService = mock(AccountService.class);
-        accountDAO = mock(AccountDAO.class);
-        paymentDAO = mock(PaymentDAO.class);
+        accountDAO = mock(AccountDAOImpl.class);
+        paymentDAO = mock(PaymentDAOImpl.class);
         service = new PaymentService(accountService, accountDAO,paymentDAO);
     }
 

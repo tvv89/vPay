@@ -3,10 +3,10 @@ package com.tvv.web.command.info;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.tvv.db.dao.AccountDAO;
+import com.tvv.db.dao.AccountDAOImpl;
 import com.tvv.db.entity.Account;
 import com.tvv.db.entity.Role;
 import com.tvv.db.entity.User;
-import com.tvv.service.AccountService;
 import com.tvv.service.exception.AppException;
 import com.tvv.web.command.Command;
 import com.tvv.web.command.UtilCommand;
@@ -19,7 +19,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
-import java.rmi.server.ExportException;
 import java.util.Map;
 
 /**
@@ -31,7 +30,7 @@ public class InfoAccountCommand extends Command {
 
     private AccountDAO accountDAO;
     public InfoAccountCommand(){
-        accountDAO = new AccountDAO();
+        accountDAO = new AccountDAOImpl();
     }
     public void setUp(AccountDAO accountDAO){
         this.accountDAO = accountDAO;

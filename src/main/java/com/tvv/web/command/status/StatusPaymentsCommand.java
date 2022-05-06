@@ -1,8 +1,9 @@
 package com.tvv.web.command.status;
 
 import com.google.gson.JsonObject;
-import com.tvv.db.dao.AccountDAO;
+import com.tvv.db.dao.AccountDAOImpl;
 import com.tvv.db.dao.PaymentDAO;
+import com.tvv.db.dao.PaymentDAOImpl;
 import com.tvv.db.entity.Payment;
 import com.tvv.db.entity.Role;
 import com.tvv.db.entity.User;
@@ -20,9 +21,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
-import java.text.DecimalFormat;
-import java.text.DecimalFormatSymbols;
-import java.util.Locale;
 import java.util.Map;
 
 /**
@@ -36,8 +34,8 @@ public class StatusPaymentsCommand extends Command {
     private PaymentService service;
 
     public StatusPaymentsCommand() {
-        paymentDAO = new PaymentDAO();
-        service = new PaymentService(new AccountService(new AccountDAO()), new AccountDAO(), paymentDAO);
+        paymentDAO = new PaymentDAOImpl();
+        service = new PaymentService(new AccountService(new AccountDAOImpl()), new AccountDAOImpl(), paymentDAO);
     }
 
     public void setUp(PaymentDAO pDAO, PaymentService pService) {

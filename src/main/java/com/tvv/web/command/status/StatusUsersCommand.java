@@ -4,6 +4,7 @@ package com.tvv.web.command.status;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.tvv.db.dao.UserDAO;
+import com.tvv.db.dao.UserDAOImpl;
 import com.tvv.db.entity.Role;
 import com.tvv.db.entity.User;
 import com.tvv.service.exception.AppException;
@@ -29,7 +30,7 @@ public class StatusUsersCommand extends Command {
     private UserDAO userDAO;
 
     public StatusUsersCommand() {
-        userDAO = new UserDAO();
+        userDAO = new UserDAOImpl();
     }
     public void setUp(UserDAO userDAO){
         this.userDAO = userDAO;

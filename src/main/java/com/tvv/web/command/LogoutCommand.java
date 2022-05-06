@@ -2,13 +2,13 @@ package com.tvv.web.command;
 
 import java.io.IOException;
 
-import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import com.tvv.db.dao.UserDAO;
+import com.tvv.db.dao.UserDAOImpl;
 import com.tvv.db.entity.Role;
 import com.tvv.db.entity.User;
 import com.tvv.service.exception.AppException;
@@ -24,7 +24,7 @@ public class LogoutCommand extends Command {
 
 	private UserDAO userDAO;
 	private void init(){
-		userDAO = new UserDAO();
+		userDAO = new UserDAOImpl();
 	}
 	/**
 	 * POST request function is same GET request function. Execute 'process'

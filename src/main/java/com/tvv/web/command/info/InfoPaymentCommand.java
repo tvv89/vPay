@@ -2,9 +2,8 @@ package com.tvv.web.command.info;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
-import com.tvv.db.dao.AccountDAO;
 import com.tvv.db.dao.PaymentDAO;
-import com.tvv.db.entity.Account;
+import com.tvv.db.dao.PaymentDAOImpl;
 import com.tvv.db.entity.Payment;
 import com.tvv.db.entity.Role;
 import com.tvv.db.entity.User;
@@ -31,7 +30,7 @@ public class InfoPaymentCommand extends Command {
     private PaymentDAO paymentDAO;
 
     public InfoPaymentCommand() {
-        this.paymentDAO = new PaymentDAO();
+        this.paymentDAO = new PaymentDAOImpl();
     }
 
     public void init(PaymentDAO paymentDAO) {

@@ -1,6 +1,6 @@
 package com.tvv.web.command;
 
-import com.tvv.db.dao.UserDAO;
+import com.tvv.db.dao.UserDAOImpl;
 import com.tvv.db.entity.Role;
 import com.tvv.db.entity.User;
 import com.tvv.service.exception.AppException;
@@ -12,9 +12,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
-import java.io.PrintWriter;
 
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 class LoginCommandTest {
@@ -22,7 +20,7 @@ class LoginCommandTest {
     private HttpServletResponse response;
     private HttpServletRequest request;
     private HttpSession session;
-    private UserDAO userDAO;
+    private UserDAOImpl userDAO;
 
     @BeforeEach
     private void init() throws IOException {
@@ -35,7 +33,7 @@ class LoginCommandTest {
         request = mock(HttpServletRequest.class);
         when(request.getSession()).thenReturn(session);
 
-        userDAO = mock(UserDAO.class);
+        userDAO = mock(UserDAOImpl.class);
     }
 
     @Test

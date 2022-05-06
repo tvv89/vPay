@@ -2,7 +2,7 @@ package com.tvv.web.command.status;
 
 
 import com.google.gson.JsonObject;
-import com.tvv.db.dao.AccountDAO;
+import com.tvv.db.dao.AccountDAOImpl;
 import com.tvv.db.entity.Role;
 import com.tvv.db.entity.User;
 import com.tvv.service.AccountService;
@@ -35,7 +35,7 @@ public class StatusAccountsCommand extends Command {
      * init service
      */
     public StatusAccountsCommand() {
-        service = new AccountService(new AccountDAO());
+        service = new AccountService(new AccountDAOImpl());
     }
 
     public void setUp(AccountService aService) {

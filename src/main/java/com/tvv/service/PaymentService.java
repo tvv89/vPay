@@ -3,7 +3,9 @@ package com.tvv.service;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.tvv.db.dao.AccountDAO;
+import com.tvv.db.dao.AccountDAOImpl;
 import com.tvv.db.dao.PaymentDAO;
+import com.tvv.db.dao.PaymentDAOImpl;
 import com.tvv.db.entity.Account;
 import com.tvv.db.entity.Payment;
 import com.tvv.db.entity.User;
@@ -45,15 +47,15 @@ public class PaymentService {
         /**
          * Euro with coefficient to USD
          */
-        EUR(1.15),
+        EUR(33),
         /**
          * Dollar with coefficient to USD
          */
-        USD(1),
+        USD(30),
         /**
          * Gryvnya with coefficient to USD
          */
-        UAH(0.033);
+        UAH(1);
 
         private final double rate;
 
@@ -332,9 +334,11 @@ public class PaymentService {
                     /**
                      * Use service for transfer money
                      */
-                    if ("Submitted".equals(statusPayment))
-                        aService.depositAccount(accountFrom, accountTo, totalPaymentFrom, totalPaymentTo);
-                    innerObject.add("status", new Gson().toJsonTree("OK"));
+                    if ("Submitted".equals(statusPayment)){
+                       boolean result =  aService.depositAccount(accountFrom, accountTo, totalPaymentFrom, totalPaymentTo);
+                       if (result)  innerObject.add("status", new Gson().toJsonTree("OK"));
+                       else return UtilCommand.errorMessageJSON("Something was happened, try again");
+                    }
 
                 } else {
                     return UtilCommand.errorMessageJSON("Account not found");

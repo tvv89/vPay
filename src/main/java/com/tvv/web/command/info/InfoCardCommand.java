@@ -1,15 +1,10 @@
 package com.tvv.web.command.info;
 
-import com.google.gson.Gson;
 import com.google.gson.JsonObject;
-import com.tvv.db.dao.AccountDAO;
-import com.tvv.db.dao.CardDAO;
-import com.tvv.db.entity.Account;
-import com.tvv.db.entity.Card;
+import com.tvv.db.dao.AccountDAOImpl;
 import com.tvv.db.entity.Role;
 import com.tvv.db.entity.User;
 import com.tvv.service.AccountService;
-import com.tvv.service.exception.AppException;
 import com.tvv.web.command.Command;
 import com.tvv.web.command.UtilCommand;
 import com.tvv.web.webutil.Path;
@@ -34,7 +29,7 @@ public class InfoCardCommand extends Command {
      */
     private AccountService service;
     public InfoCardCommand(){
-        service = new AccountService(new AccountDAO());
+        service = new AccountService(new AccountDAOImpl());
     }
     /**
      * init service

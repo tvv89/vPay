@@ -1,7 +1,9 @@
 package com.tvv.service;
 
 import com.tvv.db.dao.CardDAO;
+import com.tvv.db.dao.CardDAOImpl;
 import com.tvv.db.dao.UserDAO;
+import com.tvv.db.dao.UserDAOImpl;
 import com.tvv.db.entity.Card;
 import com.tvv.service.exception.AppException;
 import com.tvv.utils.FieldsChecker;
@@ -24,8 +26,9 @@ public class CardService {
 
 
     public CardService() {
-        userDAO = new UserDAO();
-        cardDAO = new CardDAO();
+        userDAO = new UserDAOImpl();
+        cardDAO = new CardDAOImpl();
+        setUpLocale("en");
     }
 
     public void setDAO(UserDAO userDAO, CardDAO cardDAO){

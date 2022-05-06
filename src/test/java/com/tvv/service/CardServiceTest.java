@@ -1,11 +1,10 @@
 package com.tvv.service;
 
-import com.tvv.db.dao.CardDAO;
-import com.tvv.db.dao.UserDAO;
+import com.tvv.db.dao.CardDAOImpl;
+import com.tvv.db.dao.UserDAOImpl;
 import com.tvv.db.entity.Card;
 import com.tvv.db.entity.User;
 import com.tvv.service.exception.AppException;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
@@ -27,8 +26,8 @@ class CardServiceTest {
         data.put("expYY","23");
         data.put("ownerUser","1");
 
-        UserDAO uDAO = mock(UserDAO.class);
-        CardDAO cDAO = mock(CardDAO.class);
+        UserDAOImpl uDAO = mock(UserDAOImpl.class);
+        CardDAOImpl cDAO = mock(CardDAOImpl.class);
         when(uDAO.findUserById(1L)).thenReturn(new User());
         when(cDAO.insertCard(Mockito.any())).thenReturn(new Card());
 

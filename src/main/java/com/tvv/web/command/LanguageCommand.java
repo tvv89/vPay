@@ -1,12 +1,7 @@
 package com.tvv.web.command;
 
-import com.google.gson.JsonObject;
-import com.tvv.db.dao.UserDAO;
-import com.tvv.db.entity.Role;
-import com.tvv.db.entity.User;
 import com.tvv.service.exception.AppException;
 import com.tvv.utils.SystemParameters;
-import com.tvv.web.webutil.Path;
 import org.apache.log4j.Logger;
 
 import javax.servlet.ServletException;
