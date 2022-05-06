@@ -134,29 +134,30 @@ public class PaymentService {
             if ("Account".equals(payment.getRecipientType())) {
                 Account accountTo = accountDAO.findAccountByUID(payment.getRecipientId());
                 Double totalPaymentTo = currencyExchange(payment.getSum(), payment.getCurrencySum(), accountTo.getCurrency());
-                aService.depositAccount(accountFrom, accountTo, totalPaymentFrom, totalPaymentTo);
-                payment.setStatus("Submitted");
-                paymentDAO.updatePaymentStatus(payment.getId(), "Submitted");
-                innerObject.add("status", new Gson().toJsonTree("OK"));
-                innerObject.add("id", new Gson().toJsonTree(payment.getId()));
-                innerObject.add("statusPayment", new Gson().toJsonTree(payment.getStatus()));
+                boolean deposite = aService.depositAccount(accountFrom, accountTo, totalPaymentFrom, totalPaymentTo);
+                return getJsonObject(payment, innerObject, deposite);
 
-                return innerObject;
             }
             if ("Card".equals(payment.getRecipientType())) {
-                aService.depositAccount(accountFrom, null, totalPaymentFrom, 0D);
-                payment.setStatus("Submitted");
-                paymentDAO.updatePaymentStatus(payment.getId(), "Submitted");
-                innerObject.add("status", new Gson().toJsonTree("OK"));
-                innerObject.add("id", new Gson().toJsonTree(payment.getId()));
-                innerObject.add("statusPayment", new Gson().toJsonTree(payment.getStatus()));
-
-                return innerObject;
+                boolean deposite = aService.depositAccount(accountFrom, null, totalPaymentFrom, 0D);
+                return getJsonObject(payment, innerObject, deposite);
             }
         } else {
             return UtilCommand.errorMessageJSON("Payment had been submitted before");
         }
         return UtilCommand.errorMessageJSON("Payment can not be submitted.");
+    }
+
+    private JsonObject getJsonObject(Payment payment, JsonObject innerObject, boolean deposite) throws AppException {
+        if (deposite) {
+            payment.setStatus("Submitted");
+            paymentDAO.updatePaymentStatus(payment.getId(), "Submitted");
+            innerObject.add("status", new Gson().toJsonTree("OK"));
+            innerObject.add("id", new Gson().toJsonTree(payment.getId()));
+            innerObject.add("statusPayment", new Gson().toJsonTree(payment.getStatus()));
+            return innerObject;
+        }
+        else return UtilCommand.errorMessageJSON("Something was happened, try again");
     }
 
     /**
@@ -248,9 +249,7 @@ public class PaymentService {
             innerObject.add("currency", new Gson().toJsonTree(currencyFrom));
             innerObject.add("commissionValue", new Gson().toJsonTree(commissionValue));
             innerObject.add("totalPayment", new Gson().toJsonTree(totalPayment));
-
         }
-
         return innerObject;
 
     }
@@ -330,15 +329,15 @@ public class PaymentService {
                     payment.setSum(value);
                     payment.setCurrencySum(currencyTo);
                     payment.setStatus(statusPayment);
-                    insertPaymentToDB(payment);
                     /**
                      * Use service for transfer money
                      */
                     if ("Submitted".equals(statusPayment)){
                        boolean result =  aService.depositAccount(accountFrom, accountTo, totalPaymentFrom, totalPaymentTo);
-                       if (result)  innerObject.add("status", new Gson().toJsonTree("OK"));
-                       else return UtilCommand.errorMessageJSON("Something was happened, try again");
+                       if (!result) return UtilCommand.errorMessageJSON("Something was happened, try again");
                     }
+                    insertPaymentToDB(payment);
+                    innerObject.add("status", new Gson().toJsonTree("OK"));
 
                 } else {
                     return UtilCommand.errorMessageJSON("Account not found");
@@ -383,12 +382,12 @@ public class PaymentService {
                 payment.setSum(value);
                 payment.setCurrencySum(currencyTo);
                 payment.setStatus(statusPayment);
-                insertPaymentToDB(payment);
                 /**
                  * Use service for transfer money
                  */
                 if ("Submitted".equals(statusPayment))
                     aService.depositAccount(accountFrom, null, totalPaymentFrom, 0D);
+                insertPaymentToDB(payment);
                 innerObject.add("status", new Gson().toJsonTree("OK"));
 
             } catch (AppException ex) {

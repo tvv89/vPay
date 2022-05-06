@@ -31,6 +31,10 @@ public class AccountService {
     private String locale;
     private ResourceBundle message;
 
+    public AccountService(){
+        accountDAO = new AccountDAOImpl();
+    }
+
     public AccountService(AccountDAO accountDAO) {
         this.accountDAO = accountDAO;
         this.locale = "";
@@ -66,7 +70,6 @@ public class AccountService {
         Double balanceFrom = accountFrom.getBalance();
         DecimalFormat df = new DecimalFormat("#.##", new DecimalFormatSymbols(Locale.ENGLISH));
         Double newBalanceFrom = Double.valueOf(df.format(balanceFrom - valueFrom));
-        accountDAO.updateAccountBalance(accountFrom.getId(), newBalanceFrom);
         if (accountTo != null) {
             Double balanceTo = accountTo.getBalance();
             Double newBalanceTo = Double.valueOf(df.format(balanceTo + valueTo));

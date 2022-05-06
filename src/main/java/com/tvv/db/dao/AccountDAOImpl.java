@@ -247,20 +247,21 @@ public class AccountDAOImpl implements AccountDAO {
 
     @Override
     public boolean updateAccountsBalance(Long formId, Long toId, Double newBalanceFrom, Double newBalanceTo) throws AppException {
-        boolean result = false;
-        PreparedStatement pstmtFrom = null;
-        PreparedStatement pstmtTo = null;
+        boolean result;
+        PreparedStatement pstmtFrom;
+        PreparedStatement pstmtTo;
         Connection con = null;
         try {
             con = dbManager.getConnection();
+            con.setAutoCommit(false);
             pstmtFrom = con.prepareStatement(SQL__UPDATE_BALANCE);
             pstmtFrom.setDouble(1, newBalanceFrom);
             pstmtFrom.setLong(2, formId);
-            pstmtFrom = con.prepareStatement(SQL__UPDATE_BALANCE);
+            pstmtTo = con.prepareStatement(SQL__UPDATE_BALANCE);
             pstmtTo.setDouble(1, newBalanceTo);
             pstmtTo.setLong(2, toId);
-            pstmtFrom.execute();
-            pstmtTo.execute();
+            pstmtFrom.executeUpdate();
+            pstmtTo.executeUpdate();
             pstmtFrom.close();
             pstmtTo.close();
             result = true;
