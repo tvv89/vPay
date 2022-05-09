@@ -10,9 +10,12 @@ import com.tvv.service.exception.AppException;
 import com.tvv.utils.SystemParameters;
 import com.tvv.utils.UtilsGenerator;
 import com.tvv.web.command.UtilCommand;
+import com.tvv.web.webutil.Path;
 import org.apache.log4j.Logger;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
@@ -247,6 +250,69 @@ public class AccountService {
         } else {
             innerObject = UtilCommand.errorMessageJSON(message.getString("exception.service.account.change.not_found"));
             log.error("Account does not have card");
+        }
+        return innerObject;
+    }
+
+    public JsonObject getUpdateAccountJsonObject(HttpServletRequest request, HttpServletResponse response, JsonObject innerObject) throws IOException {
+        /**
+         * Check user role
+         */
+        HttpSession session = request.getSession();
+        Role userRole = (Role) session.getAttribute("userRole");
+        User currentUser = (User) session.getAttribute("currentUser");
+        if (userRole!=Role.ADMIN && userRole!=Role.USER)
+        {
+            response.sendRedirect(request.getContextPath()+ Path.COMMAND__START_PAGE);
+            log.debug("User role is not correct");
+            return null;
+        }
+
+        /**
+         * Start JSON parsing request
+         */
+        Map<String, Object> jsonParameters = null;
+        try {
+            jsonParameters = UtilCommand.parseRequestJSON(request);
+        } catch (AppException e) {
+            e.printStackTrace();
+        }
+        Integer accountId = null;
+        Double accountCoin = null;
+        Account accountById = null;
+
+        /**
+         * Find account for change balance
+         */
+        try {
+            accountId = (Integer)jsonParameters.get("accountId");
+            accountCoin = Double.parseDouble(jsonParameters.get("coin").toString());
+            accountById = accountDAO.findAccountById(accountId.longValue());
+        }
+        catch (Exception e) {
+            log.error("Bad input value");
+        }
+
+        /**
+         * Create response with JSON files
+         */
+        try {
+            if (accountById != null && userRole == Role.USER && accountById.getOwnerUser().getId().equals(currentUser.getId())) {
+                if (accountById.getCard() != null) {
+                    if (accountById.getCard().getStatus()) {
+                        accountDAO.updateAccountBalance(accountById.getId(), accountById.getBalance() + accountCoin);
+                        accountById = accountDAO.findAccountById(accountId.longValue());
+                        innerObject.add("status", new Gson().toJsonTree("OK"));
+                        innerObject.add("account", new Gson().toJsonTree(accountById));
+                    } else innerObject = UtilCommand.errorMessageJSON("Card is locked. Please select another card.");
+                } else {
+                    innerObject = UtilCommand.errorMessageJSON("Account doesn't have card. Please add card before top up balance.");
+                }
+            } else {
+                innerObject = UtilCommand.errorMessageJSON("Cannot change account balance");
+            }
+        } catch (AppException ex) {
+            innerObject = UtilCommand.errorMessageJSON(ex.getMessage());
         }
         return innerObject;
     }

@@ -2,6 +2,7 @@ package com.tvv.service;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
+import com.tvv.db.dao.AccountDAO;
 import com.tvv.db.dao.AccountDAOImpl;
 import com.tvv.db.entity.Account;
 import com.tvv.db.entity.Card;
@@ -10,6 +11,7 @@ import com.tvv.db.entity.User;
 import com.tvv.service.exception.AppException;
 import com.tvv.utils.SystemParameters;
 import com.tvv.web.command.UtilCommand;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -29,7 +31,7 @@ class AccountServiceTest {
     private AccountService service;
     private Account accountFrom;
     private Account accountTo;
-    private AccountDAOImpl accountDAO;
+    private AccountDAO accountDAO;
 
     @BeforeEach
     private void setUp() {
@@ -71,35 +73,38 @@ class AccountServiceTest {
 
     @Test
     void testDepositAccount() throws AppException {
-        Double newBalance = 990D;
-        when(accountDAO.updateAccountBalance(accountFrom.getId(),newBalance)).thenReturn(true);
-        Double newBalanceTo = 990D;
-        when(accountDAO.updateAccountBalance(accountTo.getId(),newBalanceTo)).thenReturn(true);
+        Double addBalanceFrom = 990D;
+        //when(accountDAO.updateAccountsBalance(accountFrom.getId(),newBalance)).thenReturn(true);
+        Double addBalanceTo = 990D;
+        when(accountDAO.updateAccountsBalance(accountFrom.getId(), accountTo.getId(), addBalanceFrom, addBalanceTo)).thenReturn(true);
 
-        service.depositAccount(accountFrom,accountTo,newBalance,newBalanceTo);
-        verify(accountDAO,times(2)).updateAccountBalance(Mockito.any(),Mockito.any());
+        double newBalanceFrom = accountFrom.getBalance() - addBalanceFrom;
+        double newBalanceTo = accountTo.getBalance() + addBalanceTo;
+        service.depositAccount(accountFrom, accountTo, addBalanceFrom, addBalanceTo);
+        verify(accountDAO, times(1))
+                .updateAccountsBalance(accountFrom.getId(), accountTo.getId(), newBalanceFrom, newBalanceTo);
 
     }
 
     @Test
     void testDepositAccountToNull() throws AppException {
         Double newBalance = 990D;
-        when(accountDAO.updateAccountBalance(accountFrom.getId(),newBalance)).thenReturn(true);
+        when(accountDAO.updateAccountBalance(accountFrom.getId(), newBalance)).thenReturn(true);
         Double newBalanceTo = 990D;
 
-        service.depositAccount(accountFrom,null,newBalance,newBalanceTo);
-        verify(accountDAO,times(1)).updateAccountBalance(Mockito.any(),Mockito.any());
+        service.depositAccount(accountFrom, null, newBalance, newBalanceTo);
+        verify(accountDAO, times(1)).updateAccountBalance(Mockito.any(), Mockito.any());
 
     }
 
     @Test
     void testDepositAccountSameAccount() throws AppException {
         Double newBalance = 990D;
-        when(accountDAO.updateAccountBalance(accountFrom.getId(),newBalance)).thenReturn(true);
+        when(accountDAO.updateAccountBalance(accountFrom.getId(), newBalance)).thenReturn(true);
         Double newBalanceTo = 990D;
 
-        service.depositAccount(accountFrom,accountFrom,newBalance,newBalanceTo);
-        verify(accountDAO,times(0)).updateAccountBalance(Mockito.any(),Mockito.any());
+        service.depositAccount(accountFrom, accountFrom, newBalance, newBalanceTo);
+        verify(accountDAO, times(0)).updateAccountBalance(Mockito.any(), Mockito.any());
 
     }
 
@@ -108,13 +113,13 @@ class AccountServiceTest {
 
         Map<String, String> data = new HashMap<>();
         User user = new User();
-        data.put("ipn","");
+        data.put("ipn", "");
         data.put("bankCode", "");
         data.put("name", "AAAAABBBBB");
-        data.put("currency","EUR");
+        data.put("currency", "EUR");
 
         when(accountDAO.insertAccount(accountTo)).thenReturn(accountTo);
-        service.createAccount(data,user);
+        service.createAccount(data, user);
         verify(accountDAO, times(1)).insertAccount(Mockito.any());
 
     }
@@ -123,13 +128,14 @@ class AccountServiceTest {
     void testCreateAccountLongName() throws AppException {
         Map<String, String> data = new HashMap<>();
         User user = new User();
-        data.put("ipn","");
+        data.put("ipn", "");
         data.put("bankCode", "");
         data.put("name", "AAAAABBBBB12345678901234567");
-        data.put("currency","EUR");
+        data.put("currency", "EUR");
 
         assertThrows(AppException.class, () -> {
-        service.createAccount(data,user);});
+            service.createAccount(data, user);
+        });
 
     }
 
@@ -150,9 +156,9 @@ class AccountServiceTest {
         when(accountDAO.findAccountById(1L)).thenReturn(accountFrom);
         when(accountDAO.deleteAccount(accountFrom)).thenReturn(true);
 
-        JsonObject resultJSON = service.processDeleteAccount(request,data);
+        JsonObject resultJSON = service.processDeleteAccount(request, data);
 
-        assertEquals(assertJSON.toString(),resultJSON.toString());
+        assertEquals(assertJSON.toString(), resultJSON.toString());
 
     }
 
@@ -173,9 +179,9 @@ class AccountServiceTest {
         when(request.getSession().getAttribute("currentUser")).thenReturn(Mockito.any());
         when(accountDAO.findAccountById(1L)).thenReturn(null);
 
-        JsonObject resultJSON = service.processDeleteAccount(request,data);
+        JsonObject resultJSON = service.processDeleteAccount(request, data);
 
-        assertEquals(assertJSON.toString(),resultJSON.toString());
+        assertEquals(assertJSON.toString(), resultJSON.toString());
 
     }
 
@@ -196,9 +202,9 @@ class AccountServiceTest {
         when(request.getSession().getAttribute("currentUser")).thenReturn(Mockito.any());
         when(accountDAO.findAccountById(1L)).thenReturn(accountFrom);
 
-        JsonObject resultJSON = service.processDeleteAccount(request,data);
+        JsonObject resultJSON = service.processDeleteAccount(request, data);
 
-        assertEquals(assertJSON.toString(),resultJSON.toString());
+        assertEquals(assertJSON.toString(), resultJSON.toString());
 
     }
 
@@ -224,13 +230,13 @@ class AccountServiceTest {
         when(accountDAO.findAccountById(1L)).thenReturn(accountFrom);
         accountFrom.setStatus("Disabled");
 
-        when(accountDAO.updateStatusAccountById(1L,"Enabled")).thenReturn(true);
+        when(accountDAO.updateStatusAccountById(1L, "Enabled")).thenReturn(true);
         accountFrom.setStatus("Enabled");
         when(accountDAO.findAccountById(1L)).thenReturn(accountFrom);
 
-        JsonObject resultJSON = service.processChangeStatus(request,data);
+        JsonObject resultJSON = service.processChangeStatus(request, data);
 
-        assertEquals(assertJSON.toString(),resultJSON.toString());
+        assertEquals(assertJSON.toString(), resultJSON.toString());
     }
 
     @Test
@@ -272,8 +278,8 @@ class AccountServiceTest {
         assertJSON.add("status", new Gson().toJsonTree("OK"));
         Account account = mock(Account.class);
         when(accountDAO.findAccountById(1L)).thenReturn(account);
-        JsonObject resultJSON = service.processCardSelect(1,Mockito.any());
-        assertEquals(assertJSON.toString(),resultJSON.toString());
+        JsonObject resultJSON = service.processCardSelect(1, Mockito.any());
+        assertEquals(assertJSON.toString(), resultJSON.toString());
 
     }
 
@@ -286,8 +292,8 @@ class AccountServiceTest {
         assertJSON.add("message", new Gson().toJsonTree(message.getString("exception.service.account.change.not_found")));
 
         when(accountDAO.findAccountById(1L)).thenReturn(null);
-        JsonObject resultJSON = service.processCardSelect(1,Mockito.any());
-        assertEquals(assertJSON.toString(),resultJSON.toString());
+        JsonObject resultJSON = service.processCardSelect(1, Mockito.any());
+        assertEquals(assertJSON.toString(), resultJSON.toString());
 
     }
 }
