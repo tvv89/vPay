@@ -45,6 +45,7 @@ public class CreateAccountCommand extends Command {
 	@Override
 	public void executePost(HttpServletRequest request,
 							HttpServletResponse response) throws IOException, ServletException {
+
 		log.debug("Start create account POST command " + this.getClass().getSimpleName());
 		/**
 		 * Check user role
@@ -62,7 +63,7 @@ public class CreateAccountCommand extends Command {
 		/**
 		 * Read parameter from request
 		 */
-		Map<String, String> accountData = readParemeters(request);
+		Map<String, String> accountData = readParameters(request);
 		log.debug("Read parameter: " + accountData);
 
 		/**
@@ -103,7 +104,7 @@ public class CreateAccountCommand extends Command {
 	 * @param request request from servlet with parameters
 	 * @return Map<String, String> key - parameter name, value - value of parameter
 	 */
-	private Map<String, String> readParemeters(HttpServletRequest request) {
+	private Map<String, String> readParameters(HttpServletRequest request) {
 		Map<String,String> result = new HashMap<>();
 
 		result.put("name",request.getParameter("name"));
